@@ -13,6 +13,8 @@
 #'
 update_inventory <- function(a, idplot = NULL) {
 
+  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
+
   if (!is.null(idplot)) {
     id <- a$idplot %in% idplot
     if (!any(id)) stop("Could not find 'idplot' stand in inventory 'a'")
@@ -30,8 +32,8 @@ update_inventory <- function(a, idplot = NULL) {
         if (any(country == "spain")) {
           df_sp <- df %>% group_by(species)
           a[i,]$species[[1]] <- (df_sp %>% distinct(species))$species
-          a[i,]$BA_species[[1]] <- as.data.frame(df_sp %>% summarise(BA=(pi/200^2)*sum(factor_diam*dbh^2)))
-          a[i,]$N_species[[1]] <- as.data.frame(df_sp %>% summarise(N=sum(factor_diam)))
+          a[i,]$BA_species[[1]] <- as.data.frame(df_sp %>% summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
+          a[i,]$N_species[[1]] <- as.data.frame(df_sp %>% summarise(N=sum(factor_diam1)))
           a[i,]$BA_stand <- sum(a[i,]$BA_species[[1]]$BA)
           a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
         } else if (country == "usa") {

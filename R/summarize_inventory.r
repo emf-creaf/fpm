@@ -18,7 +18,10 @@
 #'
 summarize_inventory <- function(a) {
 
+  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
+
   out <- list(Country = attr(a, "country"),
+              Inventory_version = attr(a, "version"),
               Num_stands = nrow(a),
               Num_stand_types = table(a$stand_type))
 

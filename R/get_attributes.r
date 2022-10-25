@@ -8,13 +8,13 @@
 #' @examples
 get_attributes <- function(a) {
 
-    g <- function(x) ifelse(is.null(x), NA, x)
+  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
 
-    country <- attr(a, "country")
-    abscissas <- attr(a, "abscissas")
+  g <- function(x) ifelse(is.null(x), NA, x)
 
-    return(c(abscissas=g(abscissas),
-             country=g(country)))
+  country <- attr(a, "country")
+  version <- attr(a, "version")
 
-
+  return(c(country=g(country),
+           version=g(version)))
 }
