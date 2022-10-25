@@ -19,8 +19,6 @@
 #' a <- set_attributes(a)
 set_attributes <- function(a, country = NULL, version = NULL, x = NULL) {
 
-  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
-
   if (!is.null(country)) {
     if (!any(tolower(country) %in% c("spain", "usa", "france"))) stop("Wrong 'country' value")
     attr(a, "country") <- country

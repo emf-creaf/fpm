@@ -18,15 +18,13 @@
 #'
 smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian", width = 2) {
 
-  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
-
   if (length(idplot) > 1) stop("Input 'idplot' must have length = 1")
   id <- match(idplot, a$idplot)
   if (is.na(id)) stop(cat("Stand", idplot, "does not exist\n"))
   if (a[id, ]$stand_type != "individual") stop("Stand is not of 'individual' type")
   x <- attr(a, "integration_variable")
   if (is.null(x)) stop("Attribute 'integration_variable' is missing")
-  if (!any(stand_type %in% c("mpm", "ipm"))) stop("Input 'stand types must be equal to 'mpm' or 'ipm'")
+  if (!any(stand_type %in% c("mpm", "ipm"))) stop("Input 'stand_type' must be 'mpm' or 'ipm'")
 
   # Species to smooth.
   trees <- a[id, ]$trees[[1]]
