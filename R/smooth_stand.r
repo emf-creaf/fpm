@@ -41,9 +41,9 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
   colnames(df) <- species
 
   if (stand_type == "ipm") {
-    xx <- subset(x, select = species)
+    xx <- x[, species, drop = F]
     for (i in 1:nsp) {
-      y <- subset(trees, species == species[i])
+      y <- trees[trees$species == species[i], , drop = F]
       for (j in 1:nrow(y)) {
         df[, i] <- df[, i] + MiscStat::fast_kernsmooth(xx[, i], y$dbh1[j] , width = width) * y$factor_diam1[j]
       }
