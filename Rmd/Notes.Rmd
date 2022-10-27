@@ -1,0 +1,36 @@
+---
+title: "sf objects and inventory data"
+author: "Roberto Molowny-Horas"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Bla Bla
+
+* start_stand: 
+
+* Modify
+
+
+### Attributes
+
+There are several extra attributes that are set in the *sf* object:
+
+* country: Forest stands data may come from different countries, which in turn may have implemented a distinct sampling methodology in collecting those data. Currently, only the Spanish Inventario Forestal Nacional (IFN) is being used in the calculations, though future developments should include the French and the USA national forest inventories. Currently, by default country = "Spain".
+
+* version: Sampling methodologies may change between consecutive forest inventories. For instance, there have been noticeable changes between the IFN versions 2, 3 and 4, especially regarding of the way non-adult trees (i.e. those with dbh smaller than 7.5cm). Consequently, this attributes indicates which version it corresponds to.
+
+* integration_variable: To implement an IPM approach we must solve a very complicated analytical integral. Save for some very simple examples, that integral must be solved numerically by means of an appropriate numerical quadrature. Those quadratures need a continuous integration variable which 1) may be different for each species, and 2) 
+
+
+
+
+

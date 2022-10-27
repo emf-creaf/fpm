@@ -1,5 +1,8 @@
 #' Title
 #'
+#' @description
+#' Add "trees" or "saplings" data.frames to a single sf object representing a tree stand.
+#'
 #' @param a
 #' @param idplot
 #' @param df
@@ -20,6 +23,7 @@
 #'
 add_data_stand <- function(a, df, data = "trees") {
 
+  if (nrow(a) > 1) stop("Input 'a' must correspond to a single stand")
   if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
   if (!any(data == c("trees", "saplings"))) stop("Wrong value in 'data'")
 
