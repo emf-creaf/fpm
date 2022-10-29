@@ -16,8 +16,6 @@ merge_stands <- function(a, b) {
   # Previous copy of attributes.
   a_country <- attr(a, "country")
   b_country <- attr(b, "country")
-  a_version <- attr(a, "version")
-  b_version <- attr(b, "version")
 
   # Merging.
   a <- rbind(a, b)
@@ -27,10 +25,8 @@ merge_stands <- function(a, b) {
     if (a_country != b_country) stop("Attributes 'country' differ")
     attr(a, "country") <- a_country
   }
-  if (!is.null(a_version) | !is.null(b_version)) {
-    if (a_version != b_version) stop("Attributes 'version' differ")
-    attr(a, "version") <- a_version
-  }
+
+  # if (!is.null(a_integration_variable)) attr(a, "integration_variable") <- a_integration_variable
 
   return(a)
 }

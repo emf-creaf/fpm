@@ -27,8 +27,7 @@ add_stand <- function(a, b) {
 
   # Some attributes are lost during 'rbind'.
   if (!is.null(a_country)) attr(a, "country") <- a_country
-  if (!is.null(a_version)) attr(a, "version") <- a_version
-  # if (!is.null(a_integration_variable)) attr(a, "integration_variable") <- a_integration_variable
+
 
   return(a)
 }

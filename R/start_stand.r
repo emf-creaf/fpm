@@ -42,7 +42,9 @@ start_stand <- function(idplot, x, y, stand_type = "individual", date = NULL, cr
 
   # Initialize trees and saplings.
   z$trees[[1]] <- list()
-  z$saplings[[1]] <- list()
+
+  z$seedlings[[1]] <- vector(max(fpm:::num_seedlings()), mode = "list")
+  z$saplings[[1]] <- vector(max(fpm:::num_saplings()), mode = "list")
 
   # Aggregated info.
   z$N_species[[1]] <- list()

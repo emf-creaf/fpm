@@ -1,5 +1,8 @@
 #' Title
 #'
+#' @description
+#' Remove plots
+#'
 #' @param a
 #' @param idplot
 #'
@@ -9,11 +12,9 @@
 #' @examples
 remove_stand <- function(a, idplot) {
 
-  if (length(idplot) > 1) stop("Input 'idplot' must have length = 1")
   i <- match(idplot, a$idplot)
-  if (is.na(i)) stop(cat("Stand",idplot,"does not exist"))
+  if (any(is.na(i))) stop(cat("Could not find some plots"))
 
   return(a[-i,])
-
 
 }
