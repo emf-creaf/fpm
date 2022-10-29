@@ -25,7 +25,7 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
   # If stands are not of "individual" type, smoothing cannot be performed.
   if (any(!(a[id, ]$stand_type %in% "individual"))) stop("Some stands are not of 'individual' type")
 
-  # From discrete to matrix of ipm-type stands.
+  # From discrete to matrix or ipm-type stands.
   if (!any(stand_type %in% c("mpm", "ipm"))) stop("Input 'stand_type' must be 'mpm' or 'ipm'")
 
   # We need the integration variable for the calculations.
@@ -48,12 +48,12 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
     # Big matrix to store results per species column-wise.
     df <- matrix(0,nx, nsp, dimnames = list(c(), species))
 
-    if (a[i, ]$stand_type == "ipm") {
-      xx <- x[, species, drop = F]
+    if (stand_type == "ipm") {
       for (j in 1:nsp) {
         y <- trees[trees$species == species[j], , drop = F]
         for (k in 1:nrow(y)) {
-          df[, j] <- df[, j] + MiscStat::fast_kernsmooth(xx[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+          df[, species[j]] <- df[, species[j]] +
+            MiscStat::fast_kernsmooth(x[, species[j]], y$dbh1[k] , width = width) * y$factor_diam1[k]
         }
       }
     } else if (stand_type == "mpm") {
@@ -61,8 +61,10 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
 
     # Store and change 'stand_type' to "ipm".
     a[i, ]$trees[[1]] <- as.data.frame(df)
-    a[i, ]$stand_type <- "ipm"
   }
+
+  # Finally, stand_type is set.
+  a[id, ]$stand_type <- "ipm"
 
   return(a)
 }

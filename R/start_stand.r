@@ -1,5 +1,8 @@
 #' Title
 #'
+#' @description
+#' Make the basic structure of a 'sf' object to contain stand data.
+#'
 #' @param idplot
 #' @param x
 #' @param y
@@ -11,23 +14,18 @@
 #' @export
 #'
 #' @examples
-start_stand <- function(idplot, x, y, stand_type = "individual", date = NULL, crs = NULL) {
+start_stand <- function(idplot, x, y, crs = NULL) {
 
   mf <- match.call()
-  m <- match(c("idplot", "x", "y","stand_type", "date", "crs"), tolower(names(mf)))
-  if (any(is.na(m[1:5]))) stop("Missing 'idplot', 'x', 'y', 'stand_type' or 'date'")
-
-  if (!any(stand_type %in% c("individual", "mpm", "ipm"))) stop("Wrong 'stand_type' input")
-  if (is.null(crs)) {
-    crs <- NA
-  } else {
+  m <- match(c("idplot", "x", "y", "crs"), tolower(names(mf)))
+  if (any(is.na(m[1:3]))) stop("Missing 'idplot', 'x' or 'y'")
+  if (!is.null(crs)) {
     if (length(crs) > 1) warning("Input 'crs' should not be a vector. Using its first element only...")
+  } else {
+    crs <- fpm:::null_to_NA(crs)
   }
-  if (any(sapply(list(idplot, x, y, stand_type),length) != 1)) {
-    stop("Length of inputs 'idplot', 'x', 'y' and 'stand_type' cannot be > 1")
-  }
-  if (!is.null(date)) {
-    if (length(date) > 1) stop("Input 'date' must be a single number")
+  if (any(sapply(list(idplot, x, y),length) != 1)) {
+    stop("Length of inputs 'idplot', 'x' or 'y' cannot be > 1")
   }
 
   # Start sf object.
@@ -36,13 +34,8 @@ start_stand <- function(idplot, x, y, stand_type = "individual", date = NULL, cr
   z <- sf::st_sf(idplot=idplot, geometry = sf::st_sfc(geometry))
   sf::st_crs(z) <- crs
 
-  # Initialize years (i.e. sampling date) and stand type.
-  z$date <- date
-  z$stand_type <- stand_type
-
   # Initialize trees and saplings.
   z$trees[[1]] <- list()
-
   z$seedlings[[1]] <- vector(max(fpm:::num_seedlings()), mode = "list")
   z$saplings[[1]] <- vector(max(fpm:::num_saplings()), mode = "list")
 
