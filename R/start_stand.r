@@ -1,29 +1,29 @@
-#' Title
+#' Start \code{sf} object to represent a tree stand
 #'
 #' @description
-#' Make the basic structure of a 'sf' object to contain stand data.
+#' Make the basic structure of a \code{sf} object to contain stand data.
 #'
-#' @param idplot
-#' @param x
-#' @param y
-#' @param stand_type
-#' @param date
-#' @param crs
+#' @param idplot unique identifier of tree stand.
+#' @param x geographic coordinate of stand (e.g. longitude if unprojected, X in m if UTM projected)
+#' @param y geographic coordinate of stand (same as for \code{x.
+#' @param crs coordinate reference system of stand. If missing, NA will be assumed.
+#'
+#' @details This simple function creates a simple feature (a.k.a. \code{sf}) POINT
+#' object to store all data for a single tree stand.
 #'
 #' @return
+#' A \code{sf} object with new fields.
+#'
 #' @export
 #'
 #' @examples
-start_stand <- function(idplot, x, y, crs = NULL) {
+#' a <- start_stand("ID1", 5, 45, "EPSG:4326")
+#'
+start_stand <- function(idplot, x, y, crs) {
 
   mf <- match.call()
   m <- match(c("idplot", "x", "y", "crs"), tolower(names(mf)))
   if (any(is.na(m[1:3]))) stop("Missing 'idplot', 'x' or 'y'")
-  if (!is.null(crs)) {
-    if (length(crs) > 1) warning("Input 'crs' should not be a vector. Using its first element only...")
-  } else {
-    crs <- fpm:::null_to_NA(crs)
-  }
   if (any(sapply(list(idplot, x, y),length) != 1)) {
     stop("Length of inputs 'idplot', 'x' or 'y' cannot be > 1")
   }
@@ -32,7 +32,6 @@ start_stand <- function(idplot, x, y, crs = NULL) {
   n <- length(idplot)
   geometry <- setNames(sf::st_point(c(x,y), dim="XY"), idplot)
   z <- sf::st_sf(idplot=idplot, geometry = sf::st_sfc(geometry))
-  sf::st_crs(z) <- crs
 
   # Initialize trees and saplings.
   z$trees[[1]] <- list()
