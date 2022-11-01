@@ -12,5 +12,5 @@ get_attributes <- function(a) {
   integration_variable <- attr(a, "integration_variable")
 
   return(c(country=null_to_NA(country),
-           integration_variable=null_to_NA(integration_variable)))
+           integvars=null_to_NA(integvars)))
 }

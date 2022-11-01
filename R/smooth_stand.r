@@ -4,13 +4,17 @@
 #' Convolution of discrete tree stands per species with smoothing window
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
-#' @param idplot identifier of single POINT to modify.
+#' @param idplot identifiers of POINT elements representing tree stands to smooth.
 #' @param stand_type string specifying which type of tree stand to obtain.
 #' @param smooth_type string indicating which smoothing window to use. Presently,
 #' only \code{smooth_type = "gaussian"} option is available.
 #' #' @param width width of smoothing window.
 #'
 #' @return
+#' A \code{sf} object with a continuous distributions of trees per species as a
+#' function of dbh, instead of a set of individual dbh values (as would happen
+#' if data came from observations).
+#'
 #' @export
 #'
 #' @examples
@@ -28,13 +32,10 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
   mf <- match.call()
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
 
-  # Some plots are just not there.
-
   # Does 'idplot' exist?
-  if (any(is.na(m[1:2]))) stop("Missing 'a' or 'idplot'")
+  if (is.na(m[2])) idplot <- a$idplot
   id <- match(idplot, a$idplot)
-  if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
-  if (is.na(id)) stop("Could not find 'idplot' in 'a'")
+  if (any(is.na(id))) stop("Could not find 'idplot' in 'a'")
 
   # If stands are not of "individual" type, smoothing cannot be performed.
   if (any(!(a[id, ]$stand_type %in% "individual"))) stop("Some stands are not of 'individual' type")

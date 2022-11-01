@@ -1,15 +1,29 @@
-#' Title
+#' Descriptive statistics per tree stand
 #'
-#' @param a
+#' @description
+#' Calculate descriptive statistics (number of trees, basal area) at tree-stand level per species
+#'
+#' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param idplot identifiers of POINT elements representing tree-stands. If NULL,
+#' all plots will be used.
 #'
 #' @return
+#' A \code{sf} object with aggregate values (number of trees, basal area) per
+#' tree stand and tree species.
+#'
 #' @export
 #'
 #' @examples
-#' a <- start_inventory(letters[1:5],runif(5), runif(5),"EPSG:4326","Spain")
-#' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
-#' a <- add_data_stand(a,"c",df,"Spain","trees")
-#' a <- update_inventory(a, "c")
+#' a <- start_stand("ID1", 5, 45, "EPSG:4326")
+#' a <- set_attributes(a)
+#' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
+#' dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
+#' a <- build_stand(a, "ID1", df, "trees", "individual", 1990)
+#' x <- data.frame(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1000))
+#' a <- set_attributes(a, integvars = x)
+#' a <- update_description(a)
+#' b <- smooth_stand(a, "ID1")
+#' b <- update_description(b)
 #'
 update_description <- function(a, idplot = NULL) {
 
@@ -21,9 +35,8 @@ update_description <- function(a, idplot = NULL) {
     id <- 1:length(a$idplot)
   }
 
-  # We need the integration variable.
-
   country <- tolower(attr(a, "country"))
+  if (is.null(country)) stop("Attribute 'country' in 'a' has not been set")
 
   for (i in id) {
     df <- a[i, ]$trees[[1]]
@@ -43,7 +56,8 @@ update_description <- function(a, idplot = NULL) {
 
       # Retreived only if needed, and only once.
       if (!exists("x", inherits = F)) {
-        x <- fpm::get_integvar(a)
+        x <- attr(a, "integvars")
+        if (is.null(x)) stop("Attribute 'integvars' has not been set")
         h <- unlist(x[2,]-x[1,])
       }
       coln <- colnames(df)

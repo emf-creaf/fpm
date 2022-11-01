@@ -4,7 +4,7 @@
 #' Add or modify most variables of tree-stand \code{sf} object.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
-#' @param idplot identifier of single POINT to modify.
+#' @param idplot identifier of single POINT, representing a tree stand, to modify.
 #' @param df a data frame containing seedling, sapling or tree data.
 #' @param data_type string specifying whether the \code{df} data frame corresponds
 #' to seedling, sapling or tree data.
@@ -34,7 +34,7 @@ build_stand <- function(a, idplot, df, data_type, stand_type, date, country = "s
   if (any(is.na(m[1:2]))) stop("Missing 'a' or 'idplot'")
   i <- match(idplot, a$idplot)
   if (is.na(i)) stop("Could not find 'idplot' in 'a'")
-  if (length(i) != 0) stop("Only one 'idplot' can be modified at the time")
+  if (length(i) != 1) stop("Only one 'idplot' can be modified at the time")
 
   # Check choices of arguments.
   if (!is.na(m[4])) a$data_type <- match.arg(data_type, choices = c("trees", "saplings"))
