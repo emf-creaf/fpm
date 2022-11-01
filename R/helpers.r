@@ -10,9 +10,11 @@ num_saplings <- function() 1:3
 # Set how many time points (for the Spanish IFN, there are IFN2, IFN3 and IFN4; that is, a maximum of 1:3)
 num_timepoints <- function() 1:2
 
+countries <- function() c("spain", "usa", "france")
+
 # Is the country correct?
 test_country <- function(x) {
-  y <- any(tolower(x) %in% c("spain", "usa", "france"))
+  y <- any(tolower(x) %in% countries())
   if (!y) warning("Wrong value in attribute 'country'")
   return(y)
 }
