@@ -9,7 +9,8 @@
 #' @return
 #' A \code{sf} object without \code{idplot} stands.
 #'
-#' @export
+#' @details
+#' Simple removal of rows from \code{a}.
 #'
 #' @examples
 #'
@@ -26,6 +27,8 @@
 #'
 #' # Remove two stands.
 #' a <- remove_stand(a, c("ID3", "ID8"))
+#'
+#' @export
 #'
 remove_stand <- function(a, idplot) {
 

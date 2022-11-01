@@ -16,6 +16,10 @@
 #' @return
 #' A \code{sf} object with added or modified fields.
 #'
+#' @details
+#' Unlike other functions, \code{build_stand} must be called individually for
+#' each tree stand.
+#'
 #' @export
 #'
 #' @examples

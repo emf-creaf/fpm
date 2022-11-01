@@ -15,6 +15,11 @@
 #' function of dbh, instead of a set of individual dbh values (as would happen
 #' if data came from observations).
 #'
+#' @details
+#' Convolution with a continuous window function is done with a numerical quadrature.
+#' The default value (\code{smooth_type = "gaussian"}) such be good enough for
+#' most purposes.
+#'
 #' @export
 #'
 #' @examples

@@ -1,12 +1,33 @@
-#' Title
+#' Merge tree stands
 #'
-#' @param a
-#' @param b
+#' @description
+#' Merge \code{sf} objects representing tree-stands
+#'
+#' @param a first tree-stand \code{sf} object to merge.
+#' @param b second tree-stand \code{sf} object to merge.
 #'
 #' @return
+#' A new tree-stand \code{sf} containing both all stands in \code{a} and \code{b}.
+#'
+#' @details Attributes in stands \code{a} and \code{b} must match for \code{merge_stand}
+#' to work. The resulting \code{sf} object will have the same attributes as both
+#' inputs.
+#'
 #' @export
 #'
 #' @examples
+#'
+#' #' # First initialize one single stand.
+#' a <- start_stand("ID1", 5, 45, "EPSG:4326")
+#' a <- set_attributes(a)
+#'
+#' # Next, we merge other stands.
+#' for (i in 2:10) {
+#' b <- start_stand(paste0("ID",i), 5, 45, "EPSG:4326")
+#' b <- set_attributes(b)
+#' a <- merge_stands(a,b)
+#' }
+#'
 merge_stands <- function(a, b) {
 
   if (sf::st_crs(a) != sf::st_crs(b)) stop("CRS of inputs 'a' and 'b' do not match")
@@ -17,7 +38,6 @@ merge_stands <- function(a, b) {
   b_country <- attr(b, "country")
   a_integvars <- attr(a, "integvars")
   b_integvars <- attr(b, "integvars")
-
 
   # 'country' and 'integvars' attributes must match, if already set.
   if (!is.null(a_country) | !is.null(b_country)) {
