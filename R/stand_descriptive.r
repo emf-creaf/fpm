@@ -44,10 +44,10 @@
 #' b <- smooth_stand(a)
 #'
 #' # Update descriptive statistics for continuous data.
-#' a <- update_description(a)
-#' b <- update_description(b)
+#' a <- stand_descriptive(a)
+#' b <- stand_descriptive(b)
 #'
-update_description <- function(a, idplot = NULL) {
+stand_descriptive <- function(a, idplot = NULL) {
 
   # Check idplot. If not provided, all plots will be used.
   if (!is.null(idplot)) {
@@ -60,6 +60,7 @@ update_description <- function(a, idplot = NULL) {
   country <- tolower(attr(a, "country"))
   if (is.null(country)) stop("Attribute 'country' in 'a' has not been set")
 
+  # Either sum trees or integrate continuous distribution.
   for (i in id) {
     df <- a[i, ]$trees[[1]]
     if (a[i, ]$stand_type == "individual") {
