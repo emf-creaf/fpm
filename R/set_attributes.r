@@ -28,15 +28,13 @@
 #' a <- start_stand("ID1", 5, 45, "EPSG:4326")
 #' a <- set_attributes(a)
 #'
-set_attributes <- function(a, country = "Spain", integvars = NULL) {
+set_attributes <- function(a, country = "spain", integvars = NULL) {
 
-  mf <- match.call()
-  m <- match(c("a", "country", "integvars"), tolower(names(mf)[-1]))
   co <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
   attr(a, "country") <- co
 
-  if (!is.na(m[3])) {
-    if (!(is.data.frame(x))) stop("Input 'integvars' must be a data.frame with as many columns as species")
+  if (!is.null(integvars)) {
+    if (!(is.data.frame(integvars))) stop("Input 'integvars' must be a data.frame with as many columns as species")
     attr(a, "integvars") <- integvars
   }
 

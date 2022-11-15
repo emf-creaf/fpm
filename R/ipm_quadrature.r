@@ -8,9 +8,9 @@
 #' @export
 #'
 #' @examples
-ipm_quadrature <- function(a, idplot, quadrature_type = "trapezoidal") {
+ipm_quadrature <- function(a, idplot, gr, va, quadrature_type = "trapezoidal") {
 
-  if (!any(class(a) %in% "inventory")) stop("Object 'a' must be of 'inventory' class")
+
 
   sd.va <- sqrt(va)
 

@@ -33,6 +33,10 @@ start_stand <- function(idplot, x, y, crs) {
   geometry <- setNames(sf::st_point(c(x,y), dim="XY"), idplot)
   z <- sf::st_sf(idplot=idplot, geometry = sf::st_sfc(geometry))
 
+  # Coordinate reference system.
+
+  if (!is.null(m[4])) sf::st_crs(z) <- crs
+
   # Initialize trees and saplings.
   z$trees[[1]] <- list()
   z$seedlings[[1]] <- vector(max(fpm:::num_seedlings()), mode = "list")

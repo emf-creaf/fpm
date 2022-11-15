@@ -73,6 +73,7 @@ diam_classes <- function(x, y, xl, correction = T) {
   if (is.unsorted(x, strictly = T)) stop("Vector 'x' should have strictly increasing values")
   if (var(diff(x)) > .Machine$double.eps) stop("Increments in 'x' should be constant")
   if (is.unsorted(xl, strictly = T)) stop("Vector 'xl' should be monotonically increasing")
+  if (!is.logical(correction)) stop("Input 'correction' must be logical")
 
   # If interval does not match exactly points in x, we implement a very simple procedure.
   # In short, at each interval in xi the quadrature is multiplied by the proportion of

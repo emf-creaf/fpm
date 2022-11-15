@@ -12,8 +12,8 @@
 #' tree stand and tree species.
 #'
 #' @details
-#' When the tree-stand information is given as a continuous distribution, amn
-#' appropriate numerical quadrature is emmployed. In this case, the \emph{integvars}
+#' When the tree-stand information is given as a continuous distribution, an
+#' appropriate numerical quadrature is employed. In this case, the \emph{integvars}
 #' attribute must be set in advance.
 #'
 #' @export
