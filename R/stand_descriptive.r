@@ -57,12 +57,24 @@ stand_descriptive <- function(a, idplot = NULL) {
     id <- 1:length(a$idplot)
   }
 
+  # Check country.
   country <- tolower(attr(a, "country"))
   if (is.null(country)) stop("Attribute 'country' in 'a' has not been set")
+
+  # If any plot is "ipm", attribute "integvars" must be present.
+  # Then, retreive abscissas only if needed, and only once. Grid spacing
+  # is also calculated, as a vector, for each species.
+  if (any(a$stand_type == "ipm")) {
+    x <- attr(a, "integvars")
+    if (is.null(x)) stop("Attribute 'integvars' has not been set")
+    h <- unlist(x[2,]-x[1,])
+  }
 
   # Either sum trees or integrate continuous distribution.
   for (i in id) {
     df <- a[i, ]$trees[[1]]
+
+    # If "individual", use dplyr.
     if (a[i, ]$stand_type == "individual") {
       if (any(country == "spain")) {
         df <- df %>% group_by(species)
@@ -73,22 +85,26 @@ stand_descriptive <- function(a, idplot = NULL) {
       } else if (country == "france") {
       }
     }
+
+
+    # To be implemented.
     if (a[i,]$stand_type == "mpm") {
     }
-    if (a[i,]$stand_type == "ipm") {
 
-      # Retreived only if needed, and only once.
-      if (!exists("x", inherits = F)) {
-        x <- attr(a, "integvars")
-        if (is.null(x)) stop("Attribute 'integvars' has not been set")
-        h <- unlist(x[2,]-x[1,])
+
+
+    # If "ipm", use quadratures.
+    if (a[i,]$stand_type == "ipm") {
+      if (any(country == "spain")) {
+        coln <- colnames(df)
+        a[i,]$species[[1]] <- coln
+        a[i,]$BA_species[[1]] <-
+          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
+        a[i,]$N_species[[1]] <-
+          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y],h[y]))))
+      } else if (country == "usa") {
+      } else if (country == "france") {
       }
-      coln <- colnames(df)
-      a[i,]$species[[1]] <- coln
-      a[i,]$BA_species[[1]] <-
-        data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
-      a[i,]$N_species[[1]] <-
-        data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y],h[y]))))
     }
     a[i,]$BA_stand <- sum(a[i,]$BA_species[[1]]$BA)
     a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)

@@ -84,11 +84,11 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
     df <- matrix(0,nx, nsp, dimnames = list(c(), species))
 
     if (stand_type == "ipm") {
-      for (j in 1:nsp) {
-        y <- trees[trees$species == species[j], , drop = F]
+      for (j in species) {
+        y <- trees[trees$species == j, , drop = F]
         for (k in 1:nrow(y)) {
-          df[, species[j]] <- df[, species[j]] +
-            MiscStat::fast_kernsmooth(x[, species[j]], y$dbh1[k] , width = width) * y$factor_diam1[k]
+          df[, j] <- df[, j] +
+            MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
         }
       }
     } else if (stand_type == "mpm") {

@@ -2,7 +2,7 @@ test_that("Numerical quadrature of a tabulated function", {
 
   # Abscissas.
   x <- seq(-3, 60, by=.17)
-  xl <- seq(0, 54, length = 20)
+  xl <- seq(0, 54, length = 40)
 
   # Functions to integrate.
   y1 <- sin(x*pi/54)
@@ -15,7 +15,7 @@ test_that("Numerical quadrature of a tabulated function", {
   expect_equal(length(diam_classes(x, y1, xl)), length(xl)-1)
 
   # Approximation to actual integrals.
-  expect_lt(abs(sum(diam_classes(x, y1, xl))-(1-cos(pi))*54/pi), .015)
-  expect_lt(abs(sum(diam_classes(x, y2, xl))-(exp(-.15*min(xl))-exp(-.15*max(xl)))/.15), .015)
+  expect_lt(abs(sum(diam_classes(x, y1, xl))-(1-cos(pi))*54/pi), .01)
+  expect_lt(abs(sum(diam_classes(x, y2, xl))-(exp(-.15*min(xl))-exp(-.15*max(xl)))/.15), .01)
 
 })
