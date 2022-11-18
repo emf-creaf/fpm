@@ -61,14 +61,17 @@ stand_descriptive <- function(a, idplot = NULL) {
   country <- tolower(attr(a, "country"))
   if (is.null(country)) stop("Attribute 'country' in 'a' has not been set")
 
-  # If any plot is "ipm", attribute "integvars" must be present.
-  # Then, retreive abscissas only if needed, and only once. Grid spacing
+  # If any plot is "ipm", attribute "integvars" must be present in the 'sf'.
+  # Then, retrieve abscissas only if needed, and only once. Grid spacing
   # is also calculated, as a vector, for each species.
   if (any(a$stand_type == "ipm")) {
     x <- attr(a, "integvars")
     if (is.null(x)) stop("Attribute 'integvars' has not been set")
     h <- unlist(x[2,]-x[1,])
   }
+
+  # Define pipe operator.
+  `%>%` <- magrittr::`%>%`
 
   # Either sum trees or integrate continuous distribution.
   for (i in id) {
@@ -77,17 +80,17 @@ stand_descriptive <- function(a, idplot = NULL) {
     # If "individual", use dplyr.
     if (a[i, ]$stand_type == "individual") {
       if (any(country == "spain")) {
-        df <- df %>% group_by(species)
-        a[i,]$species[[1]] <- (df %>% distinct(species))$species
-        a[i,]$BA_species[[1]] <- as.data.frame(df %>% summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
-        a[i,]$N_species[[1]] <- as.data.frame(df %>% summarise(N=sum(factor_diam1)))
+        df <- df %>% dplyr::group_by(species)
+        a[i,]$species[[1]] <- (df %>% dplyr::distinct(species))$species
+        a[i,]$BA_species[[1]] <- as.data.frame(df %>% dplyr::summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
+        a[i,]$N_species[[1]] <- as.data.frame(df %>% dplyr::summarise(N=sum(factor_diam1)))
       } else if (country == "usa") {
       } else if (country == "france") {
       }
     }
 
 
-    # To be implemented.
+    # To be implemented (matrix population models).
     if (a[i,]$stand_type == "mpm") {
     }
 
@@ -99,9 +102,9 @@ stand_descriptive <- function(a, idplot = NULL) {
         coln <- colnames(df)
         a[i,]$species[[1]] <- coln
         a[i,]$BA_species[[1]] <-
-          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
+          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_ext_simpson(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
         a[i,]$N_species[[1]] <-
-          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y],h[y]))))
+          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_ext_simpson(df[,y],h[y]))))
       } else if (country == "usa") {
       } else if (country == "france") {
       }

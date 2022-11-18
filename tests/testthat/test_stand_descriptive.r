@@ -1,7 +1,5 @@
 test_that("Descriptive statistics", {
 
-  library(dplyr)
-
    # First initialize one single stand.
    a <- start_stand("ID1", 5, 45, "EPSG:4326")
    a <- set_attributes(a)
@@ -29,5 +27,25 @@ test_that("Descriptive statistics", {
    a <- stand_descriptive(a)
    b <- stand_descriptive(b)
 
+   # Check initial species are still there.
+   expect_true(all(sapply(1:nrow(b), function(i) all(colnames(b[i,]$trees[[1]]) %in% a[i,]$trees[[1]]$species))))
+
+   # Check species are the same.
+   ab <- sapply(1:nrow(a), function(i) {
+     colna <- colnames(a$N_species[[i]])
+     colnb <- colnames(b$N_species[[i]])
+     j1 <- match(colna, colnb)
+     j2 <- match(colnb, colna)
+     all(!is.na(j1), !is.na(j2))
+   })
+   expect_true(all(ab))
+
+   # Check descriptive statistics. Difference must be less than 0.1%.
+   # Change this criteria if necessary.
+   ab <- sapply(1:nrow(a), function(i) {
+     j <- match(a$N_species[[i]]$species, b$N_species[[i]]$species)
+     sum(abs((a$N_species[[i]]$N - b$N_species[[i]]$N[j])/a$N_species[[i]]$N))*100
+   })
+   expect_lt(max(ab), 0.1)
 
 })

@@ -19,14 +19,14 @@ test_that("Numerical quadrature", {
   }
 
   # Convolve to obtain a continuous distribution.
-  x <- data.frame(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1000))
+  x <- data.frame(Pnigra = seq(7.5,200,length=100), Phalep = seq(7.5,250,length=100))
   a <- set_attributes(a, integvars = x)
   ainit <- stand_descriptive(a)
   a <- smooth_stand(a)
 
   # IPM functions.
   gr <- data.frame(Pnigra=rep(.1, nrow(x)), Phalep=rep(.15, nrow(x)))
-  va <- data.frame(Pnigra=rep(2, nrow(x)), Phalep=rep(2.5, nrow(x)))
+  va <- data.frame(Pnigra=2, Phalep=2.5)
   su <- data.frame(Pnigra=rep(1, nrow(x)), Phalep=rep(1, nrow(x)))
 
   # Apply quadrature.
@@ -40,17 +40,24 @@ test_that("Numerical quadrature", {
   # Check species are the same.
   expect_true(all(colnames(a[1,]$trees[[1]]) %in% colnames(b[1,]$trees[[1]])))
 
-  # Check descriptive statistics.
-  ainit <- stand_descriptive(ainit)
+  # Update descriptive statistics for continuous data.
   a <- stand_descriptive(a)
   b <- stand_descriptive(b)
-  ab <- sapply(1:nrow(a), function(i) {
-    colna <- colnames(a$N_species[[i]])
-    colnb <- colnames(b$N_species[[i]])
-    j <- match(colna, colnb)
-    sum(abs(a$N_species[[i]]$N - b$N_species[[i]]$N[j]))
-  })
 
+  # Check resulting data.frames have the same dimensions.
+  expect_equal(nrow(a[1,]$trees[[1]]),nrow(b[1,]$trees[[1]]))
+  expect_equal(ncol(a[1,]$trees[[1]]),ncol(b[1,]$trees[[1]]))
+
+  # Check species are the same.
+  expect_true(all(colnames(a[1,]$trees[[1]]) %in% colnames(b[1,]$trees[[1]])))
+
+  # Check descriptive statistics. Diameters and basal areas should be larger in all cases.
+  ab <- sapply(1:nrow(a), function(i) {
+    j <- match(b$N_species[[i]]$species, a$N_species[[i]]$species)
+    if (length(j)==0) browser()
+    min(b$N_species[[i]]$N - a$N_species[[i]]$N[j])
+  })
+  expect_lt(min(ab), 0)
 
 
 })
