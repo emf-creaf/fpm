@@ -40,7 +40,7 @@ test_that("Smoothing discrete tree data", {
   expect_true(all(sapply(1:nrow(b), function(i) ncol(b[i,]$trees[[1]]) == length(unique(a[i,]$trees[[1]]$species)))))
 
   # Check initial species are still there.
-  expect_true(all(sapply(1:nrow(b), function(i) colnames(b[i,]$trees[[1]]) %in% a[i,]$trees[[1]]$species)))
+  expect_true(all(sapply(1:nrow(b), function(i) all(colnames(b[i,]$trees[[1]]) %in% a[i,]$trees[[1]]$species))))
 
   # Check that smooth_stand has not generated any NA's.
   expect_true(all(sapply(1:nrow(b), function(i) all(!is.na(b[i,]$trees[[1]])))))

@@ -38,19 +38,30 @@
 #'
 #' @return
 #' \code{sf} object with projected adult tree population.
+#'
 #' @export
 #'
-ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, min_dbh) {
+ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, min_dbh, quadrature = c("trapezoidal", "simpson")) {
 
   id <- match(idplot, a$idplot)
   if (is.na(id)) stop("Could not find 'idplot' in 'a'")
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
   if (a$stand_type[id] != "ipm") stop("'stand_type' must be 'ipm'")
 
+  if (class(expected_growth) != "data.frame") stop("Input 'expected_growth' must be a data.frame")
+  if (class(variance_growth) != "data.frame") stop("Input 'variance_growth' must be a data.frame")
+  if (ncol(expected_growth) != ncol(variance_growth))
+    stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
+  if (nrow(expected_growth) != nrow(variance_growth))
+    stop("Inputs 'expected_growth' and 'variance_growth' have different number of rows")
+  if (!all(colnames(expected_growth) %in% colnames(variance_growth)))
+    stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
+
   # Abscissas per species.
   x <- attr(a, "integvars")
   nx <- nrow(x)
 
+  # From variance to standard deviation.
   sd_growth <- sqrt(variance_growth)
 
   # IPM quadrature.
@@ -70,30 +81,27 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
   b <- a[id, ]$trees[[1]]
   sp <- colnames(b)
 
+  # Former tree distribution times survival per species.
+  Nsu <- b[, sp, drop = F] * survival_prob[, sp, drop = F]
+
   # Abscissae intervals for species present in the plot.
   h <- unlist(x[2, sp, drop = F] - x[1, sp, drop = F])
 
   for (i in sp) {
 
-    # Expected growth and sd for species 'i'.
-    g <- expected_growth[, i]
-    s <- sd_growth[i]
-
-    # Big matrix to store 2D growth term.
+    # Big matrix for growth term.
     gmat <- matrix(0, nx, nx)
     xx <- x[, i] - min_dbh[i]
     jseq <- 1:nx
     for (j in 1:nx) {
-      gmat[j, jseq] <- dlnorm(xx, meanlog = g[j], sdlog = s[i])
+      gmat[j, jseq] <- dlnorm(xx, meanlog = expected_growth[j, i], sdlog = sd_growth[j,i])
       xx <- xx[-length(xx)]
       jseq <- jseq[-1]
     }
 
-    # Former tree distribution times survival.
-    Nsu <- b[, i, drop = F] * survival_prob[, i, drop = F]
+    # Numerical quadrature with trapezoidal rule.
+    b[, i] <- numquad_vm(Nsu[, i], gmat, nx, h[i], "simpson")
 
-    # Numerical quadrature.
-    b[, i] <- sapply(1:nx, function(j) MiscMath::quad_ext_simpson(Nsu[, i]*gmat[, j],h[i]))
   }
 
   # Update trees.

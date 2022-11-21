@@ -1,4 +1,4 @@
-test_that("Numerical quadrature", {
+test_that("IPM numerical quadrature", {
 
   # First initialize one single stand.
   a <- start_stand("ID1", 5, 45, "EPSG:4326")
@@ -19,19 +19,20 @@ test_that("Numerical quadrature", {
   }
 
   # Convolve to obtain a continuous distribution.
-  x <- data.frame(Pnigra = seq(7.5,200,length=100), Phalep = seq(7.5,250,length=100))
+  x <- data.frame(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1000))
   a <- set_attributes(a, integvars = x)
   ainit <- stand_descriptive(a)
   a <- smooth_stand(a)
 
   # IPM functions.
   gr <- data.frame(Pnigra=rep(.1, nrow(x)), Phalep=rep(.15, nrow(x)))
-  va <- data.frame(Pnigra=2, Phalep=2.5)
+  va <- data.frame(Pnigra=rep(2, nrow(x)), Phalep=rep(2.5, nrow(x)))
   su <- data.frame(Pnigra=rep(1, nrow(x)), Phalep=rep(1, nrow(x)))
 
   # Apply quadrature.
-  b <- ipm_quadrature(a, "ID1", gr, va, su, min_dbh = 7.5)
-  for (i in paste0("ID",2:10)) b <- ipm_quadrature(b, i, gr, va, su, min_dbh = 7.5)
+  min_dbh <- c(Pnigra = 7.5, Phalep = 7.5)
+  b <- ipm_quadrature(a, "ID1", gr, va, su, min_dbh = min_dbh)
+  for (i in paste0("ID",2:10)) b <- ipm_quadrature(b, i, gr, va, su, min_dbh = min_dbh)
 
   # Check resulting data.frames have the same dimensions.
   expect_equal(nrow(a[1,]$trees[[1]]),nrow(b[1,]$trees[[1]]))

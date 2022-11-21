@@ -102,9 +102,9 @@ stand_descriptive <- function(a, idplot = NULL) {
         coln <- colnames(df)
         a[i,]$species[[1]] <- coln
         a[i,]$BA_species[[1]] <-
-          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_ext_simpson(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
+          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
         a[i,]$N_species[[1]] <-
-          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_ext_simpson(df[,y],h[y]))))
+          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y],h[y]))))
       } else if (country == "usa") {
       } else if (country == "france") {
       }
