@@ -54,11 +54,22 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
     stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
   if (nrow(expected_growth) != nrow(variance_growth))
     stop("Inputs 'expected_growth' and 'variance_growth' have different number of rows")
-  if (!all(colnames(expected_growth) %in% colnames(variance_growth)))
-    stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
+
+  # Select plot.
+  b <- a[id, ]$trees[[1]]
+
+  # Check species.
+  sp <- colnames(b)
+
+  if (!all(sp %in% colnames(variance_growth)))
+    stop("Inputs 'expected_growth' and 'variance_growth' have different species")
+
+  # Check min_dbh.
+  if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
 
   # Abscissas per species.
   x <- attr(a, "integvars")
+  if (!all(sp %in% colnames(x))) stop("Species and integvars column names do not match")
   nx <- nrow(x)
 
   # From variance to standard deviation.
@@ -76,10 +87,6 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
   # return(N.new)
 
   # if (idplot == "ID7") browser()
-
-  # Select plot and species.
-  b <- a[id, ]$trees[[1]]
-  sp <- colnames(b)
 
   # Former tree distribution times survival per species.
   Nsu <- b[, sp, drop = F] * survival_prob[, sp, drop = F]
