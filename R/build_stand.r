@@ -19,6 +19,12 @@
 #' @details
 #' Unlike other functions, \code{build_stand} must be called individually for
 #' each tree stand.
+#' When \code{stand_type = "individual"} and the attribute \code{country = "spain"},
+#' the \code{df} \code{data.frame} for
+#' trees (that is, when \code{data_type = "trees"}) must have three columns,
+#' labeled "species", "dbh1" and "factor_diam1". When it is saplings that want
+#' to add to \code{a}, that \code{data.frame} must have two columns, labeled
+#' "species" and "N".
 #'
 #' @export
 #'
@@ -42,39 +48,49 @@
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
 #' }
 #'
-build_stand <- function(a, idplot, df, data_type, stand_type, date, country = "spain") {
+build_stand <- function(a, idplot, df, date = NA,
+                        data_type = c("trees", "saplings"),
+                        stand_type = c("individual", "mpm", "ipm"),
+                        country = c("spain", "usa", "france")) {
 
   mf <- match.call()
-  m <- match(c("a", "idplot", "df", "data_type", "stand_type", "date", "country"), tolower(names(mf)[-1]))
+  m <- match(c("a", "idplot", "df", "date", "data_type", "stand_type", "country"), tolower(names(mf)[-1]))
 
   # Does 'idplot' exist?
   if (any(is.na(m[1:2]))) stop("Missing 'a' or 'idplot'")
-  i <- match(idplot, a$idplot)
-  if (is.na(i)) stop("Could not find 'idplot' in 'a'")
-  if (length(i) != 1) stop("Only one 'idplot' can be modified at the time")
+  id <- match(idplot, a$idplot)
+  if (is.na(id)) stop("Could not find 'idplot' in 'a'")
+  if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
+
+
+
 
   # Check choices of arguments.
-  if (!is.na(m[4])) a[i, "data_type"] <- match.arg(data_type, choices = c("trees", "saplings"))
-  if (!is.na(m[5])) a[i, "stand_type"] <- match.arg(stand_type, choices = c("individual", "mpm", "ipm"))
-  country <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
-  if (country != tolower(attr(a, "country"))) stop("Input 'country' value does not match that of 'a'")
+  a$data_type[[id]] <- match.arg(data_type)
+  a$stand_type[[id]] <- match.arg(stand_type)
+  country <- match.arg(country)
+
+
+
+
 
   # If 'date' exists.
-  if (!is.na(m[6])) a[i, "date"] <- date
+  if (!is.na(m[6])) a$date[[id]] <- date
+
+
+
 
   # If 'df' exists, seedlings, saplings or trees will change.
   if (!is.na(m[3])) {
     if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
     if (country == "spain") {
       if (data_type == "trees") {
-        a[i, ]$trees[[1]] <- df
+        a$trees[[id]] <- df
       } else {
-        if (any(grepl(data_type, paste0("seedlings", num_seedlings())))) {
-          i <- grep(data_type, paste0("seedlings", num_seedlings()))
-          a[i, ]$seedlings[[i]] <- df
-        } else if (any(grepl(data_type, paste0("saplings", num_saplings())))) {
-          i <- grep(data_type, paste0("saplings", num_saplings()))
-          a[, ]$saplings[[i]] <- df
+        if (data_type == "seedlings") {
+          a[id, ]$seedlings[[1]] <- df
+        } else if (data_type == "saplings") {
+          a[id, saplings][[1]] <- df
         }
       }
     }
