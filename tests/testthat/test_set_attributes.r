@@ -10,8 +10,8 @@ test_that("Set attributes of sf tree stand object", {
   a <- set_attributes(a, country = "spain")
   expect_identical(attr(a, "country"), "spain")
 
-  # Null integvars.
-  expect_null(attr(a, "integvars"))
+  # Nothing is done
+  expect_warning(set_attributes(a))
 
   # Wrong integvars.
   expect_error(set_attributes(a, country = "spain", integvars = 1:3))

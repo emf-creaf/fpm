@@ -47,7 +47,7 @@
 #' a <- set_attributes(a, integvars = x)
 #' b <- smooth_stand(a)
 #'
-smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian", width = 2) {
+smooth_stand <- function(a, idplot, stand_type = c("individual", "mpm", "ipm"), smooth_type = "gaussian", width = 2) {
 
   mf <- match.call()
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
@@ -61,7 +61,7 @@ smooth_stand <- function(a, idplot, stand_type = "ipm", smooth_type = "gaussian"
   if (any(!(a[id, ]$stand_type %in% "individual"))) stop("Some stands are not of 'individual' type")
 
   # From discrete to matrix or ipm-type stands.
-  stand_type <- match.arg(stand_type, choices = c("mpm", "ipm"))
+  stand_type <- match.arg(stand_type)
 
   # We need the integration variable for the calculations.
   x <- attr(a, "integvars")

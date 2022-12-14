@@ -80,10 +80,16 @@ stand_descriptive <- function(a, idplot = NULL) {
     # If "individual", use dplyr.
     if (a[i, ]$stand_type == "individual") {
       if (any(country == "spain")) {
-        df <- df %>% dplyr::group_by(species)
-        a[i,]$species[[1]] <- (df %>% dplyr::distinct(species))$species
-        a[i,]$BA_species[[1]] <- as.data.frame(df %>% dplyr::summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
-        a[i,]$N_species[[1]] <- as.data.frame(df %>% dplyr::summarise(N=sum(factor_diam1)))
+        if (length(df) > 0) {
+          df <- df %>% dplyr::group_by(species)
+          a[i,]$species[[1]] <- (df %>% dplyr::distinct(species))$species
+          a[i,]$BA_species[[1]] <- as.data.frame(df %>% dplyr::summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
+          a[i,]$N_species[[1]] <- as.data.frame(df %>% dplyr::summarise(N=sum(factor_diam1)))
+        } else {
+          a[i,]$species[[1]] <- list()
+          a[i,]$BA_species[[1]] <- list()
+          a[i,]$N_species[[1]] <- list()
+        }
       } else if (country == "usa") {
       } else if (country == "france") {
       }
@@ -96,7 +102,7 @@ stand_descriptive <- function(a, idplot = NULL) {
 
 
 
-    # If "ipm", use quadratures.
+    # If "ipm", use numerical quadratures (since data sets are continuous).
     if (a[i,]$stand_type == "ipm") {
       if (any(country == "spain")) {
         coln <- colnames(df)

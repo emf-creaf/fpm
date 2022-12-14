@@ -9,7 +9,8 @@
 #' @param data_type string specifying whether the \code{df} data frame corresponds
 #' to seedling, sapling or tree data.
 #' @param stand_type string specifying which type of tree stand.
-#' @param date date that corresponds to the
+#' @param date an optional numeric value setting the sampling date. If missing, the
+#' default value will be NA. It can be set at a later time manually.
 #' @param country string indicating which country the stand belongs to. It can be
 #' \code{country = "spain"}, \code{country = "france"} or \code{country = "usa"}.
 #'
@@ -48,50 +49,39 @@
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
 #' }
 #'
-build_stand <- function(a, idplot, df, date = NA,
-                        data_type = c("trees", "saplings"),
+build_stand <- function(a, idplot, df,
+                        data_type = c("trees", "seedlings", "saplings"),
                         stand_type = c("individual", "mpm", "ipm"),
+                        date = NA,
                         country = c("spain", "usa", "france")) {
 
   mf <- match.call()
-  m <- match(c("a", "idplot", "df", "date", "data_type", "stand_type", "country"), tolower(names(mf)[-1]))
+  m <- match(c("a", "idplot", "df", "data_type", "stand_type", "date", "country"), tolower(names(mf)[-1]))
 
   # Does 'idplot' exist?
   if (any(is.na(m[1:2]))) stop("Missing 'a' or 'idplot'")
   id <- match(idplot, a$idplot)
   if (is.na(id)) stop("Could not find 'idplot' in 'a'")
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
-
-
-
+  if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
 
   # Check choices of arguments.
-  a$data_type[[id]] <- match.arg(data_type)
+  data_type <- match.arg(data_type)
   a$stand_type[[id]] <- match.arg(stand_type)
+  a$date <- date
   country <- match.arg(country)
+  if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
-
-
-
-
-  # If 'date' exists.
-  if (!is.na(m[6])) a$date[[id]] <- date
-
-
-
-
-  # If 'df' exists, seedlings, saplings or trees will change.
-  if (!is.na(m[3])) {
-    if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
-    if (country == "spain") {
-      if (data_type == "trees") {
-        a$trees[[id]] <- df
-      } else {
-        if (data_type == "seedlings") {
-          a[id, ]$seedlings[[1]] <- df
-        } else if (data_type == "saplings") {
-          a[id, saplings][[1]] <- df
-        }
+  # Update seedlings, saplings or trees.
+  if (country == "spain") {
+    if (data_type == "trees") {
+      a$trees[[id]] <- df
+    } else {
+      if (any(duplicated(df))) stop("There are duplicated rows in data.frame 'df'")
+      if (data_type == "seedlings") {
+        a$seedlings[[id]] <- df
+      } else if (data_type == "saplings") {
+        a$saplings[[id]] <- df
       }
     }
   }
