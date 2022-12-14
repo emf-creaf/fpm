@@ -10,8 +10,9 @@ test_that("We create an sf object for a single stand", {
   expect_identical(sf::st_crs(a), sf::st_crs("EPSG:4326"))
 
   # Check colnames.
-  expect_identical(colnames(a), c("idplot","geometry","trees","seedlings",
-                                  "saplings","N_species","BA_species","species",
+  expect_setequal(colnames(a), c("idplot", "geometry", "idplot", "stand_type", "date", "species",
+                                  "trees","seedlings",
+                                  "saplings","N_species","BA_species",
                                   "N_stand","BA_stand"))
 
   # Check coordinates.

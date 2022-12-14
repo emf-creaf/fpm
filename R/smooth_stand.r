@@ -47,7 +47,7 @@
 #' a <- set_attributes(a, integvars = x)
 #' b <- smooth_stand(a)
 #'
-smooth_stand <- function(a, idplot, stand_type = c("individual", "mpm", "ipm"), smooth_type = "gaussian", width = 2) {
+smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
 
   mf <- match.call()
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
@@ -57,12 +57,6 @@ smooth_stand <- function(a, idplot, stand_type = c("individual", "mpm", "ipm"), 
   id <- match(idplot, a$idplot)
   if (any(is.na(id))) stop("Could not find 'idplot' in 'a'")
 
-  # If stands are not of "individual" type, smoothing cannot be performed.
-  if (any(!(a[id, ]$stand_type %in% "individual"))) stop("Some stands are not of 'individual' type")
-
-  # From discrete to matrix or ipm-type stands.
-  stand_type <- match.arg(stand_type)
-
   # We need the integration variable for the calculations.
   x <- attr(a, "integvars")
   if (is.null(x)) stop("Attribute 'integvars' is missing")
@@ -71,35 +65,35 @@ smooth_stand <- function(a, idplot, stand_type = c("individual", "mpm", "ipm"), 
   # Loop along all plots.
   for (i in id) {
 
-    # Species to smooth.
-    trees <- a[i, ]$trees[[1]]
-    species <- unique(trees$species)
-    nsp <- length(species)
+    # Smooth only discrete data.
+    if (a[i, ]$stand_type == "individual") {
 
-    # Check that all species are in 'integvars' data.frame.
-    colx <- colnames(x)
-    if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
+      # Species to smooth.
+      trees <- a[i, ]$trees[[1]]
+      species <- unique(trees$species)
+      nsp <- length(species)
 
-    # Big matrix to store results per species column-wise.
-    df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+      # Check that all species are in 'integvars' data.frame.
+      colx <- colnames(x)
+      if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
 
-    if (stand_type == "ipm") {
+      # Big matrix to store results per species column-wise.
+      df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+
+      # Loop through species and individual trees.
       for (j in species) {
         y <- trees[trees$species == j, , drop = F]
-        for (k in 1:nrow(y)) {
-          df[, j] <- df[, j] +
+        for (k in 1:nrow(y)) df[, j] <- df[, j] +
             MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
-        }
       }
-    } else if (stand_type == "mpm") {
+
+      # Store and change 'stand_type' to "ipm".
+      a[i, ]$trees[[1]] <- as.data.frame(df)
+      a[i, ]$stand_type <- "ipm"
+
     }
 
-    # Store and change 'stand_type' to "ipm".
-    a[i, ]$trees[[1]] <- as.data.frame(df)
   }
-
-  # Finally, stand_type is set.
-  a[id, ]$stand_type <- "ipm"
 
   return(a)
 }

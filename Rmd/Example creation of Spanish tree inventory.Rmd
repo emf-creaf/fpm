@@ -119,9 +119,25 @@ a <- fpm::set_attributes(a, integvars = x)
 Next, we give $\tt{smooth_stand}$ the $\tt{sf}$ object with the discrete tree data and the function will smooth/convolve the data with a smooth distribution (default is a gaussian curve) to obtain a continuous distribution of sizes. In the case of Spain, to conserve the total number of trees the results will be multiplied by the corresponding *factor_diam1* factor to account for variables stand radius.
 
 ```{r}
+b <- a
 a <- fpm::smooth_stand(a)
 ```
 
-Notice that, although the number of trees is preserved, the basal area is not. However, if the width of the smoothing window is not very large, the basal area computed with the discrete values and that obtained with the smoothed distribution are not very different.
+Notice that, although the number of trees is preserved, the basal area is not due to the square-diameter factor inside the integral. However, if the width of the smoothing window is not very large, the basal area computed with the discrete values and that obtained with the smoothed distribution are not very different. An example of the smoothing calculations is shown below. The thick vertical dashed-dotted line on the left indicates the minimum diameter in the inventory (7.5 cm).
+
+```{r}
+sp <- b[1, ]$trees[[1]]$species[1]
+xx <- x[, sp]
+y <- subset(b[1, ]$trees[[1]], species == sp)
+z <- sapply(1:nrow(y), function(i) {
+  MiscStat::fast_kernsmooth(xx, y$dbh1[i] , width = 2) * y$factor_diam1[i]
+})
+plot(x[, sp], a[1, ]$trees[[1]][, sp], xlab = "DBH (cm)", ylab = "N. of trees",
+     xlim = c(0, max(y$dbh1)*1.5), type = "l", main = "Pinus nigra")
+for (i in 1:nrow(y)) points(xx, z[, i], type = "l", lty = 2)
+points(y$dbh1,rep(0, nrow(y)), pch = 16, cex = 1.5)
+points(c(7.5, 7.5), c(0, max(z)), type = "l", lty = 4, lwd = 2)
+```
+
 
 
