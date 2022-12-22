@@ -43,7 +43,7 @@
 #' print(t2/t1)
 #' print(sum(t2,na.rm=T)/sum(t1,na.rm=T))
 #'
-numquad_vm <- function(v, m, nv, h, quadrature = c("trapezoidal", "simpson")) {
+numquad_vm <- function(v, m, nv, h, quadrature = c("trapez", "simpson")) {
 
   # Checks.
   if (!is.vector(v)) stop("Input 'v' must be a vector")
@@ -58,7 +58,7 @@ numquad_vm <- function(v, m, nv, h, quadrature = c("trapezoidal", "simpson")) {
   y <- v %*% m
 
   # Correction.
-  if (quadrature == "trapezoidal") {
+  if (quadrature == "trapez") {
     y <- y - .5*(v[1]*m[1, ] + v[nv]*m[nv, ])
   } else if (quadrature == "simpson") {
     y <- y - 7/12*(v[1]*m[1, ] + v[nv]*m[nv, ]) + 1/12*(v[2]*m[2, ] + v[nv-1]*m[nv-1, ])

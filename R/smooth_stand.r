@@ -68,28 +68,36 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
     # Smooth only discrete data.
     if (a[i, ]$stand_type == "individual") {
 
-      # Species to smooth.
-      trees <- a[i, ]$trees[[1]]
-      species <- unique(trees$species)
-      nsp <- length(species)
+      # If "trees" list is not empty.
+      if (length(a[i, ]$trees[[1]])) {
 
-      # Check that all species are in 'integvars' data.frame.
-      colx <- colnames(x)
-      if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
+        # Check country.
+        if (attr(a, "country") == "spain") {
 
-      # Big matrix to store results per species column-wise.
-      df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+          # Species to smooth.
+          trees <- a[i, ]$trees[[1]]
+          species <- unique(trees$species)
+          nsp <- length(species)
 
-      # Loop through species and individual trees.
-      for (j in species) {
-        y <- trees[trees$species == j, , drop = F]
-        for (k in 1:nrow(y)) df[, j] <- df[, j] +
-            MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+          # Check that all species are in 'integvars' data.frame.
+          colx <- colnames(x)
+          if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
+
+          # Big matrix to store results per species column-wise.
+          df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+
+          # Loop through species and individual trees.
+          for (j in species) {
+            y <- trees[trees$species == j, , drop = F]
+            for (k in 1:nrow(y)) df[, j] <- df[, j] +
+                MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+          }
+
+          # Store and change 'stand_type' to "ipm".
+          a[i, ]$trees[[1]] <- as.data.frame(df)
+          a[i, ]$stand_type <- "ipm"
+        }
       }
-
-      # Store and change 'stand_type' to "ipm".
-      a[i, ]$trees[[1]] <- as.data.frame(df)
-      a[i, ]$stand_type <- "ipm"
 
     }
 

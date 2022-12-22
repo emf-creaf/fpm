@@ -3,7 +3,7 @@
 #' @description
 #' \code{diam_classes} returns the integral of a set of points at different intervals.
 #'
-#' @param x vector of abscissae values. It should be strictly increasing and have
+#' @param x vector of abscissa values. It should be strictly increasing and have
 #' the same length as \code{y}
 #' @param y vector of ordinate values, corresponding to every value in \code{x}.
 #' @param xl vector with limits of class intervals. Its range should be included

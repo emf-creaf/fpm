@@ -64,7 +64,7 @@ stand_descriptive <- function(a, idplot = NULL) {
   # If any plot is "ipm", attribute "integvars" must be present in the 'sf'.
   # Then, retrieve abscissas only if needed, and only once. Grid spacing
   # is also calculated, as a vector, for each species.
-  if (any(a$stand_type == "ipm")) {
+  if (any(tolower(a$stand_type) == "ipm")) {
     x <- attr(a, "integvars")
     if (is.null(x)) stop("Attribute 'integvars' has not been set")
     h <- unlist(x[2,]-x[1,])
@@ -77,46 +77,51 @@ stand_descriptive <- function(a, idplot = NULL) {
   for (i in id) {
     df <- a[i, ]$trees[[1]]
 
-    # If "individual", use dplyr.
-    if (a[i, ]$stand_type == "individual") {
-      if (any(country == "spain")) {
-        if (length(df) > 0) {
+    # Calculate only if there are trees.
+    if (length(df) > 0) {
+
+      # If "individual", use dplyr.
+      if (tolower(a[i, ]$stand_type) == "individual") {
+        if (country == "spain") {
           df <- df %>% dplyr::group_by(species)
           a[i,]$species[[1]] <- (df %>% dplyr::distinct(species))$species
           a[i,]$BA_species[[1]] <- as.data.frame(df %>% dplyr::summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
           a[i,]$N_species[[1]] <- as.data.frame(df %>% dplyr::summarise(N=sum(factor_diam1)))
-        } else {
-          a[i,]$species[[1]] <- list()
-          a[i,]$BA_species[[1]] <- list()
-          a[i,]$N_species[[1]] <- list()
+        } else if (country == "usa") {
+        } else if (country == "france") {
         }
-      } else if (country == "usa") {
-      } else if (country == "france") {
       }
-    }
 
 
-    # To be implemented (matrix population models).
-    if (a[i,]$stand_type == "mpm") {
-    }
+
+      # To be implemented (matrix population models).
+      if (tolower(a[i, ]$stand_type) == "mpm") {
+      }
 
 
 
     # If "ipm", use numerical quadratures (since data sets are continuous).
-    if (a[i,]$stand_type == "ipm") {
-      if (any(country == "spain")) {
-        coln <- colnames(df)
-        a[i,]$species[[1]] <- coln
-        a[i,]$BA_species[[1]] <-
-          data.frame(species = coln, BA = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y]*x[,y]^2,h[y]))*(pi/40000)))
-        a[i,]$N_species[[1]] <-
-          data.frame(species = coln, N = unname(sapply(coln, function(y) MiscMath::quad_trapez(df[,y],h[y]))))
-      } else if (country == "usa") {
-      } else if (country == "france") {
+      if (tolower(a[i, ]$stand_type) == "ipm") {
+        if (any(country == "spain")) {
+          coln <- colnames(df)
+          a[i,]$species[[1]] <- coln
+          a[i,]$BA_species[[1]] <-
+            data.frame(species = coln, BA = unname(sapply(coln, function(j) MiscMath::quad_trapez(df[, j]*x[, j]^2, h[j]))*(pi/40000)))
+          a[i,]$N_species[[1]] <-
+            data.frame(species = coln, N = unname(sapply(coln, function(j) MiscMath::quad_trapez(df[, j], h[j]))))
+        } else if (country == "usa") {
+        } else if (country == "france") {
+        }
       }
+      a[i,]$BA_stand <- sum(a[i,]$BA_species[[1]]$BA)
+      a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
+
+    } else {
+      a[i,]$species[[1]] <- list()
+      a[i,]$BA_species[[1]] <- list()
+      a[i,]$N_species[[1]] <- list()
     }
-    a[i,]$BA_stand <- sum(a[i,]$BA_species[[1]]$BA)
-    a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
+
   }
 
   return(a)

@@ -9,13 +9,13 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=10, fig.height=8) 
 ```
 
 <br>
 <br>
 
-
-### Initialize
+## Initialize
 
 Creating a $\tt{sf}$ object containing the individual tree diameters of an inventory is straightforward.
 We will exemplify for the case of Spain.
@@ -49,10 +49,11 @@ a <- fpm::merge_stands(a, b)
 ```
 
 <br>
+<br>
 
-### Include tree and/or sapling data
+## Add/Include tree and/or sapling data
 
-The $\tt{sf}$ object initalized in the previous calculations does not yet contain seedling, sapling or tree data.
+The $\tt{sf}$ object initialized in the previous calculations does not yet contain seedling, sapling or tree data.
 Therefore, our next step will consist of adding those data to the plots.
 For that purpose we can use the function $\tt{build\_stand}$.
 Notice that, at this stage, the attribute *country* should have been set previously in *a* to any
@@ -102,11 +103,13 @@ for (i in a$idplot) {
 }
 ```
 
+<br>
+<br>
 
-### Smoothing of discrete tree data
+## Smoothing of discrete tree data
 
 So far we have dealt with discrete tree data that had been collected from field studies.
-If we wish to apply the IPM methodology to our data, we must describe the tree population at each station in terms of a continuous distribution of number of trees as a function of e.g. diameter at breast height. Forest inventories represent a collection of discrete data which are not well suited for IPMs and, as a previous step, they must be converted into continuous distribution of e.g. size. For that purpose, function $\tt{smooth_stand}$ can be used to smooth the discrete data to obtain a continuous distribution, for each species.
+If we wish to apply the IPM methodology to our data, we must describe the tree population at each station in terms of a continuous distribution of number of trees as a function of e.g. diameter at breast height. Forest inventories represent a collection of discrete data which are not well suited for IPMs and, as a previous step, they must be converted into continuous distribution of e.g. size. For that purpose, function $\tt{smooth\_stand}$ can be used to smooth the discrete data to obtain a continuous distribution, for each species.
 
 Before $\tt{smooth_stand}$ can be applied, we must determine in advance the abscissas that will be employed in all future calculations and store them as an attribute in the $\tt{sf}$ object. Again for the sake of illustration, let us assume that diameters will range from a minimum of 7.5 cm to a maximum that will depend on each species. Then, the resulting $\tt{data.frame}$ will be stored as an attribute labeled "integvars".
 
@@ -117,7 +120,7 @@ b <- a
 b <- fpm::set_attributes(b, integvars = x)
 ```
 
-Next, we give $\tt{smooth_stand}$ the $\tt{sf}$ object with the discrete tree data and the function will smooth/convolve the data with a smooth distribution (default is a gaussian curve) to obtain a continuous distribution of sizes. In the case of Spain, to conserve the total number of trees the results will be multiplied by the corresponding *factor_diam1* factor to account for variables stand radius.
+Next, we give $\tt{smooth\_stand}$ the $\tt{sf}$ object with the discrete tree data and the function will smooth/convolve the data with a smooth distribution (default is a gaussian curve) to obtain a continuous distribution of sizes. In the case of Spain, to conserve the total number of trees the results will be multiplied by the corresponding *factor_diam1* factor to account for variables stand radius.
 
 ```{r}
 b <- fpm::smooth_stand(b)
@@ -128,8 +131,8 @@ Notice that, although the number of trees is preserved, the basal area is not du
 An example of the smoothing internal algorithm is shown below, where the resulting tree size distributions for one species at four tree stand
 are shown together with the contributions from each individual tree. The thick vertical dashed-dotted line on the left indicates the minimum diameter in the inventory (7.5 cm).
 
-```{r}
-par(mfcol=c(2,2))
+```{r, fig.width=10, fig.height=8}
+par(mfcol = c(2,2))
 for (i in 1:4) {
   sp <- a[i, ]$trees[[1]]$species[1]
   xx <- x[, sp]
@@ -145,6 +148,47 @@ for (i in 1:4) {
 }
 par(mfcol=c(1,1))
 ```
+
+<br>
+<br>
+
+## Removal of selected plots 
+Single or multiple plots can be removed with the aid of the $\tt{remove_stand}$ function.
+
+```{r}
+a <- fpm::remove_stand(a, c("ID1", "ID27"))
+```
+
+<br>
+<br>
+
+## Descriptive statistics
+
+Once a set of tree plots have been added to the $\tt{sf}$ object we may need to calculate basic statistics like e.g. number of trees, basal area , etc. per species and as a total. When the first "skeleton" of a $\tt{sf}$ forest inventory object was created with function $\tt{start_stand}$, four fields were added to store aggregated information of each plot. Those fields were the following:
+
+1. $\tt{N\_species}$: R $\tt{data.frame}$ with two columns, *species* and *N*, containing the number of trees per ha per species.
+2. $\tt{BA\_species}$: R $\tt{data.frame}$ with two columns, *species* and *BA*, containing the basal area in m^2^/ha per species.
+3. $\tt{N\_stand}$: total number of trees per ha.
+4. $\tt{BA\_stand}$: total basal area per ha.
+
+To fill in those fields we will use the function $\tt{stand\_descriptive}$ to calculate summary statistics for each plot, basically number of individuals and basal area. Those calculations vary depending on whether plots are discrete or continuous. This information is obtained from the field *stand_type* of the $\tt{sf}$ object. The summary statistics is computed only for those plots for which there is tree data.
+
+The previous step of smoothing the data with a convolution window to convert it from discrete to continuous implies that the basal area will increase slightly. For that reason, the argument $\tt{width}$ in function $\tt{smooth_stand}$ should be kept to low values.
+
+```{r, fig.width=10, fig.height=4}
+a <- fpm::stand_descriptive(a)
+b <- fpm::stand_descriptive(b)
+par(mfcol = c(1,2))
+aa <- a[!is.na(a$N_stand),]
+bb <- b[!is.na(b$N_stand),]
+plot((bb$N_stand-aa$N_stand)/aa$N_stand*100, xlab = "ID tree plot",
+     ylab = "Relative difference (%)", main = "Number of trees per ha")
+plot((bb$BA_stand-aa$BA_stand)/aa$BA_stand*100, xlab = "ID tree plot",
+     ylab = "Relative difference (%)", main = "Basal area (m2/ha)")
+par(mfcol = c(1,1))
+```
+
+
 
 
 

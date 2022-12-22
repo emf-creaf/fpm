@@ -1,7 +1,7 @@
 #' Remove tree stands
 #'
 #' @description
-#' Remove stands from \code{sf} tree-stand object
+#' Remove tree stands from \code{sf} tree-stand object
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param idplot identifiers of POINT elements representing tree stands to remove.
