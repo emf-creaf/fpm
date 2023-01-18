@@ -72,7 +72,18 @@ build_stand <- function(a, idplot, df,
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
-  # Update seedlings, saplings or trees.
+  # Check that data makes sense (i.e. no NA's or empty rows).
+  if (any(is.na(df))) stop("There are NA's in df'")
+  if (country == "spain") {
+    if (data_type == "trees") {
+      if (any(df$dbh1 == 0)) stop("'dbh1' cannot have zero values")
+    } else {
+      if (any(duplicated(df))) stop("There are duplicated seedlings/saplings rows in data.frame 'df'")
+      if (any(df$N == 0)) stop("Number of seedlings/saplings 'N' cannot have zero values")
+    }
+  }
+
+  # Things look ok. So, update..
   if (country == "spain") {
     if (data_type == "trees") {
       a$trees[[id]] <- df
