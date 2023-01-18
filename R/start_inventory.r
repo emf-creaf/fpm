@@ -10,8 +10,6 @@
 #'
 #' @return
 #'
-#' @export
-#'
 #' @examples
 #' a <- start_inventory(letters[1:5],runif(5),runif(5),rep("individual",5),runif(5),"EPSG:4326")
 #'
