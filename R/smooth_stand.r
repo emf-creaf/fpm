@@ -66,39 +66,40 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
   for (i in id) {
 
     # Smooth only discrete data.
-    if (a[i, ]$stand_type == "individual") {
+    if (!is.na(a[i, ])) {
+      if (a[i, ]$stand_type == "individual") {
 
-      # If "trees" list is not empty.
-      if (length(a[i, ]$trees[[1]])) {
+        # If "trees" list is not empty.
+        if (length(a[i, ]$trees[[1]])) {
 
-        # Check country.
-        if (attr(a, "country") == "spain") {
+          # Check country.
+          if (attr(a, "country") == "spain") {
 
-          # Species to smooth.
-          trees <- a[i, ]$trees[[1]]
-          species <- unique(trees$species)
-          nsp <- length(species)
+            # Species to smooth.
+            trees <- a[i, ]$trees[[1]]
+            species <- unique(trees$species)
+            nsp <- length(species)
 
-          # Check that all species are in 'integvars' data.frame.
-          colx <- colnames(x)
-          if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
+            # Check that all species are in 'integvars' data.frame.
+            colx <- colnames(x)
+            if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
 
-          # Big matrix to store results per species column-wise.
-          df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+            # Big matrix to store results per species column-wise.
+            df <- matrix(0,nx, nsp, dimnames = list(c(), species))
 
-          # Loop through species and individual trees.
-          for (j in species) {
-            y <- trees[trees$species == j, , drop = F]
-            for (k in 1:nrow(y)) df[, j] <- df[, j] +
-                MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+            # Loop through species and individual trees.
+            for (j in species) {
+              y <- trees[trees$species == j, , drop = F]
+              for (k in 1:nrow(y)) df[, j] <- df[, j] +
+                  MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+            }
+
+            # Store and change 'stand_type' to "ipm".
+            a[i, ]$trees[[1]] <- as.data.frame(df)
+            a[i, ]$stand_type <- "ipm"
           }
-
-          # Store and change 'stand_type' to "ipm".
-          a[i, ]$trees[[1]] <- as.data.frame(df)
-          a[i, ]$stand_type <- "ipm"
         }
       }
-
     }
 
   }
