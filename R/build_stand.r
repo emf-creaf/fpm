@@ -67,7 +67,7 @@ build_stand <- function(a, idplot, df,
 
   # Check choices of arguments.
   data_type <- match.arg(data_type)
-  a$stand_type[[id]] <- match.arg(stand_type)
+  if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type)
   a$date <- date
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
@@ -77,7 +77,7 @@ build_stand <- function(a, idplot, df,
     if (data_type == "trees") {
       a$trees[[id]] <- df
     } else {
-      if (any(duplicated(df))) stop("There are duplicated rows in data.frame 'df'")
+      if (any(duplicated(df))) stop("There are duplicated seedlings/saplings rows in data.frame 'df'")
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df
       } else if (data_type == "saplings") {
