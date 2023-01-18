@@ -66,7 +66,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
   for (i in id) {
 
     # Smooth only discrete data.
-    if (!is.na(a[i, ])) {
+    if (!is.na(a[i, ]$stand_type)) {
       if (a[i, ]$stand_type == "individual") {
 
         # If "trees" list is not empty.

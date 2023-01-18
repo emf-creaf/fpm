@@ -51,7 +51,7 @@
 #'
 build_stand <- function(a, idplot, df,
                         data_type = c("trees", "seedlings", "saplings"),
-                        stand_type = c("individual", "mpm", "ipm"),
+                        stand_type = NULL,
                         date = NA,
                         country = c("spain", "usa", "france")) {
 
@@ -67,7 +67,7 @@ build_stand <- function(a, idplot, df,
 
   # Check choices of arguments.
   data_type <- match.arg(data_type)
-  if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type)
+  if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type, c("individual", "mpm", "ipm"))
   a$date <- date
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
