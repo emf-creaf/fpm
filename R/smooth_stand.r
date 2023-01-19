@@ -53,7 +53,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
 
   # Does 'idplot' exist?
-  id <- if (is.na(m[2])) a$idplot else match(idplot, a$idplot)
+  id <- if (is.na(m[2])) 1:length(a$idplot) else match(idplot, a$idplot)
   if (any(is.na(id))) stop("Could not find 'idplot' in 'a'")
 
   # We need the integration variable for the calculations.
@@ -72,27 +72,25 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
                            width = 100)
   }
 
-  # To store results.
-  b <- a
-
   # Loop along all plots.
   for (i in id) {
+    b <- a[i, ]
 
     # Progress bar.
-    pb$tick()
+    if (progressbar) pb$tick()
 
-    # Smooth only discrete data.
-    if (!is.na(b[i, ]$stand_type)) {
-      if (b[i, ]$stand_type == "individual") {
+    # Smooth discrete data, but only if stand_type has been defined and set to "individual".
+    if (!is.na(b$stand_type)) {
+      if (b$stand_type == "individual") {
 
         # If "trees" list is not empty.
-        if (length(b[i, ]$trees[[1]])) {
+        if (length(b$trees[[1]])) {
 
           # Check country.
           if (attr(b, "country") == "spain") {
 
             # Species to smooth.
-            trees <- b[i, ]$trees[[1]]
+            trees <- b$trees[[1]]
             species <- unique(trees$species)
             nsp <- length(species)
 
@@ -112,14 +110,13 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             }
 
             # Store and change 'stand_type' to "ipm".
-            b[i, ]$trees[[1]] <- as.data.frame(df)
-            b[i, ]$stand_type <- "ipm"
+            a[i, ]$trees[[1]] <- as.data.frame(df)
+            a[i, ]$stand_type <- "ipm"
           }
         }
       }
     }
-
   }
 
-  return(b)
+  return(a)
 }
