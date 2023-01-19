@@ -15,10 +15,21 @@ check_stand <- function(a) {
 
   # First extract species of adult trees present in all plots.
   b <- a %>% pull(trees)
-  adultsp <- unique(unlist(sapply(b, function(x) switch(stand_type,
-                                                             individual = unique(x$species),
-                                                             ipm = colnames(x))
-  )))
+  adultsp <- sapply(1:length(b), function(i) {
+    if (is.na(a$stand_type[i])) {
+      NA
+    } else if (a$stand_type[i] == "individual") {
+      unique(b[[i]]$species)
+    } else if (a$stand_type[i] == "ipm") {
+      colnames(b[[i]])
+    }
+  })
+  adultsp <- unique(adultsp)
+
+  # adultsp <- unique(unlist(sapply(b, function(x) switch(a$stand_type,
+  #                                                            individual = unique(x$species),
+  #                                                            ipm = colnames(x))
+  # )))
 
   # Same for smaller trees.
   b <- a %>% pull(saplings)
