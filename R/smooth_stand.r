@@ -104,9 +104,8 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             # Loop through species and individual trees.
             for (j in species) {
               y <- trees[trees$species == j, , drop = F]
-              # for (k in 1:nrow(y)) df[, j] <- df[, j] +
-              #     MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
-              df[, j] <- fast_kernsmooth(x[, j], y$dbh1 , width = width) * y$factor_diam1
+              for (k in 1:nrow(y)) df[, j] <- df[, j] +
+                  MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
             }
 
             # Store and change 'stand_type' to "ipm".
