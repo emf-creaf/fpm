@@ -5,6 +5,9 @@
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #'
 #' @return
+#' A \code{list} containing the number of sapling and adult tree species presents
+#' in the stands.
+#'
 #' @export
 #'
 #' @examples
