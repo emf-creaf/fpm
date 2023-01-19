@@ -72,8 +72,6 @@ build_stand <- function(a, idplot, df,
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
-  # Check that data makes sense (i.e. no NA's or empty rows).
-  if (any(is.na(df))) stop("There are NA's in df'")
   if (country == "spain") {
     if (data_type == "trees") {
       if (any(df$dbh1 == 0)) stop("'dbh1' cannot have zero values")

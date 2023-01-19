@@ -53,8 +53,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
 
   # Does 'idplot' exist?
-  if (is.na(m[2])) idplot <- a$idplot
-  id <- match(idplot, a$idplot)
+  id <- if (is.na(m[2])) a$idplot else match(idplot, a$idplot)
   if (any(is.na(id))) stop("Could not find 'idplot' in 'a'")
 
   # We need the integration variable for the calculations.
