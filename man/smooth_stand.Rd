@@ -4,7 +4,7 @@
 \alias{smooth_stand}
 \title{Convolution of discrete tree stands}
 \usage{
-smooth_stand(a, idplot, smooth_type = "gaussian", width = 2)
+smooth_stand(a, idplot, smooth_type = "gaussian", width = 2, progressbar = T)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
@@ -12,10 +12,11 @@ smooth_stand(a, idplot, smooth_type = "gaussian", width = 2)
 \item{idplot}{identifiers of POINT elements representing tree stands to smooth.}
 
 \item{smooth_type}{string indicating which smoothing window to use. Presently,
-only \code{smooth_type = "gaussian"} option is available.
-#' @param width width of smoothing window.}
+only \code{smooth_type = "gaussian"} option is available.}
 
-\item{stand_type}{string specifying which type of tree stand to obtain.}
+\item{width}{width of smoothing window.}
+
+\item{progressbar}{logical to print a progress bar with package \code{progress}.}
 }
 \value{
 A \code{sf} object with a continuous distributions of trees per species as a

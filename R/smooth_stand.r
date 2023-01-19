@@ -5,10 +5,10 @@
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param idplot identifiers of POINT elements representing tree stands to smooth.
-#' @param stand_type string specifying which type of tree stand to obtain.
 #' @param smooth_type string indicating which smoothing window to use. Presently,
 #' only \code{smooth_type = "gaussian"} option is available.
-#' #' @param width width of smoothing window.
+#' @param width width of smoothing window.
+#' @param progressbar logical to print a progress bar with package \code{progress}.
 #'
 #' @return
 #' A \code{sf} object with a continuous distributions of trees per species as a
@@ -47,7 +47,7 @@
 #' a <- set_attributes(a, integvars = x)
 #' b <- smooth_stand(a)
 #'
-smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
+smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progressbar = T) {
 
   mf <- match.call()
   m <- match(c("a", "idplot", "stand_type", "smooth_type", "width"), tolower(names(mf)[-1]))
@@ -62,8 +62,22 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2) {
   if (is.null(x)) stop("Attribute 'integvars' is missing")
   nx <- nrow(x)
 
+  # If progress is TRUE, print a progress bar.
+  if (progressbar) {
+    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+                           total = length(id),
+                           complete = "=",   # Completion bar character
+                           incomplete = "-", # Incomplete bar character
+                           current = ">",    # Current bar character
+                           clear = FALSE,    # If TRUE, clears the bar when finish
+                           width = 100)
+  }
+
   # Loop along all plots.
   for (i in id) {
+
+    # Progress bar.
+    pb$tick()
 
     # Smooth only discrete data.
     if (!is.na(a[i, ]$stand_type)) {
