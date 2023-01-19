@@ -35,6 +35,6 @@ check_stand <- function(a) {
   b <- a %>% pull(saplings)
   saplingsp <- unique(unlist(sapply(b, function(x) unique(x$species))))
 
-  return(list(species.adults = adults,
+  return(list(species.adults = adultsp,
               species.saplingsp = saplingsp))
 }
