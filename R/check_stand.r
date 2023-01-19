@@ -26,24 +26,34 @@ check_stand <- function(a) {
   })
   species_adults <- unique(unlist(species_adults))
 
-  # Are there NA's in adult tree species? Where?
-  adult_sp_NA <- sapply(b, function(x) sum(is.na(x$species)))
+  # How many species per plot?
+  adult_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
 
-  # Are there NA's in adult tree dbh1? Where?
+  # How many NA's per plot in species name?
+  adult_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
+
+  # How many different non-NA adult trees per plot?
+  adult_tree_number <- sapply(b, function(x) sum(!is.na((x$dbh1))))
+
+  # How many NA's per plot in dbh?
   adult_dbh_NA <- sapply(b, function(x) sum(is.na(x$dbh1)))
 
   # Same for smaller trees.
   b <- a %>% pull(saplings)
   species_saplings <- unique(unlist(sapply(b, function(x) unique(x$species))))
-
-  sapling_sp_NA <- sapply(b, function(x) sum(is.na(x$species)))
-
-  sapling_N_NA <- sapply(b, function(x) sum(is.na(x$N)))
+  sapling_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
+  sapling_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
+  sapling_number <- sapply(b, function(x) sum(x$N, na.rm=T))
+  sapling_number_NA <- sapply(b, function(x) sum(is.na(x$N)))
 
   return(list(species_adults = species_adults,
-              adult_sp_NA = adult_sp_NA,
+              adult_species_number = adult_species_number,
+              adult_species_NA = adult_species_NA,
+              adult_tree_number = adult_tree_number,
               adult_dbh_NA = adult_dbh_NA,
               species_saplings = species_saplings,
-              sapling_sp_NA = sapling_sp_NA,
-              sapling_N_NA = sapling_N_NA))
+              sapling_species_number = sapling_species_number,
+              sapling_species_NA = sapling_species_NA,
+              sapling_number = sapling_number,
+              sapling_number_NA = sapling_number_NA))
 }
