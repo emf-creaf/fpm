@@ -24,7 +24,7 @@ check_stand <- function(a) {
       colnames(b[[i]])
     }
   })
-  adultsp <- unique(adultsp)
+  adultsp <- unique(unlist(adultsp))
 
   # adultsp <- unique(unlist(sapply(b, function(x) switch(a$stand_type,
   #                                                            individual = unique(x$species),
