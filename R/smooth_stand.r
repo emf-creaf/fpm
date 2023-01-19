@@ -72,6 +72,9 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
                            width = 100)
   }
 
+  # To store results.
+  b <- a
+
   # Loop along all plots.
   for (i in id) {
 
@@ -79,17 +82,17 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
     pb$tick()
 
     # Smooth only discrete data.
-    if (!is.na(a[i, ]$stand_type)) {
-      if (a[i, ]$stand_type == "individual") {
+    if (!is.na(b[i, ]$stand_type)) {
+      if (b[i, ]$stand_type == "individual") {
 
         # If "trees" list is not empty.
-        if (length(a[i, ]$trees[[1]])) {
+        if (length(b[i, ]$trees[[1]])) {
 
           # Check country.
-          if (attr(a, "country") == "spain") {
+          if (attr(b, "country") == "spain") {
 
             # Species to smooth.
-            trees <- a[i, ]$trees[[1]]
+            trees <- b[i, ]$trees[[1]]
             species <- unique(trees$species)
             nsp <- length(species)
 
@@ -109,8 +112,8 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             }
 
             # Store and change 'stand_type' to "ipm".
-            a[i, ]$trees[[1]] <- as.data.frame(df)
-            a[i, ]$stand_type <- "ipm"
+            b[i, ]$trees[[1]] <- as.data.frame(df)
+            b[i, ]$stand_type <- "ipm"
           }
         }
       }
@@ -118,5 +121,5 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
 
   }
 
-  return(a)
+  return(b)
 }
