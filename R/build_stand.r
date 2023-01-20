@@ -63,9 +63,13 @@ build_stand <- function(a, idplot, df,
   id <- match(idplot, a$idplot)
   if (is.na(id)) stop("Could not find 'idplot' in 'a'")
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
-  if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
 
-  # Check choices of arguments.
+  # Input df must be a data.frame, and it should not be empty nor should it have NA's.
+  if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
+  if (nrow(df) == 0) stop("Input 'df' should not be empty")
+  if (any(is.na(df))) stop("Input 'df' should not have NA's")
+
+  # Check other input arguments.
   data_type <- match.arg(data_type)
   if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type, c("individual", "mpm", "ipm"))
   a$date <- date
