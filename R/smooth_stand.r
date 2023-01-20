@@ -59,6 +59,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
   # We need the integration variable for the calculations.
   x <- attr(a, "integvars")
   if (is.null(x)) stop("Attribute 'integvars' is missing")
+  colx <- colnames(x)
   nx <- nrow(x)
 
   # If progress is TRUE, print a progress bar.
@@ -91,11 +92,10 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
 
             # Species to smooth.
             trees <- b$trees[[1]]
-            species <- unique(trees$species)
+            species <- colnames(trees$species)
             nsp <- length(species)
 
             # Check that all species are in 'integvars' data.frame.
-            colx <- colnames(x)
             if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
 
             # Big data.frame to store results per species column-wise.
@@ -109,7 +109,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
               for (k in 1:nrow(y)) z <- z + MiscStat::fast_kernsmooth(xj, y$dbh1[k] , width = width) * y$factor_diam1[k]
               df[, j] <- z
             }
-
+browser()
             # Store and change 'stand_type' to "ipm".
             a[i, ]$trees[[1]] <- df
             a[i, ]$stand_type <- "ipm"
