@@ -98,18 +98,20 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             colx <- colnames(x)
             if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in 'integvars' attribute\n"))
 
-            # Big matrix to store results per species column-wise.
-            df <- matrix(0,nx, nsp, dimnames = list(c(), species))
+            # Big data.frame to store results per species column-wise.
+            df <- data.frame(matrix(0,nx, nsp, dimnames = list(c(), species)))
 
             # Loop through species and individual trees.
             for (j in species) {
+              xj <- x[, j]
               y <- trees[trees$species == j, , drop = F]
-              for (k in 1:nrow(y)) df[, j] <- df[, j] +
-                  MiscStat::fast_kernsmooth(x[, j], y$dbh1[k] , width = width) * y$factor_diam1[k]
+              z <- numeric(nx)
+              for (k in 1:nrow(y)) z <- z + MiscStat::fast_kernsmooth(xj, y$dbh1[k] , width = width) * y$factor_diam1[k]
+              df[, j] <- z
             }
 
             # Store and change 'stand_type' to "ipm".
-            a[i, ]$trees[[1]] <- as.data.frame(df)
+            a[i, ]$trees[[1]] <- df
             a[i, ]$stand_type <- "ipm"
           }
         }
