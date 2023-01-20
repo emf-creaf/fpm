@@ -109,7 +109,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
               for (k in 1:nrow(y)) z <- z + MiscStat::fast_kernsmooth(xj, y$dbh1[k] , width = width) * y$factor_diam1[k]
               df[, j] <- z
             }
-browser()
+
             # Store and change 'stand_type' to "ipm".
             a[i, ]$trees[[1]] <- df
             a[i, ]$stand_type <- "ipm"
