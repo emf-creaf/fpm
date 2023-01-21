@@ -72,7 +72,21 @@ test_timepoints_youngs <- function(x, country) {
   return(y)
 }
 
-
+# Descriptive statistics for seedlings or saplings.
+stat_minor_trees <- function(a) {
+  species <- unique(unlist(sapply(a, function(x) unique(x$species))))
+  species_number <- sapply(a, function(x) sum(!is.na(unique(x$species))))
+  species_NA <- sapply(a, function(x) sum(is.na(x$species)))
+  number <- sapply(a, function(x) sum(x$N, na.rm=T))
+  number_NA <- sapply(a, function(x) sum(is.na(x$N)))
+  return(list(
+    species = species,
+    species_number = species_number,
+    species_NA = species_NA,
+    number = number,
+    number_NA = number_NA
+  ))
+}
 
 
 

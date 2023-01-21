@@ -85,7 +85,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
       if (b$stand_type == "individual") {
 
         # If "trees" list is not empty.
-        if (length(b$trees[[1]])) {
+        if (length(b$trees[[1]]) > 0) {
 
           # Check country.
           if (attr(b, "country") == "spain") {

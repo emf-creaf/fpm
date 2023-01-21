@@ -27,33 +27,36 @@ check_stand <- function(a) {
   species_adults <- unique(unlist(species_adults))
 
   # How many species per plot?
-  adult_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
+  adults_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
 
   # How many NA's per plot in species name?
-  adult_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
+  adults_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
 
   # How many different non-NA adult trees per plot?
-  adult_tree_number <- sapply(b, function(x) sum(!is.na((x$dbh1))))
+  adults_number <- sapply(b, function(x) sum(!is.na((x$dbh1))))
 
   # How many NA's per plot in dbh?
-  adult_dbh_NA <- sapply(b, function(x) sum(is.na(x$dbh1)))
+  adults_dbh_NA <- sapply(b, function(x) sum(is.na(x$dbh1)))
 
-  # Same for smaller trees.
-  b <- a %>% pull(saplings)
-  species_saplings <- unique(unlist(sapply(b, function(x) unique(x$species))))
-  sapling_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
-  sapling_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
-  sapling_number <- sapply(b, function(x) sum(x$N, na.rm=T))
-  sapling_number_NA <- sapply(b, function(x) sum(is.na(x$N)))
+  # Same for seedlings and saplings.
+  seedlings <- a %>% pull(seedlings) %>% stat_minor_trees()
+  saplings <- a %>% pull(saplings) %>% stat_minor_trees()
 
   return(list(species_adults = species_adults,
-              adult_species_number = adult_species_number,
-              adult_species_NA = adult_species_NA,
-              adult_tree_number = adult_tree_number,
-              adult_dbh_NA = adult_dbh_NA,
-              species_saplings = species_saplings,
-              sapling_species_number = sapling_species_number,
-              sapling_species_NA = sapling_species_NA,
-              sapling_number = sapling_number,
-              sapling_number_NA = sapling_number_NA))
+              adults_species_number = adults_species_number,
+              adults_species_NA = adults_species_NA,
+              adults_number = adults_number,
+              adults_dbh_NA = adults_dbh_NA,
+
+              species_seedlings = seedlings$species,
+              seedlings_species_number = seedlings$species_number,
+              seedlings_species_NA = seedlings$species_NA,
+              seedlings_number = seedlings$number,
+              seedlings_number_NA = seedlings$number_NA,
+
+              species_saplings = saplings$species,
+              saplings_species_number = saplings$species_number,
+              saplings_species_NA = saplings$species_NA,
+              saplings_number = saplings$number,
+              saplings_number_NA = saplings$number_NA))
 }
