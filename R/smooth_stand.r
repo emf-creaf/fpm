@@ -91,8 +91,8 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
           if (attr(b, "country") == "spain") {
 
             # Species to smooth.
-            trees <- b$trees[[1]]
-            species <- colnames(trees$species)
+            trees <- data.frame(b$trees[[1]])
+            species <- unique(trees$species)
             nsp <- length(species)
 
             # Check that all species are in 'integvars' data.frame.
