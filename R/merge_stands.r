@@ -40,8 +40,10 @@ merge_stands <- function(a, b) {
   b_integvars <- attr(b, "integvars")
 
   # 'country' and 'integvars' attributes must match, if already set.
-  if (!is.null(a_country) | !is.null(b_country)) {
+  if (!is.null(a_country) & !is.null(b_country)) {
     if (a_country != b_country) stop("Attributes 'country' differ")
+  } else{
+    stop("Attribute 'country' must be set")
   }
   if (!is.null(a_integvars) | !is.null(b_integvars)) {
     if (!identical(a_integvars, b_integvars)) stop("Attributes 'integvars' differ")

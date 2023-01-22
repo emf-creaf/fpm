@@ -52,7 +52,7 @@ to add to \code{a}, that \code{data.frame} must have two columns, labeled
 
 # First initialize one single stand.
 a <- start_stand("ID1", 5, 45, "EPSG:4326")
-a <- set_attributes(a)
+a <- set_attributes(a, country = "spain")
 
 # Next, we merge other stands.
 for (i in 2:10) {
