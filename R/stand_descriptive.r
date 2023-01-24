@@ -47,35 +47,39 @@
 #' a <- stand_descriptive(a)
 #' b <- stand_descriptive(b)
 #'
-stand_descriptive <- function(a, idplot = NULL) {
+stand_descriptive <- function(a, idplot = NULL, quadrature = "simpson", progressbar = T) {
 
-  # Check idplot. If not provided, all plots will be used.
+  # Checks.
   if (!is.null(idplot)) {
     id <- match(idplot, a$idplot)
     if (any(is.na(id))) stop(cat("Could not find some 'idplots' in input 'a'"))
   } else {
     id <- 1:length(a$idplot)
   }
+  quadrature <- match.arg(quadrature, c("trapezoidal", "simpson"))
+  country <- match.arg(tolower(attr(a, "country")), c("spain"))
 
-  # Check country.
-  country <- tolower(attr(a, "country"))
-  if (is.null(country)) stop("Attribute 'country' in 'a' has not been set")
+  # Shorter name for quadrature function.
+  q <- function(y, h) if (quadrature == "trapezoidal") quad_trapez(y, h) else quad_ext_simpson(y, h)
 
-  # If any plot is "ipm", attribute "integvars" must be present in the 'sf'.
-  # Then, retrieve abscissas only if needed, and only once. Grid spacing
-  # is also calculated, as a vector, for each species.
-  if (any(tolower(a$stand_type) == "ipm")) {
-    x <- attr(a, "integvars")
-    if (is.null(x)) stop("Attribute 'integvars' has not been set")
-    h <- unlist(x[2,]-x[1,])
+  # If progress is TRUE, print a progress bar.
+  if (progressbar) {
+    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+                           total = length(id),
+                           complete = "=",   # Completion bar character
+                           incomplete = "-", # Incomplete bar character
+                           current = ">",    # Current bar character
+                           clear = FALSE,    # If TRUE, clears the bar when finish
+                           width = 100)
   }
 
-  # Define pipe operator.
-  `%>%` <- magrittr::`%>%`
-
   # Either sum trees or integrate continuous distribution.
+  flag.ipm <- F
   for (i in id) {
     df <- a[i, ]$trees[[1]]
+
+    # Progress bar.
+    if (progressbar) pb$tick()
 
     # Calculate only if there are trees.
     if (length(df) > 0) {
@@ -102,13 +106,26 @@ stand_descriptive <- function(a, idplot = NULL) {
 
     # If "ipm", use numerical quadratures (since data sets are continuous).
       if (tolower(a[i, ]$stand_type) == "ipm") {
+
+        # If any plot is "ipm", attribute "integvars" must be present in the 'sf'.
+        # Then, retrieve abscissas only if needed, and only once. Grid spacing
+        # is also calculated, as a vector, for each species.
+        if (!flag.ipm) {
+          if (any(tolower(a$stand_type) == "ipm")) {
+            x <- attr(a, "integvars")
+            if (is.null(x)) stop("Attribute 'integvars' has not been set")
+            h <- unlist(x[2,]-x[1,])
+          }
+          flag.ipm <- TRUE
+        }
+
         if (any(country == "spain")) {
           coln <- colnames(df)
           a[i,]$species[[1]] <- coln
           a[i,]$BA_species[[1]] <-
-            data.frame(species = coln, BA = unname(sapply(coln, function(j) MiscMath::quad_trapez(df[, j]*x[, j]^2, h[j]))*(pi/40000)))
+            data.frame(species = coln, BA = unname(sapply(coln, function(j) q(df[, j]*x[, j]^2, h[j]))*(pi/40000)))
           a[i,]$N_species[[1]] <-
-            data.frame(species = coln, N = unname(sapply(coln, function(j) MiscMath::quad_trapez(df[, j], h[j]))))
+            data.frame(species = coln, N = unname(sapply(coln, function(j) q(df[, j], h[j]))))
         } else if (country == "usa") {
         } else if (country == "france") {
         }

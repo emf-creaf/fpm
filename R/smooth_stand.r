@@ -99,7 +99,8 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in attribute 'integvars'\n"))
 
             # Big data.frame to store results per species column-wise.
-            df <- data.frame(matrix(0,nx, nsp, dimnames = list(c(), species)))
+            df <- data.frame(matrix(0,nx, nsp))
+            colnames(df) <- species
 
             # Loop through species and individual trees.
             for (j in species) {

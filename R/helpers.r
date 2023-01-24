@@ -89,8 +89,31 @@ stat_minor_trees <- function(a) {
 }
 
 
+# Quadrature for single species.
+quad_growth <- function(N, x, mean_growth, sd_growth, prob_surv, meandbh,
+                        country = c("spain"), quadrature = c("trapez", "simpson")) {
 
+  country <- match.arg(country)
+  quadrature <- match.arg(quadrature)
 
+  if (country == "spain") {
+    # Big matrix for growth term.
+    nx <- nrow(x)
+    gmat <- matrix(NA, nx, nx)
+    xx <- x - mindbh
+    jseq <- 1:nx
+    for (j in 1:nx) {
+      gmat[j, jseq] <- dlnorm(xx, meanlog = mean_growth[j, i], sdlog = sd_growth[j,i])
+      xx <- xx[-length(xx)]
+      jseq <- jseq[-1]
+    }
+
+    # Numerical quadrature with trapezoidal rule.
+    b[, i] <- numquad_vm(N * prob_surv, gmat, nx, "simpson")
+  }
+
+  return(b)
+}
 
 
 

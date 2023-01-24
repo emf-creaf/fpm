@@ -6,7 +6,7 @@
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param idplot identifier of single POINT, representing a tree stand, to modify.
-#' @param expected_growth data.frame containing, for each species, the expected growth
+#' @param expected_growth data.frame containing, for eac species, the expected growth
 #' in dbh over previous dbh.
 #' @param variance_growth named vector with variance of logarithmic growth per species.
 #' @param survival_prob probability of survival
@@ -41,7 +41,7 @@
 #'
 #' @export
 #'
-ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, quadrature = c("trapezoidal", "simpson")) {
+ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, min_dbh, quadrature = c("trapezoidal", "simpson")) {
 
   id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
 
@@ -58,37 +58,51 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
 
   if (a[id, ]$stand_type != "ipm") stop("Some plots are not 'ipm' type")
 
-  # Abscissas per species.
-  x <- attr(a, "integvars")
-
   # Check tree stands.
 
   for (i in id) {
 
-    # Select plot.
+    # Select plot. No tibbles.
     b <- data.frame(a[id, ]$trees[[1]])
 
+
     # If "trees" list is not empty.
-    if (nrow(b) > 0) {
+    if (length(b) > 0)
 
       # Check country.
-      if (attr(b, "country") == "spain") {
+      if (attr(b, "country") == "spain")
 
-        # Retrieve species.
-        trees <- data.frame(b$trees[[1]])
-        species <- unique(trees$species)
-        nsp <- length(species)
+    # Retrieve species.
+    trees <- data.frame(b$trees[[1]])
+    species <- unique(trees$species)
+    nsp <- length(species)
 
-    # if (!all(sp %in% colnames(variance_growth)))
-    #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
-    #
-    # # Check min_dbh.
-    # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
+    if (!all(sp %in% colnames(variance_growth)))
+      stop("Inputs 'expected_growth' and 'variance_growth' have different species")
 
-    if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
+    # Check min_dbh.
+    if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
+
+    # Abscissas per species.
+    x <- attr(a, "integvars")
+    if (!all(sp %in% colnames(x))) stop("Species and integvars column names do not match")
+    nx <- nrow(x)
 
     # From variance to standard deviation.
     sd_growth <- sqrt(variance_growth)
+
+    # IPM quadrature.
+    # if (attr(a, "country") == "spain") {
+    #
+    #   ng <- length(N)
+    #   g.matrix <- matrix(0,ng,ng)
+    #   for (i in 1:ng) g.matrix[i,] <- c(rep(0,i-1),dlnorm(y[1:(ng-(i-1))]-min_dbh,meanlog=gr[i],sdlog=sd.va[i]))
+    #   Nsu <- N*su
+    #   N.new <- sapply(1:ng,function(i) MiscMath::quad_ext_simpson(Nsu*g.matrix[,i],h))
+    # }
+    # return(N.new)
+
+    # if (idplot == "ID7") browser()
 
     # Former tree distribution times survival per species.
     Nsu <- b[, sp, drop = F] * survival_prob[, sp, drop = F]
@@ -114,7 +128,7 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
     }
 
     # Update trees.
-    a[id, ]$trees[[1]] <- quad_growth()
+    a[id, ]$trees[[1]] <- b
   }
 
   return(a)

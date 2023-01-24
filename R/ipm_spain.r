@@ -41,43 +41,35 @@
 #'
 #' @export
 #'
-ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, quadrature = c("trapezoidal", "simpson")) {
+ipm_spain <- function(a, reg_expected_growth, reg_variance_growth, reg_survival, quadrature = "simpson") {
 
-  id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
+  if (any(a$stand_type != "ipm")) stop("'stand_type' must be 'ipm'")
+  stopifnot(tolower(attr(a, "country")) == "spain")
 
-  if (is.na(id)) stop("Could not find 'idplot' in 'a'")
+  quadrature <- match.arg(quadrature, c("trapezoidal", "simpson"))
 
-  if (a$stand_type[id] != "ipm") stop("'stand_type' must be 'ipm'")
-
-  if (class(expected_growth) != "data.frame") stop("Input 'expected_growth' must be a data.frame")
-  if (class(variance_growth) != "data.frame") stop("Input 'variance_growth' must be a data.frame")
-  if (ncol(expected_growth) != ncol(variance_growth))
-    stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
-  if (nrow(expected_growth) != nrow(variance_growth))
-    stop("Inputs 'expected_growth' and 'variance_growth' have different number of rows")
-
-  if (a[id, ]$stand_type != "ipm") stop("Some plots are not 'ipm' type")
+  # if (class(expected_growth) != "data.frame") stop("Input 'expected_growth' must be a data.frame")
+  # if (class(variance_growth) != "data.frame") stop("Input 'variance_growth' must be a data.frame")
+  # if (ncol(expected_growth) != ncol(variance_growth))
+  #   stop("Inputs 'expected_growth' and 'variance_growth' have different columns")
+  # if (nrow(expected_growth) != nrow(variance_growth))
 
   # Abscissas per species.
   x <- attr(a, "integvars")
 
   # Check tree stands.
 
-  for (i in id) {
+  for (i in 1:length(a$idplot)) {
 
     # Select plot.
-    b <- data.frame(a[id, ]$trees[[1]])
+    df <- a[i, ]
+    trees <- data.frame(df$trees[[1]])
 
     # If "trees" list is not empty.
-    if (nrow(b) > 0) {
+    if (nrow(trees) > 0) {
 
-      # Check country.
-      if (attr(b, "country") == "spain") {
-
-        # Retrieve species.
-        trees <- data.frame(b$trees[[1]])
-        species <- unique(trees$species)
-        nsp <- length(species)
+      # One column per species.
+      nsp <- ncol(trees)
 
     # if (!all(sp %in% colnames(variance_growth)))
     #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
@@ -85,13 +77,14 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
     # # Check min_dbh.
     # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
 
-    if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
+    # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
+
 
     # From variance to standard deviation.
-    sd_growth <- sqrt(variance_growth)
+    sd_growth <- sqrt(predict(reg_survival[[sp]], newdata = dat))
 
     # Former tree distribution times survival per species.
-    Nsu <- b[, sp, drop = F] * survival_prob[, sp, drop = F]
+    Nsu <- trees[, sp, drop = F] * predict(reg_survival[[sp]], newdata = dat)
 
     # Abscissae intervals for species present in the plot.
     h <- unlist(x[2, sp, drop = F] - x[1, sp, drop = F])
