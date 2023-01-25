@@ -75,23 +75,25 @@ build_stand <- function(a, idplot, df,
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
-  # Checks that carried out:
+  # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42.
+  no_zeros <- function(x) ifelse(any(x), FALSE, TRUE)
+  col_concat <- function(df) apply(df, 1, paste0, sep="", collapse="")
+
+  # Checks that carried out below:
   # - There are no NA values, both in trees or seedlings/saplings.
   # - Tree dbh1 is always >0.
   # - Number of seedlings/saplings is always >0.
   # - Seedlings/saplings are not duplicated.
+
   if (country == "spain") {
     if (data_type == "trees") {
       a$trees[[id]] <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, in_set(F), species) %>%
-        assertr::assert_rows(assertr::num_row_NAs, in_set(F), dbh1) %>%
-        assertr::assert_rows(assertr::num_row_NAs, in_set(F), factor_diam1) %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species, dbh1, factor_diam1) %>%
         assertr::verify(dbh1 > 0)
     } else {
       df <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, in_set(F), N) %>%
-        assertr::assert_rows(assertr::num_row_NAs, in_set(F), species) %>%
-        assertr::assert(assertr::is_uniq, N, species) %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species, N) %>%
+        assertr::assert_rows(col_concat, assertr::is_uniq, N, species) %>%
         assertr::verify(N > 0)
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df
