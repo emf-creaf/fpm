@@ -76,11 +76,11 @@ build_stand <- function(a, idplot, df,
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
   # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42.
-  any_NA <- function(x) x>0
+  any_NA <- function(x) x == 0
   col_concat <- function(df) apply(df, 1, paste0, sep="", collapse="")
 
   # Checks that carried out below:
-  # - There are no NA values, both in trees or seedlings/saplings.
+  # - There are no NA values, neither in trees nor in seedlings/saplings.
   # - Tree dbh1 is always >0.
   # - Number of seedlings/saplings is always >0.
   # - Seedlings/saplings are not duplicated.
@@ -91,8 +91,6 @@ build_stand <- function(a, idplot, df,
         assertr::assert_rows(assertr::num_row_NAs, any_NA, species, dbh1, factor_diam1) %>%
         assertr::verify(dbh1 > 0)
     } else {
-      browser()
-
       df <- df %>%
         assertr::assert_rows(assertr::num_row_NAs, any_NA, species, N) %>%
         assertr::assert_rows(col_concat, assertr::is_uniq, N, species) %>%
