@@ -10,7 +10,7 @@ remove_empty(a)
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
 }
 \value{
-\code{remove_empty} returns the input \{sf} object but without rows
+\code{remove_empty} returns the input \code{sf} object but without rows
 where the number of adults, seedlings AND saplings are zero.
 }
 \description{

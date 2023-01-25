@@ -13,8 +13,9 @@
 #' an empty stand will always remain empty.
 #'
 #' @return
-#' \code{remove_empty} returns the input \{sf} object but without rows
+#' \code{remove_empty} returns the input \code{sf} object but without rows
 #' where the number of adults, seedlings AND saplings are zero.
+#'
 #' @export
 #'
 #' @examples

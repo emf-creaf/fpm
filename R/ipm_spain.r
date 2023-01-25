@@ -112,7 +112,7 @@ ipm_spain <- function(a, reg_expected_growth, reg_variance_growth, reg_survival,
         }
 
         # Numerical quadrature with trapezoidal rule.
-        trees[, i] <- numquad_vm(Nsu, gmat, nx, h[i], quadrature)
+        trees[, i] <- numquad_vm(Nsu, gmat, h[i], quadrature)
       }
 
       # Update trees.
