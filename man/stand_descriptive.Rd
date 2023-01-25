@@ -4,7 +4,7 @@
 \alias{stand_descriptive}
 \title{Descriptive statistics per tree stand}
 \usage{
-stand_descriptive(a, idplot = NULL)
+stand_descriptive(a, idplot = NULL, quadrature = "simpson", progressbar = T)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}

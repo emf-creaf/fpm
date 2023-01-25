@@ -4,7 +4,13 @@
 \alias{set_attributes}
 \title{Set attributes of a \code{sf} tree-stand object}
 \usage{
-set_attributes(a, country = NULL, integvars = NULL)
+set_attributes(
+  a,
+  country = NULL,
+  integvars = NULL,
+  min_dbh = NULL,
+  max_dbh = NULL
+)
 }
 \arguments{
 \item{a}{a \code{sf} tree-stand object created with \code{\link{start_stand}}.}
@@ -18,6 +24,11 @@ implemented. Lower or upper case letters can be used. No default value is set.}
 species to be used by the IPM methodology. Future implementations will likely
 allow the use of different number of abscissas for each species, but at this
 moment this is not permitted.}
+
+\item{max_dbh}{named vector containing the maximum dbh reachable for each species.}
+
+\item{min_dbhnamed}{vector containing the minimum dbh after which a tree will
+be considered as an adult individual.}
 }
 \value{
 A \code{sf} object with attributes \emph{country} and \emph{x} set.
@@ -33,6 +44,9 @@ stand dynamics calculations have been implemented at this stage.
 }
 \examples{
 a <- start_stand("ID1", 5, 45, "EPSG:4326")
-a <- set_attributes(a)
+max_dbh <- c('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+a <- set_attributes(a, max_dbh = max_dbh)
+
+
 
 }

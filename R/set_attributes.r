@@ -13,6 +13,8 @@
 #' species to be used by the IPM methodology. Future implementations will likely
 #' allow the use of different number of abscissas for each species, but at this
 #' moment this is not permitted.
+#' @param min_dbhnamed vector containing the minimum dbh after which a tree will
+#' be considered as an adult individual.
 #' @param max_dbh named vector containing the maximum dbh reachable for each species.
 #'
 #' @return
@@ -27,13 +29,14 @@
 #'
 #' @examples
 #' a <- start_stand("ID1", 5, 45, "EPSG:4326")
-#' a <- set_attributes(a)
-#'
 #' max_dbh <- c('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_attributes(a, max_dbh = max_dbh)
 #'
-set_attributes <- function(a, country = NULL, integvars = NULL, max_dbh = NULL) {
+#'
+#'
+set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL) {
 
-  if (is.null(country) & is.null(integvars) & is.null(max_dbh)) warning("No attribute has been set!")
+  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh)) warning("No attribute has been set!")
 
   if (!is.null(country)) {
     attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
@@ -44,9 +47,14 @@ set_attributes <- function(a, country = NULL, integvars = NULL, max_dbh = NULL) 
     attr(a, "integvars") <- integvars
   }
 
+  if (!is.null(min_dbh)) {
+    stopifnot(is.vector(min_dbh))
+    attr(a, "min_dbh") <- min_dbh
+  }
+
   if (!is.null(max_dbh)) {
     stopifnot(is.vector(max_dbh))
-    attr(a, "max_dbh") <- match.arg(tolower(max_dbh))
+    attr(a, "max_dbh") <- max_dbh
   }
 
   return(a)
