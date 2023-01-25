@@ -77,7 +77,6 @@ build_stand <- function(a, idplot, df,
 
   # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42.
   any_NA <- function(x) x == 0
-  col_concat <- function(df) apply(df, 1, paste0, sep="", collapse="")
 
   # Checks that carried out below:
   # - There are no NA values, neither in trees nor in seedlings/saplings.
@@ -93,7 +92,7 @@ build_stand <- function(a, idplot, df,
     } else {
       df <- df %>%
         assertr::assert_rows(assertr::num_row_NAs, any_NA, species, N) %>%
-        assertr::assert_rows(col_concat, assertr::is_uniq, N, species) %>%
+        assertr::assert_rows(assertr::col_concat, assertr::is_uniq, N, species) %>%
         assertr::verify(N > 0)
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df
