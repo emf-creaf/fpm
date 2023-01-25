@@ -76,7 +76,7 @@ build_stand <- function(a, idplot, df,
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
   # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42.
-  no_zeros <- function(x) ifelse(any(x), FALSE, TRUE)
+  any_NA <- function(x) x>0
   col_concat <- function(df) apply(df, 1, paste0, sep="", collapse="")
 
   # Checks that carried out below:
@@ -88,11 +88,13 @@ build_stand <- function(a, idplot, df,
   if (country == "spain") {
     if (data_type == "trees") {
       a$trees[[id]] <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species, dbh1, factor_diam1) %>%
+        assertr::assert_rows(assertr::num_row_NAs, any_NA, species, dbh1, factor_diam1) %>%
         assertr::verify(dbh1 > 0)
     } else {
+      browser()
+
       df <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species, N) %>%
+        assertr::assert_rows(assertr::num_row_NAs, any_NA, species, N) %>%
         assertr::assert_rows(col_concat, assertr::is_uniq, N, species) %>%
         assertr::verify(N > 0)
       if (data_type == "seedlings") {
