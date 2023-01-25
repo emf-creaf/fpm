@@ -47,7 +47,7 @@
 #' a <- stand_descriptive(a)
 #' b <- stand_descriptive(b)
 #'
-stand_descriptive <- function(a, idplot = NULL, quadrature = "simpson", progressbar = T) {
+stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson"), progressbar = T) {
 
   # Checks.
   if (!is.null(idplot)) {
@@ -56,7 +56,7 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = "simpson", progress
   } else {
     id <- 1:length(a$idplot)
   }
-  quadrature <- match.arg(quadrature, c("trapezoidal", "simpson"))
+  quadrature <- match.arg(quadrature)
   country <- match.arg(tolower(attr(a, "country")), c("spain"))
 
   # Shorter name for quadrature function.

@@ -38,12 +38,12 @@
 #' # Next, we merge other stands.
 #' for (i in 2:10) {
 #' b <- start_stand(paste0("ID",i), 5, 45, "EPSG:4326")
-#' b <- set_attributes(b)
+#' b <- set_attributes(b, country = "spain")
 #' a <- merge_stands(a,b)
 #' }
 #'
 #' # Now we add tree information.
-#' for (i in 1:10) {
+#' for (i in 1:8) {
 #' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
 #' dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
@@ -76,21 +76,22 @@ build_stand <- function(a, idplot, df,
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
+  # Checks that carried out:
+  # - There are no NA values, both in trees or seedlings/saplings.
+  # - Tree dbh1 is always >0.
+  # - Number of seedlings/saplings is always >0.
+  # - Seedlings/saplings are not duplicated.
   if (country == "spain") {
     if (data_type == "trees") {
-      if (any(df$dbh1 == 0)) stop("'dbh1' cannot have zero values")
+      a$trees[[id]] <- df %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species) %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, dbh1) %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, factor_diam1) %>%
+        assertr::assert(assertr::within_bounds(0, Inf, include.lower = F), dbh1)
     } else {
-      if (any(duplicated(df))) stop("There are duplicated seedlings/saplings rows in data.frame 'df'")
-      if (any(df$N == 0)) stop("Number of seedlings/saplings 'N' cannot have zero values")
-    }
-  }
-
-  # Things look ok. So, update..
-  if (country == "spain") {
-    if (data_type == "trees") {
-      a$trees[[id]] <- df
-    } else {
-      if (any(duplicated(df))) stop("There are duplicated seedlings/saplings rows in data.frame 'df'")
+      df <- df %>%
+        assertr::assert(assertr::is_uniq, N, species) %>%
+        assertr::assert(assertr::within_bounds(0, Inf, include.lower = F), N)
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df
       } else if (data_type == "saplings") {

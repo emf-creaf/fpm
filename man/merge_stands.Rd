@@ -26,12 +26,12 @@ inputs.
 
 #' # First initialize one single stand.
 a <- start_stand("ID1", 5, 45, "EPSG:4326")
-a <- set_attributes(a)
+a <- set_attributes(a, country = "spain")
 
 # Next, we merge other stands.
 for (i in 2:10) {
 b <- start_stand(paste0("ID",i), 5, 45, "EPSG:4326")
-b <- set_attributes(b)
+b <- set_attributes(b, country = "spain")
 a <- merge_stands(a,b)
 }
 

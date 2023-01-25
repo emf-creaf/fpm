@@ -116,4 +116,6 @@ quad_growth <- function(N, x, mean_growth, sd_growth, prob_surv, meandbh,
 }
 
 
+# Predicate for assertthat.
+no_zeros <- function(x) x == 0
 
