@@ -51,7 +51,7 @@
 #'
 build_stand <- function(a, idplot, df,
                         data_type = c("trees", "seedlings", "saplings"),
-                        stand_type = NULL,
+                        stand_type = c("individual", "ipm", "mpm"),
                         date = NA,
                         country = c("spain", "usa", "france")) {
 
@@ -64,14 +64,13 @@ build_stand <- function(a, idplot, df,
   if (is.na(id)) stop("Could not find 'idplot' in 'a'")
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
 
-  # Input df must be a data.frame, and it should not be empty nor should it have NA's.
+  # Input df must be a data.frame, and it should not be empty.
   if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
   if (nrow(df) == 0) stop("Input 'df' should not be empty")
-  if (any(is.na(df))) stop("Input 'df' should not have NA's")
 
   # Check other input arguments.
   data_type <- match.arg(data_type)
-  if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type, c("individual", "mpm", "ipm"))
+  if (data_type == "trees") a$stand_type[[id]] <- match.arg(stand_type)
   a$date <- date
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
@@ -87,11 +86,13 @@ build_stand <- function(a, idplot, df,
         assertr::assert_rows(assertr::num_row_NAs, no_zeros, species) %>%
         assertr::assert_rows(assertr::num_row_NAs, no_zeros, dbh1) %>%
         assertr::assert_rows(assertr::num_row_NAs, no_zeros, factor_diam1) %>%
-        assertr::assert(assertr::within_bounds(0, Inf, include.lower = F), dbh1)
+        assertr::verify(dbh1 > 0)
     } else {
       df <- df %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, N) %>%
+        assertr::assert_rows(assertr::num_row_NAs, no_zeros, species) %>%
         assertr::assert(assertr::is_uniq, N, species) %>%
-        assertr::assert(assertr::within_bounds(0, Inf, include.lower = F), N)
+        assertr::verify(N > 0)
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df
       } else if (data_type == "saplings") {

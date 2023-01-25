@@ -16,7 +16,9 @@ check_stand <- function(a) {
   # Extract species of adult trees present in all plots.
   b <- a %>% pull(trees)
   species_adults <- sapply(1:length(b), function(i) {
-    if (!is.na(a$stand_type[i])) {
+    if (is.na(a$stand_type[i])) {
+      NA
+    } else {
       if (a$stand_type[i] == "individual") {
         unique(b[[i]]$species)
       } else if (a$stand_type[i] == "ipm") {
@@ -24,6 +26,7 @@ check_stand <- function(a) {
       }
     }
   })
+
   species_adults <- unique(unlist(species_adults))
 
   # How many species per plot?

@@ -9,7 +9,7 @@ build_stand(
   idplot,
   df,
   data_type = c("trees", "seedlings", "saplings"),
-  stand_type = NULL,
+  stand_type = c("individual", "ipm", "mpm"),
   date = NA,
   country = c("spain", "usa", "france")
 )

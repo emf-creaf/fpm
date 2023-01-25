@@ -42,10 +42,10 @@
 remove_empty <- function(a) {
 
   x <- check_stand(a)
-  idplot <- which(x$adults_number == 0 &
-                    x$seedlings_number == 0 &
-                    x$saplings_number == 0)
-  if(length(idplot) > 0) a <- a[-idplot, ]
+  i <- which(x$adults_number == 0 &
+               x$seedlings_number == 0 &
+               x$saplings_number == 0)
+  if(length(i) > 0) a <- a[-i, ]
 
   return(a)
 }
