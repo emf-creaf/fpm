@@ -27,7 +27,7 @@ check_stand <- function(a) {
     }
   })
 
-  species_adults <- unique(unlist(species_adults))
+  species_adults <- unique(na.omit(unlist(species_adults)))
 
   # How many species per plot?
   adults_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))

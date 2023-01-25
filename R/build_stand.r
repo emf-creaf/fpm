@@ -75,7 +75,7 @@ build_stand <- function(a, idplot, df,
   country <- match.arg(country)
   if (attr(a, "country") != country) stop("Attribute 'country' does not match")
 
-  # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42.
+  # Functions for .assertr checks below. See https://github.com/ropensci/assertr/issues/42
   any_NA <- function(x) x == 0
 
   # Checks that carried out below:
