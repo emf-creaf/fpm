@@ -65,7 +65,7 @@ build_stand <- function(a, idplot, df,
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
 
   # Input df must be a data.frame, and it should not be empty.
-  if (!is.data.frame(df)) stop("Input 'df' must be a data.frame")
+  df <- data.frame(df)
   if (nrow(df) == 0) stop("Input 'df' should not be empty")
 
   # Check other input arguments.
@@ -87,11 +87,11 @@ build_stand <- function(a, idplot, df,
   if (country == "spain") {
     if (data_type == "trees") {
       a$trees[[id]] <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, any_NA, species, dbh1, factor_diam1) %>%
+        assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, dbh1, factor_diam1) %>%
         assertr::verify(dbh1 > 0)
     } else {
       df <- df %>%
-        assertr::assert_rows(assertr::num_row_NAs, any_NA, species, N) %>%
+        assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, N) %>%
         assertr::assert_rows(assertr::col_concat, assertr::is_uniq, N, species) %>%
         assertr::verify(N > 0)
       if (data_type == "seedlings") {
