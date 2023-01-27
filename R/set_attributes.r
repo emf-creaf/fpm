@@ -48,12 +48,12 @@ set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
   }
 
   if (!is.null(min_dbh)) {
-    stopifnot(is.vector(min_dbh))
+    stopifnot(is.data.frame(min_dbh))
     attr(a, "min_dbh") <- min_dbh
   }
 
   if (!is.null(max_dbh)) {
-    stopifnot(is.vector(max_dbh))
+    stopifnot(is.data.frame(max_dbh))
     attr(a, "max_dbh") <- max_dbh
   }
 
