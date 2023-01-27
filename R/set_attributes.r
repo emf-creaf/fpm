@@ -36,7 +36,10 @@
 #'
 set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL) {
 
-  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh)) warning("No attribute has been set!")
+  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh)) {
+    warning("No attribute has been set!")
+    return(a)
+  }
 
   if (!is.null(country)) {
     attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
