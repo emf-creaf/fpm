@@ -1,4 +1,4 @@
-#' IPM numerical quadrature
+#' IPM model for Spain
 #'
 #' @description
 #' \code{ipm_quadrature} is used to calculate the integral of the continuous
@@ -41,7 +41,7 @@
 #'
 #' @export
 #'
-ipm_spain <- function(a, reg_expected_growth, reg_variance_growth, reg_survival, reg_saplings, quadrature = "simpson") {
+ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings, quadrature = "simpson") {
 
   if (any(a$stand_type != "ipm")) stop("'stand_type' must be 'ipm'")
   stopifnot(tolower(attr(a, "country")) == "spain")
@@ -89,17 +89,17 @@ ipm_spain <- function(a, reg_expected_growth, reg_variance_growth, reg_survival,
       # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
 
       # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
-
+browser()
       for (i in species) {
 
         # Former tree distribution times survival per species.
         Nsu <- trees[, species[i], drop = F] * predict(reg_survival[[species[i]]], newdata = dat)
 
         # Growth term.
-        growth <- predict(reg_expected_growth, newdata = dat)
+        growth <- predict(reg_growth, newdata = dat)
 
         # Term for standard deviation of growth term.
-        sd_growth <- sqrt(predict(reg_survival[[species[i]]], newdata = dat, type = "response"))
+        sd_growth <- sqrt(predict(reg_variance[[species[i]]], newdata = dat, type = "response"))
 
         # Big matrix for growth term.
         gmat <- matrix(0, nx, nx)

@@ -2,13 +2,14 @@
 % Please edit documentation in R/ipm_spain.r
 \name{ipm_spain}
 \alias{ipm_spain}
-\title{IPM numerical quadrature}
+\title{IPM model for Spain}
 \usage{
 ipm_spain(
   a,
-  reg_expected_growth,
-  reg_variance_growth,
+  reg_growth,
+  reg_variance,
   reg_survival,
+  reg_ingrowth,
   reg_saplings,
   quadrature = "simpson"
 )

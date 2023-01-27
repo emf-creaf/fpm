@@ -86,20 +86,22 @@ build_stand <- function(a, idplot, df,
 
   if (country == "spain") {
     if (data_type == "trees") {
-      a$trees[[id]] <- df %>%
+      df <- df %>%
         assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, dbh1, factor_diam1) %>%
         assertr::verify(dbh1 > 0)
+      # a$trees[[id]] <- data.frame(df)
     } else {
       df <- df %>%
         assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, N) %>%
         assertr::assert_rows(assertr::col_concat, assertr::is_uniq, N, species) %>%
         assertr::verify(N > 0)
-      if (data_type == "seedlings") {
-        a$seedlings[[id]] <- df
-      } else if (data_type == "saplings") {
-        a$saplings[[id]] <- df
-      }
+      # if (data_type == "seedlings") {
+      #   a$seedlings[[id]] <- data.frame(df)
+      # } else if (data_type == "saplings") {
+      #   a$saplings[[id]] <- data.frame(df)
+      # }
     }
+    a[, data_type][[id]] <- data.frame(df)
   }
 
   return(a)

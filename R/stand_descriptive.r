@@ -87,10 +87,10 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
       # If "individual", use dplyr.
       if (tolower(a[i, ]$stand_type) == "individual") {
         if (country == "spain") {
-          df <- df %>% dplyr::group_by(species)
-          a[i,]$species[[1]] <- (df %>% dplyr::distinct(species))$species
-          a[i,]$BA_species[[1]] <- as.data.frame(df %>% dplyr::summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
-          a[i,]$N_species[[1]] <- as.data.frame(df %>% dplyr::summarise(N=sum(factor_diam1)))
+          df <- df %>% group_by(species)
+          a[i,]$species[[1]] <- data.frame((df %>% distinct(species))$species)
+          a[i,]$BA_species[[1]] <- data.frame(df %>% summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
+          a[i,]$N_species[[1]] <- data.frame(df %>% summarise(N=sum(factor_diam1)))
         } else if (country == "usa") {
         } else if (country == "france") {
         }
