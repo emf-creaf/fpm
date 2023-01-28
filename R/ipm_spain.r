@@ -55,6 +55,7 @@
 ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
                       quadrature = "simpson", progressbar = T) {
 
+  # Indices.
   id <- 1:nrow(a)
 
   stopifnot(tolower(attr(a, "country")) == "spain")
