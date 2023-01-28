@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-empty_seedlings <- function(a, idplot) {
+empty_seedlings <- function(a, idplot, include_date = NA) {
 
   mf <- match.call()
   m <- match(c("a", "idplot"), tolower(names(mf)[-1]))
@@ -16,8 +16,14 @@ empty_seedlings <- function(a, idplot) {
   i <- match(idplot, a$idplot)
   if (any(is.na(i))) stop(cat(paste0("Could not find ",sum(is.na(i))," plots\n")))
 
-  a$saplings[[i]] <- data.frame()
+  # Erase date or not?
+  if (is.na(include_data)) stop("You must set 'include_date' to TRUE or FALSE")
+  stopifnot(is.logical(include_date))
+  if (include_date) z$stand_type <- NA
 
+  # Erase content.
+  a$seedlings[[1]] <- list()
+  a$seedling_species[[1]] <- list()
 
   return(a)
 }

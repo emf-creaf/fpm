@@ -40,19 +40,18 @@ start_stand <- function(idplot, x, y, crs = NA) {
   z$stand_type = NA
   z$date <- NA
 
-  # To contain character vector with species present in this stand.
-  z$species[[1]] <- list()
-
   # Initialize trees and saplings.
   z$trees[[1]] <- list()
   z$seedlings[[1]] <- list()
   z$saplings[[1]] <- list()
 
+  # To contain character vector with species present in this stand.
+  z$tree_species[[1]] <- list()
+  z$seedling_species[[1]] <- list()
+  z$sapling_species[[1]] <- list()
+
   # Aggregated info.
-  z$N_species[[1]] <- list()
-  z$BA_species[[1]] <- list()
-  z$N_stand <- NA                       # Number of tree species in stand. A single number.
-  z$BA_stand <- NA                      # Total basal area in stand. A single number.
+  z$basal_area <- NA                      # Total basal area in stand. A single number.
 
   return(z)
 }

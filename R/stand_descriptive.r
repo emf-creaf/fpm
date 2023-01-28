@@ -89,8 +89,7 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
         if (country == "spain") {
           df <- df %>% group_by(species)
           a[i,]$species[[1]] <- data.frame((df %>% distinct(species))$species)
-          a[i,]$BA_species[[1]] <- data.frame(df %>% summarise(BA=(pi/200^2)*sum(factor_diam1*dbh1^2)))
-          a[i,]$N_species[[1]] <- data.frame(df %>% summarise(N=sum(factor_diam1)))
+          a[i,]$basal_area <- sum(df %>% summarise(basal_area_species=(pi/40000)*sum(factor_diam1*dbh1^2)))
         } else if (country == "usa") {
         } else if (country == "france") {
         }
@@ -121,22 +120,16 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
 
         if (any(country == "spain")) {
           coln <- colnames(df)
-          a[i,]$species[[1]] <- coln
-          a[i,]$BA_species[[1]] <-
-            data.frame(species = coln, BA = unname(sapply(coln, function(j) q(df[, j]*x[, j]^2, h[j]))*(pi/40000)))
-          a[i,]$N_species[[1]] <-
-            data.frame(species = coln, N = unname(sapply(coln, function(j) q(df[, j], h[j]))))
+          a[i,]$tree_species[[1]] <- coln
         } else if (country == "usa") {
         } else if (country == "france") {
         }
       }
-      a[i,]$BA_stand <- sum(a[i,]$BA_species[[1]]$BA)
-      a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
+      a[i,]$basal_area <- sum(sapply(coln, function(j) q(df[, j]*x[, j]^2, h[j]))*(pi/40000))
+      # a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
 
     } else {
-      a[i,]$species[[1]] <- list()
-      a[i,]$BA_species[[1]] <- list()
-      a[i,]$N_species[[1]] <- list()
+      a[i,]$basal_area <- NA
     }
 
   }

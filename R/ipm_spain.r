@@ -43,7 +43,6 @@
 #'
 ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings, quadrature = "simpson") {
 
-  if (any(a$stand_type != "ipm")) stop("'stand_type' must be 'ipm'")
   stopifnot(tolower(attr(a, "country")) == "spain")
 
   quadrature <- match.arg(quadrature, c("trapezoidal", "simpson"))
@@ -65,67 +64,73 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
   # Abscissae intervals for species present in the plot.
   h <- x[2, ] - x[1, ]
 
-  for (i in 1:length(a$idplot)) {
+  for (idplot in a$idplot) {
 
     # Select plot.
-    df <- a[i, ]
+    df <- a[idplot, ]
 
+browser()
 
     ########################################## Adult trees.
 
-    trees <- data.frame(df$trees[[1]])
+    if (!is.na(df$stand_type)) {
 
-    # Continue if "trees" list is not empty.
-    if (nrow(trees) > 0) {
+      # Continue if stand_type is "ipm".
+      if (df$stand_type == "ipm") {
 
-      # One column per species.
-      species <- colnames(trees)
-      nsp <- ncol(trees)
+        trees <- data.frame(df$trees[[1]])
 
-      # if (!all(sp %in% colnames(variance_growth)))
-      #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
-      #
-      # # Check min_dbh.
-      # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
+        # One column per species.
+        species <- colnames(trees)
+        nsp <- ncol(trees)
 
-      # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
-browser()
-      for (i in species) {
+        # if (!all(sp %in% colnames(variance_growth)))
+        #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
+        #
+        # # Check min_dbh.
+        # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
 
-        # Former tree distribution times survival per species.
-        Nsu <- trees[, species[i], drop = F] * predict(reg_survival[[species[i]]], newdata = dat)
+        # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
 
-        # Growth term.
-        growth <- predict(reg_growth, newdata = dat)
+        for (ispecies in species) {
 
-        # Term for standard deviation of growth term.
-        sd_growth <- sqrt(predict(reg_variance[[species[i]]], newdata = dat, type = "response"))
+    browser()
 
-        # Big matrix for growth term.
-        gmat <- matrix(0, nx, nx)
-        xx <- x[, i] - min_dbh[i]
-        jseq <- 1:nx
-        for (j in 1:nx) {
-          gmat[j, jseq] <- dlnorm(xx, meanlog = growth[i], sdlog = sd_growth[i])
-          xx <- xx[-length(xx)]
-          jseq <- jseq[-1]
+          # Former tree distribution times survival per species.
+          Nsu <- trees[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
+
+          # Growth term.
+          growth <- predict(reg_growth, newdata = dat)
+
+          # Term for standard deviation of growth term.
+          sd_growth <- sqrt(predict(reg_variance[[ispecies]], newdata = dat, type = "response"))
+
+          # Big matrix for growth term.
+          gmat <- matrix(0, nx, nx)
+          xx <- x[, ispecies] - mindbh[ispecies]
+          iseq <- 1:nx
+          for (ix in 1:nx) {
+            gmat[j, jseq] <- dlnorm(xx, meanlog = growth[ix], sdlog = sd_growth[ix])
+            xx <- xx[-length(xx)]
+            iseq <- iseq[-1]
+          }
+
+          # Numerical quadrature with trapezoidal rule.
+          trees[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
         }
 
-        # Numerical quadrature with trapezoidal rule.
-        trees[, i] <- numquad_vm(Nsu, gmat, h[i], quadrature)
+        # Update trees.
+        a[idplot, ]$trees[[1]] <- trees
       }
 
-      # Update trees.
-      a[id, ]$trees[[1]] <- trees
+
+      ########################################## Saplings.
+
+
+
     }
-
-
-    ########################################## Saplings.
-
-
-
   }
 
-    return(a)
+  return(a)
 
   }
