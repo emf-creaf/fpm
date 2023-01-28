@@ -81,17 +81,17 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
     if (progressbar) pb$tick()
 
     # Smooth discrete data, but only if stand_type has been defined and set to "individual".
-    if (!is.na(b$stand_type)) {
-      if (b$stand_type == "individual") {
+    if (!is.na(a$stand_type[i])) {
+      if (astand_type[i] == "individual") {
 
         # If "trees" list is not empty.
-        if (length(b$trees[[1]]) > 0) {
+        if (length(a$trees[[i]]) > 0) {
 
           # Check country.
-          if (attr(b, "country") == "spain") {
+          if (attr(a, "country") == "spain") {
 
             # Species to smooth.
-            trees <- data.frame(b$trees[[1]])
+            trees <- data.frame(a$trees[[i]])
             species <- unique(trees$species)
             nsp <- length(species)
 
@@ -112,8 +112,8 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             }
 
             # Store and change 'stand_type' to "ipm".
-            a[i, ]$trees[[1]] <- df
-            a[i, ]$stand_type <- "ipm"
+            a$trees[[i]] <- df
+            a$stand_type[i] <- "ipm"
           }
         }
       }

@@ -50,12 +50,9 @@
 stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson"), progressbar = T) {
 
   # Checks.
-  if (!is.null(idplot)) {
-    id <- match(idplot, a$idplot)
-    if (any(is.na(id))) stop(cat("Could not find some 'idplots' in input 'a'"))
-  } else {
-    id <- 1:length(a$idplot)
-  }
+  id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
+  if (any(is.na(id))) stop(cat("Could not find some 'idplots' in input 'a'"))
+
   quadrature <- match.arg(quadrature)
   country <- match.arg(tolower(attr(a, "country")), c("spain"))
 
@@ -63,33 +60,32 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
   q <- function(y, h) if (quadrature == "trapezoidal") quad_trapez(y, h) else quad_ext_simpson(y, h)
 
   # If progress is TRUE, print a progress bar.
-  # if (progressbar) {
-  #   pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
-  #                          total = length(id),
-  #                          complete = "=",   # Completion bar character
-  #                          incomplete = "-", # Incomplete bar character
-  #                          current = ">",    # Current bar character
-  #                          clear = FALSE,    # If TRUE, clears the bar when finish
-  #                          width = 100)
-  # }
+  if (progressbar) {
+    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+                           total = length(id),
+                           complete = "=",   # Completion bar character
+                           incomplete = "-", # Incomplete bar character
+                           current = ">",    # Current bar character
+                           clear = FALSE,    # If TRUE, clears the bar when finish
+                           width = 100)
+  }
 
   # Either sum trees or integrate continuous distribution.
   flag.ipm <- F
   for (i in id) {
-    df <- a[i, ]$trees[[1]]
 
     # Progress bar.
-    # if (progressbar) pb$tick()
+    if (progressbar) pb$tick()
 
     # Calculate only if there are trees.
-    if (length(df) > 0) {
+    if (length(a$trees[[i]]) > 0) {
 
       # If "individual", use dplyr.
-      if (tolower(a[i, ]$stand_type) == "individual") {
+      if (tolower(a$stand_type[i]) == "individual") {
         if (country == "spain") {
-          df <- df %>% group_by(species)
-          a[i,]$species[[1]] <- data.frame(species = (df %>% distinct(species))$species)
-          a[i,]$basal_area <- sum(df$factor_diam1 * df$dbh1^2) * (pi/40000)
+          df <- a$trees[[i]] %>% group_by(species)
+          a$species[[i]] <- data.frame(species = (df %>% distinct(species))$species)
+          a$basal_area[i] <- sum(df$factor_diam1 * df$dbh1^2) * (pi/40000)
         } else if (country == "usa") {
         } else if (country == "france") {
         }
@@ -97,13 +93,13 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
 
 
       # To be implemented (matrix population models).
-      if (tolower(a[i, ]$stand_type) == "mpm") {
+      if (tolower(a$stand_type[i]) == "mpm") {
       }
 
 
 
-    # If "ipm", use numerical quadratures (since data sets are continuous).
-      if (tolower(a[i, ]$stand_type) == "ipm") {
+      # If "ipm", use numerical quadratures (since data sets are continuous).
+      if (tolower(a$stand_type[i]) == "ipm") {
 
         # If any plot is "ipm", attribute "integvars" must be present in the 'sf'.
         # Then, retrieve abscissas only if needed, and only once. Grid spacing
@@ -118,17 +114,16 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
         }
 
         if (any(country == "spain")) {
-          coln <- colnames(df)
-          a[i,]$tree_species[[1]] <- coln
+          coln <- colnames(a$trees[[i]])
+          a$tree_species[[i]] <- coln
         } else if (country == "usa") {
         } else if (country == "france") {
         }
+        a$basal_area[i] <- sum(sapply(coln, function(j) q(a$trees[[i]][, j]*x[, j]^2, h[j]))*(pi/40000))
+        # a$N_stand[i] <- sum(a[i,]$N_species[[1]]$N)
       }
-      a[i,]$basal_area <- sum(sapply(coln, function(j) q(df[, j]*x[, j]^2, h[j]))*(pi/40000))
-      # a[i,]$N_stand <- sum(a[i,]$N_species[[1]]$N)
-
     } else {
-      a[i,]$basal_area <- NA
+      a$basal_area[i] <- NA # No data.
     }
 
   }
