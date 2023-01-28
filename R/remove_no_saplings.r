@@ -17,6 +17,7 @@ remove_no_saplings <- function(a, idplot = NULL) {
     if (length(a$saplings[[i]]) == 0) j <- c(j, i)
   }
 
+  if (!is.null(j)) a <- a[-j, ]
   return(a[-j,])
 
 }

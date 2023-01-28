@@ -39,13 +39,15 @@
 #' }
 #'
 #'
-remove_empty <- function(a) {
+remove_empty <- function(a, idplot = NULL) {
 
-  x <- check_stand(a)
-  i <- which(x$adults_number == 0 &
-               x$seedlings_number == 0 &
-               x$saplings_number == 0)
-  if(length(i) > 0) a <- a[-i, ]
+  id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
+  if (any(is.na(i))) stop(cat(paste0("Could not find ",sum(is.na(i))," plots\n")))
 
-  return(a)
-}
+  j <- NULL
+  for (i in id) {
+    if (length(a$trees[[i]]) == 0 & length(a$saplings[[i]]) == 0) j <- c(j, i)
+  }
+
+  if (!is.null(j)) a <- a[-j, ]
+  return(a[-j,])}

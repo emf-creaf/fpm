@@ -4,7 +4,7 @@
 \alias{remove_empty}
 \title{Removal of empty POINT}
 \usage{
-remove_empty(a)
+remove_empty(a, idplot = NULL)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
