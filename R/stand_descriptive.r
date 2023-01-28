@@ -63,15 +63,15 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
   q <- function(y, h) if (quadrature == "trapezoidal") quad_trapez(y, h) else quad_ext_simpson(y, h)
 
   # If progress is TRUE, print a progress bar.
-  if (progressbar) {
-    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
-                           total = length(id),
-                           complete = "=",   # Completion bar character
-                           incomplete = "-", # Incomplete bar character
-                           current = ">",    # Current bar character
-                           clear = FALSE,    # If TRUE, clears the bar when finish
-                           width = 100)
-  }
+  # if (progressbar) {
+  #   pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+  #                          total = length(id),
+  #                          complete = "=",   # Completion bar character
+  #                          incomplete = "-", # Incomplete bar character
+  #                          current = ">",    # Current bar character
+  #                          clear = FALSE,    # If TRUE, clears the bar when finish
+  #                          width = 100)
+  # }
 
   # Either sum trees or integrate continuous distribution.
   flag.ipm <- F
@@ -79,7 +79,7 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
     df <- a[i, ]$trees[[1]]
 
     # Progress bar.
-    if (progressbar) pb$tick()
+    # if (progressbar) pb$tick()
 
     # Calculate only if there are trees.
     if (length(df) > 0) {
@@ -88,8 +88,8 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
       if (tolower(a[i, ]$stand_type) == "individual") {
         if (country == "spain") {
           df <- df %>% group_by(species)
-          a[i,]$species[[1]] <- data.frame((df %>% distinct(species))$species)
-          a[i,]$basal_area <- sum(df %>% summarise(basal_area_species=(pi/40000)*sum(factor_diam1*dbh1^2)))
+          a[i,]$species[[1]] <- data.frame(species = (df %>% distinct(species))$species)
+          a[i,]$basal_area <- sum(df$factor_diam1 * df$dbh1^2) * (pi/40000)
         } else if (country == "usa") {
         } else if (country == "france") {
         }
