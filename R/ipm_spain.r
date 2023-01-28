@@ -106,8 +106,10 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
         nsp <- ncol(df)
 
         # data.frame to be used to predict. Clean it first.
-        dat <- a[i, ]
-        dat$trees <- dat$seedlings <- dat$saplings <- NULL
+        dat <- data.frame(a[i, ])
+        dat$trees <- dat$seedlings <- dat$saplings <- dat$geometry <- dat$idplot <-
+          dat$stand_type <- dat$date <-
+          dat$tree_species <- dat$seedling_species <- dat$sapling_species <- NULL
 
         # if (!all(sp %in% colnames(variance_growth)))
         #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
