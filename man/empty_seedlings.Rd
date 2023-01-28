@@ -4,7 +4,7 @@
 \alias{empty_seedlings}
 \title{Set seedlings to an empty \code{data.frame}}
 \usage{
-empty_seedlings(a, idplot)
+empty_seedlings(a, idplot, include_date = NA)
 }
 \arguments{
 \item{idplot}{}

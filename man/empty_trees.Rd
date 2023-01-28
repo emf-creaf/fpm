@@ -4,7 +4,7 @@
 \alias{empty_trees}
 \title{Set trees to an empty \code{data.frame}}
 \usage{
-empty_trees(a, idplot)
+empty_trees(a, idplot, include_date = NA)
 }
 \arguments{
 \item{idplot}{}

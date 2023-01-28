@@ -4,7 +4,7 @@
 \alias{empty_saplings}
 \title{Set saplings to an empty \code{data.frame}}
 \usage{
-empty_saplings(a, idplot)
+empty_saplings(a, idplot, include_date = NA)
 }
 \arguments{
 \item{idplot}{}
