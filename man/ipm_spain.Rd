@@ -11,23 +11,16 @@ ipm_spain(
   reg_survival,
   reg_ingrowth,
   reg_saplings,
-  quadrature = "simpson"
+  quadrature = "simpson",
+  progressbar = T
 )
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
 
+\item{progressbar}{}
+
 \item{idplot}{identifier of single POINT, representing a tree stand, to modify.}
-
-\item{expected_growth}{data.frame containing, for each species, the expected growth
-in dbh over previous dbh.}
-
-\item{variance_growth}{named vector with variance of logarithmic growth per species.}
-
-\item{survival_prob}{probability of survival}
-
-\item{min_dbh}{minimum dbh for adult tree class. It must be a named numeric vector
-with one value per species.}
 }
 \value{
 \code{sf} object with projected adult tree population.

@@ -65,7 +65,7 @@ build_stand <- function(a, idplot, df,
   if (length(id) != 1) stop("Only one 'idplot' can be modified at the time")
 
   # Input df should be a data.frame, and it should not be empty.
-  df <- data.frame(df)
+  df <- data.frame(df, check.names = FALSE)
   if (nrow(df) == 0) stop("Input 'df' should not be empty")
 
   # Check other input arguments.

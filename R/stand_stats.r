@@ -61,21 +61,22 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
-    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
-                           total = length(id),
-                           complete = "=",   # Completion bar character
-                           incomplete = "-", # Incomplete bar character
-                           current = ">",    # Current bar character
-                           clear = FALSE,    # If TRUE, clears the bar when finish
-                           width = 100)
+    pb <- txtProgressBar(min = 1,
+                                        max = length(id),
+                                        style = 3,
+                                        width = 50,
+                                        char = "=")
+    cat("Calculating descriptive statistics...\n")
   }
 
   # Either sum trees or integrate continuous distribution.
   flag.ipm <- F
+  icount <- 1
   for (i in id) {
 
     # Progress bar.
-    if (progressbar) pb$tick()
+    if (progressbar) setTxtProgressBar(pb, icount)
+    icount <- icount + 1
 
     # Calculate only if there are trees.
     if (length(a$trees[[i]]) > 0) {

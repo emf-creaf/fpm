@@ -6,12 +6,23 @@
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param idplot identifier of single POINT, representing a tree stand, to modify.
-#' @param expected_growth data.frame containing, for each species, the expected growth
-#' in dbh over previous dbh.
-#' @param variance_growth named vector with variance of logarithmic growth per species.
-#' @param survival_prob probability of survival
-#' @param min_dbh minimum dbh for adult tree class. It must be a named numeric vector
-#' with one value per species.
+#' @param reg_growth
+#' @param reg_variance
+#' @param reg_survival
+#' @param reg_ingrowth
+#' @param reg_saplings
+#' @param quadrature
+#' @param progressbar
+
+#'
+#' @param a
+#' @param reg_growth
+#' @param reg_variance
+#' @param reg_survival
+#' @param reg_ingrowth
+#' @param reg_saplings
+#' @param quadrature
+#' @param progressbar
 #'
 #' @examples
 #' # First initialize one single stand.
@@ -41,7 +52,10 @@
 #'
 #' @export
 #'
-ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings, quadrature = "simpson") {
+ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
+                      quadrature = "simpson", progressbar = T) {
+
+  id <- 1:nrow(a)
 
   stopifnot(tolower(attr(a, "country")) == "spain")
 
@@ -64,25 +78,31 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
   # Abscissae intervals for species present in the plot.
   h <- x[2, ] - x[1, ]
 
-  for (idplot in a$idplot) {
+  # If progress is TRUE, print a progress bar.
+  if (progressbar) pb <- txtProgressBar(min = 1,
+                                        max = length(id),
+                                        style = 3,
+                                        width = 50,
+                                        char = "=")
 
-    # Select plot.
-    df <- a[idplot, ]
+  # Main loop.
+  icount <- 1
+  for (i in id) {
 
-browser()
+    # Progress bar.
+    if (progressbar) setTxtProgressBar(pb, icount)
+    icount <- icount + 1
 
     ########################################## Adult trees.
 
-    if (!is.na(df$stand_type)) {
+    if (!is.na(a$stand_type[i])) {
 
       # Continue if stand_type is "ipm".
-      if (df$stand_type == "ipm") {
+      if (a$stand_type[[i]] == "ipm") {
 
-        trees <- data.frame(df$trees[[1]])
-
-        # One column per species.
-        species <- colnames(trees)
-        nsp <- ncol(trees)
+        df <- data.frame(a$trees[[i]])    # Shorter than writing a$trees[[i]].
+        species <- colnames(df)
+        nsp <- ncol(df)
 
         # if (!all(sp %in% colnames(variance_growth)))
         #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
@@ -97,7 +117,7 @@ browser()
     browser()
 
           # Former tree distribution times survival per species.
-          Nsu <- trees[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
+          Nsu <- df[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
 
           # Growth term.
           growth <- predict(reg_growth, newdata = dat)
@@ -116,11 +136,11 @@ browser()
           }
 
           # Numerical quadrature with trapezoidal rule.
-          trees[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
+          df[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
         }
 
         # Update trees.
-        a[idplot, ]$trees[[1]] <- trees
+        a$trees[[i]] <- df
       }
 
 
@@ -133,4 +153,4 @@ browser()
 
   return(a)
 
-  }
+}

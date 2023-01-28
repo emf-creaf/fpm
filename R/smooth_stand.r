@@ -64,21 +64,22 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
-    pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
-                           total = length(id),
-                           complete = "=",   # Completion bar character
-                           incomplete = "-", # Incomplete bar character
-                           current = ">",    # Current bar character
-                           clear = FALSE,    # If TRUE, clears the bar when finish
-                           width = 100)
+    pb <- txtProgressBar(min = 1,
+                                        max = length(id),
+                                        style = 3,
+                                        width = 50,
+                                        char = "=")
+    cat("Calculating descriptive statistics...\n")
   }
 
   # Loop along all plots.
+  icount <- 1
   for (i in id) {
     b <- a[i, ]
 
     # Progress bar.
-    if (progressbar) pb$tick()
+    if (progressbar) setTxtProgressBar(pb, icount)
+    icount <- icount + 1
 
     # Smooth discrete data, but only if stand_type has been defined and set to "individual".
     if (!is.na(a$stand_type[i])) {
@@ -91,7 +92,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
           if (attr(a, "country") == "spain") {
 
             # Species to smooth.
-            trees <- data.frame(a$trees[[i]])
+            trees <- data.frame(a$trees[[i]], check.names = FALSE)
             species <- unique(trees$species)
             nsp <- length(species)
 
@@ -99,7 +100,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
             if (any(!(species %in% colx))) stop(cat("Species in stand ",i," do not match those in attribute 'integvars'\n"))
 
             # Big data.frame to store results per species column-wise.
-            df <- data.frame(matrix(0,nx, nsp))
+            df <- data.frame(matrix(0,nx, nsp), check.names = FALSE)
             colnames(df) <- species
 
             # Loop through species and individual trees.
