@@ -80,11 +80,14 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
   h <- x[2, ] - x[1, ]
 
   # If progress is TRUE, print a progress bar.
-  if (progressbar) pb <- txtProgressBar(min = 1,
+  if (progressbar) {
+    pb <- txtProgressBar(min = 1,
                                         max = length(id),
                                         style = 3,
                                         width = 50,
                                         char = "=")
+    cat("\n-> ipm_spain: Calculating descriptive statistics...\n")
+  }
 
   # Main loop.
   icount <- 1

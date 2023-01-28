@@ -66,7 +66,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
                                         style = 3,
                                         width = 50,
                                         char = "=")
-    cat("Calculating descriptive statistics...\n")
+    cat("\n-> stand_stats: Calculating descriptive statistics...\n")
   }
 
   # Either sum trees or integrate continuous distribution.
