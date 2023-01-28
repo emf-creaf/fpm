@@ -4,7 +4,7 @@
 \alias{remove_no_trees}
 \title{Title}
 \usage{
-remove_no_trees(a, idplot)
+remove_no_trees(a, idplot = NULL)
 }
 \arguments{
 \item{idplot}{}

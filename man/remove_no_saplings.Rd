@@ -4,7 +4,7 @@
 \alias{remove_no_saplings}
 \title{Title}
 \usage{
-remove_no_saplings(a, idplot)
+remove_no_saplings(a, idplot = NULL)
 }
 \arguments{
 \item{idplot}{}

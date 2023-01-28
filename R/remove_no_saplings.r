@@ -7,14 +7,14 @@
 #' @export
 #'
 #' @examples
-remove_no_saplings <- function(a, idplot) {
+remove_no_saplings <- function(a, idplot = NULL) {
 
-  id <- if (is.null(idplot)) a$idplot else match(idplot, a$idplot)
+  id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
   if (any(is.na(i))) stop(cat(paste0("Could not find ",sum(is.na(i))," plots\n")))
 
   j <- NULL
   for (i in id) {
-    if (length(a[i, ]$saplings[[1]]) == 0) j <- c(j, i)
+    if (length(a$saplings[[i]]) == 0) j <- c(j, i)
   }
 
   return(a[-j,])
