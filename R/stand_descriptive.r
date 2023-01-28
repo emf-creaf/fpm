@@ -96,7 +96,6 @@ stand_descriptive <- function(a, idplot = NULL, quadrature = c("trapezoidal", "s
       }
 
 
-
       # To be implemented (matrix population models).
       if (tolower(a[i, ]$stand_type) == "mpm") {
       }
