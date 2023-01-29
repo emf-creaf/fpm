@@ -38,7 +38,7 @@
 #' # Now we add tree information.
 #' for (i in 1:10) {
 #' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-#' dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
+#' dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
 #' }
 #'
@@ -108,7 +108,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
               xj <- x[, j]
               y <- trees[trees$species == j, , drop = F]
               z <- numeric(nx)
-              for (k in 1:nrow(y)) z <- z + kernsmooth(xj, y$dbh1[k] , width = width) * y$factor_diam1[k]
+              for (k in 1:nrow(y)) z <- z + kernsmooth(xj, y$dbh[k] , width = width) * y$factor_diam[k]
               df[, j] <- z
             }
 
