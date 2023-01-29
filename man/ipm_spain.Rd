@@ -6,6 +6,7 @@
 \usage{
 ipm_spain(
   a,
+  dat,
   reg_growth,
   reg_variance,
   reg_survival,
@@ -36,7 +37,7 @@ a <- set_attributes(a)
 
 # Now we add tree information.
 df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
+dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
 a <- build_stand(a, "ID1", df, "trees", "individual", 1990)
 
 # Convolve to obtain a continuous distribution.
