@@ -126,8 +126,8 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
     } else {
       a$basal_area[i] <- NA # No data.
     }
-
   }
+  cat("\n")
 
   return(a)
 }

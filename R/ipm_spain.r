@@ -167,6 +167,7 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
 
     }
   }
+  cat("\n")
 
   return(a)
 

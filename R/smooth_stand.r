@@ -120,6 +120,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
       }
     }
   }
+  cat("\n")
 
   return(a)
 }
