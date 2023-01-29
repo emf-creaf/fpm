@@ -86,7 +86,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
         if (country == "spain") {
           df <- a$trees[[i]] %>% group_by(species)
           a$species[[i]] <- data.frame(species = (df %>% distinct(species))$species)
-          a$basal_area[i] <- sum(df$factor_diam1 * df$dbh^2) * (pi/40000)
+          a$basal_area[i] <- sum(df$factor_diam * df$dbh^2) * (pi/40000)
         } else if (country == "usa") {
         } else if (country == "france") {
         }
