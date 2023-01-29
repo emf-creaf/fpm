@@ -31,7 +31,7 @@
 #'
 #' # Now we add tree information.
 #' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-#' dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
+#' dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
 #' a <- build_stand(a, "ID1", df, "trees", "individual", 1990)
 #'
 #' # Convolve to obtain a continuous distribution.
@@ -52,8 +52,11 @@
 #'
 #' @export
 #'
-ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
+ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
                       quadrature = "simpson", progressbar = T) {
+
+  id <- match(a$idplot %in% dat$idplot)
+  if (any(is.na(id))) stop("Inputs 'a' and 'dat' do not match")
 
   # Indices.
   id <- 1:nrow(a)
@@ -78,13 +81,6 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
 
   # Abscissae intervals for species present in the plot.
   h <- x[2, ] - x[1, ]
-
-  # Copy the sf without lists.
-  b <- a
-  b$trees <- b$seedlings <- b$saplings <- b$geometry <- b$idplot <-
-    b$stand_type <- b$date <-
-    b$tree_species <- b$seedling_species <- b$sapling_species <- NULL
-
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
@@ -115,9 +111,6 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
         species <- colnames(df)
         nsp <- ncol(df)
 
-        # data.frame used to predict.
-        dat <- data.frame(b[i, ])
-
         # if (!all(sp %in% colnames(variance_growth)))
         #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
         #
@@ -126,7 +119,7 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
 
         # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
 
-        if (!any(is.na(dat))) {
+        if (!any(is.na(dat[i, ]))) {
 
           for (ispecies in species) {
 

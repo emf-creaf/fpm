@@ -34,7 +34,7 @@
 #' # Now we add tree information.
 #' for (i in 1:10) {
 #' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-#' dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
+#' dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
 #' }
 #'
@@ -86,7 +86,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
         if (country == "spain") {
           df <- a$trees[[i]] %>% group_by(species)
           a$species[[i]] <- data.frame(species = (df %>% distinct(species))$species)
-          a$basal_area[i] <- sum(df$factor_diam1 * df$dbh1^2) * (pi/40000)
+          a$basal_area[i] <- sum(df$factor_diam1 * df$dbh^2) * (pi/40000)
         } else if (country == "usa") {
         } else if (country == "france") {
         }
