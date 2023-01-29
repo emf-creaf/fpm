@@ -65,10 +65,10 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
     pb <- txtProgressBar(min = 1,
-                                        max = length(id),
-                                        style = 3,
-                                        width = 50,
-                                        char = "=")
+                         max = length(id),
+                         style = 3,
+                         width = 50,
+                         char = "=")
     cat("\n-> smooth_stand: Calculating descriptive statistics...\n")
   }
 

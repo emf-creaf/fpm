@@ -79,13 +79,20 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
   # Abscissae intervals for species present in the plot.
   h <- x[2, ] - x[1, ]
 
+  # Copy the sf without lists.
+  b <- a
+  b$trees <- b$seedlings <- b$saplings <- b$geometry <- b$idplot <-
+    b$stand_type <- b$date <-
+    b$tree_species <- b$seedling_species <- b$sapling_species <- NULL
+
+
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
     pb <- txtProgressBar(min = 1,
-                                        max = length(id),
-                                        style = 3,
-                                        width = 50,
-                                        char = "=")
+                         max = length(id),
+                         style = 3,
+                         width = 50,
+                         char = "=")
     cat("\n-> ipm_spain: Calculating descriptive statistics...\n")
   }
 
@@ -108,11 +115,8 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
         species <- colnames(df)
         nsp <- ncol(df)
 
-        # data.frame to be used to predict. Clean it first.
-        dat <- data.frame(a[i, ])
-        dat$trees <- dat$seedlings <- dat$saplings <- dat$geometry <- dat$idplot <-
-          dat$stand_type <- dat$date <-
-          dat$tree_species <- dat$seedling_species <- dat$sapling_species <- NULL
+        # data.frame used to predict.
+        dat <- data.frame(b[i, ])
 
         # if (!all(sp %in% colnames(variance_growth)))
         #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
@@ -122,35 +126,38 @@ ipm_spain <- function(a, reg_growth, reg_variance, reg_survival, reg_ingrowth, r
 
         # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
 
-        for (ispecies in species) {
+        if (!any(is.na(dat))) {
 
-    browser()
+          for (ispecies in species) {
 
-          # Former tree distribution times survival per species.
-          Nsu <- df[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
+      browser()
 
-          # Growth term.
-          growth <- predict(reg_growth, newdata = dat)
+            # Former tree distribution times survival per species.
+            Nsu <- df[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
 
-          # Term for standard deviation of growth term.
-          sd_growth <- sqrt(predict(reg_variance[[ispecies]], newdata = dat, type = "response"))
+            # Growth term.
+            growth <- predict(reg_growth, newdata = dat)
 
-          # Big matrix for growth term.
-          gmat <- matrix(0, nx, nx)
-          xx <- x[, ispecies] - mindbh[ispecies]
-          iseq <- 1:nx
-          for (ix in 1:nx) {
-            gmat[j, jseq] <- dlnorm(xx, meanlog = growth[ix], sdlog = sd_growth[ix])
-            xx <- xx[-length(xx)]
-            iseq <- iseq[-1]
+            # Term for standard deviation of growth term.
+            sd_growth <- sqrt(predict(reg_variance[[ispecies]], newdata = dat, type = "response"))
+
+            # Big matrix for growth term.
+            gmat <- matrix(0, nx, nx)
+            xx <- x[, ispecies] - mindbh[ispecies]
+            iseq <- 1:nx
+            for (ix in 1:nx) {
+              gmat[j, jseq] <- dlnorm(xx, meanlog = growth[ix], sdlog = sd_growth[ix])
+              xx <- xx[-length(xx)]
+              iseq <- iseq[-1]
+            }
+
+            # Numerical quadrature with trapezoidal rule.
+            df[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
           }
-
-          # Numerical quadrature with trapezoidal rule.
-          df[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
+          # Update trees.
+          a$trees[[i]] <- df
         }
 
-        # Update trees.
-        a$trees[[i]] <- df
       }
 
 
