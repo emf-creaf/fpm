@@ -55,7 +55,7 @@
 ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
                       quadrature = "simpson", progressbar = T) {
 
-  id <- match(a$idplot %in% dat$idplot)
+  id <- a$idplot %in% dat$idplot
   if (any(is.na(id))) stop("Inputs 'a' and 'dat' do not match")
 
   # Indices.
@@ -121,15 +121,24 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
         if (!any(is.na(dat[i, ]))) {
 
+          # data.frame for predictions.
+          newdata <- as.data.frame(lapply(dat[i, ], rep, nx))
+
           for (ispecies in species) {
 
-      browser()
+            # Abscissas for ispecies.
+            newdata$dbh <- x[, ispecies]
+            newdata$max_dbh <- max_dbh[max_dbh$species == ispecies,]$dbh
+
+            browser()
 
             # Former tree distribution times survival per species.
-            Nsu <- df[, ispecies, drop = F] * predict(reg_survival[[ispecies]], newdata = dat)
+            Nsu <- df[, ispecies, drop = F] *
+              predict(reg_survival[[ispecies]], newdata = newdata, type = "response")
+            Nsu <- as.vector(Nsu)
 
             # Growth term.
-            growth <- predict(reg_growth, newdata = dat)
+            growth <- predict(reg_growth[[ispecies]], newdata = newdata, type = "response")
 
             # Term for standard deviation of growth term.
             sd_growth <- sqrt(predict(reg_variance[[ispecies]], newdata = dat, type = "response"))
