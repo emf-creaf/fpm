@@ -39,7 +39,6 @@
 #' @return
 #' \code{sf} object with projected adult tree population.
 #'
-#' @export
 #'
 ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival_prob, min_dbh, quadrature = c("trapezoidal", "simpson")) {
 

@@ -46,7 +46,7 @@ numquad_vm <- function(v, m, h, quadrature = c("trapez", "simpson")) {
   # Checks.
   stopifnot(is.vector(v))
   stopifnot(is.matrix(m))
-  stopifnot(length(h) != 1)
+  stopifnot(length(h) == 1)
   nv <- length(v)
   if (nv != nrow(m)) stop("Length of 'v' must be equal to number of rows of 'm'")
   quadrature <- match.arg(quadrature)

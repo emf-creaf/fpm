@@ -80,7 +80,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
   nx <- nrow(x)
 
   # Abscissae intervals for species present in the plot.
-  h <- x[2, ] - x[1, ]
+  h <- unlist(x[2, ] - x[1, ])
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
@@ -130,10 +130,8 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             newdata$dbh <- x[, ispecies]
             newdata$max_dbh <- max_dbh[max_dbh$species == ispecies,]$dbh
 
-            browser()
-
             # Former tree distribution times survival per species.
-            Nsu <- df[, ispecies, drop = F] *
+            Nsu <- df[, ispecies] *
               predict(reg_survival[[ispecies]], newdata = newdata, type = "response")
             Nsu <- as.vector(Nsu)
 
@@ -145,14 +143,13 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
             # Big matrix for growth term.
             gmat <- matrix(0, nx, nx)
-            xx <- x[, ispecies] - mindbh[ispecies]
-            iseq <- 1:nx
-            for (ix in 1:nx) {
-              gmat[j, jseq] <- dlnorm(xx, meanlog = growth[ix], sdlog = sd_growth[ix])
+            xx <- x[, ispecies] - mindbh[mindbh$species==ispecies,]$dbh
+            jseq <- 1:nx
+            for (j in 1:nx) {
+              gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
               xx <- xx[-length(xx)]
-              iseq <- iseq[-1]
+              jseq <- jseq[-1]
             }
-
             # Numerical quadrature with trapezoidal rule.
             df[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
           }
@@ -172,5 +169,4 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
   cat("\n")
 
   return(a)
-
 }
