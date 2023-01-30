@@ -9,11 +9,11 @@
 #' At this moment, "Spain" (default), "France" or "USA" are valid inputs, though
 #' only calculations for the Spanish Inventario Forestal Nacional have been
 #' implemented. Lower or upper case letters can be used. No default value is set.
-#' @param integvars Optional data frame containing, in columns, the abscissas for each
+#' @param integvars Optional numeric matrix containing, in columns, the abscissas for each
 #' species to be used by the IPM methodology. Future implementations will likely
-#' allow the use of different number of abscissas for each species, but at this
-#' moment this is not permitted.
-#' @param min_dbhnamed vector containing the minimum dbh after which a tree will
+#' allow the use of different number of abscissas for each species (using e.g. a list),
+#' but at this moment this is not permitted.
+#' @param min_dbh named vector containing the minimum dbh after which a tree will
 #' be considered as an adult individual.
 #' @param max_dbh named vector containing the maximum dbh reachable for each species.
 #'
@@ -46,17 +46,17 @@ set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
   }
 
   if (!is.null(integvars)) {
-    stopifnot(is.data.frame(integvars))
+    stopifnot(is.matrix(integvars))
     attr(a, "integvars") <- integvars
   }
 
   if (!is.null(min_dbh)) {
-    stopifnot(is.data.frame(min_dbh))
+    stopifnot(is.vector(min_dbh))
     attr(a, "min_dbh") <- min_dbh
   }
 
   if (!is.null(max_dbh)) {
-    stopifnot(is.data.frame(max_dbh))
+    stopifnot(is.vector(max_dbh))
     attr(a, "max_dbh") <- max_dbh
   }
 

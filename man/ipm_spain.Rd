@@ -11,7 +11,6 @@ ipm_spain(
   reg_variance,
   reg_survival,
   reg_ingrowth,
-  reg_saplings,
   quadrature = "simpson",
   progressbar = T
 )

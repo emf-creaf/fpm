@@ -20,15 +20,15 @@ At this moment, "Spain" (default), "France" or "USA" are valid inputs, though
 only calculations for the Spanish Inventario Forestal Nacional have been
 implemented. Lower or upper case letters can be used. No default value is set.}
 
-\item{integvars}{Optional data frame containing, in columns, the abscissas for each
+\item{integvars}{Optional numeric matrix containing, in columns, the abscissas for each
 species to be used by the IPM methodology. Future implementations will likely
-allow the use of different number of abscissas for each species, but at this
-moment this is not permitted.}
+allow the use of different number of abscissas for each species (using e.g. a list),
+but at this moment this is not permitted.}
+
+\item{min_dbh}{named vector containing the minimum dbh after which a tree will
+be considered as an adult individual.}
 
 \item{max_dbh}{named vector containing the maximum dbh reachable for each species.}
-
-\item{min_dbhnamed}{vector containing the minimum dbh after which a tree will
-be considered as an adult individual.}
 }
 \value{
 A \code{sf} object with attributes \emph{country} and \emph{x} set.

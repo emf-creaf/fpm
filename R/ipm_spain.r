@@ -52,7 +52,7 @@
 #'
 #' @export
 #'
-ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth, reg_saplings,
+ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth,
                       quadrature = "simpson", progressbar = T) {
 
   id <- a$idplot %in% dat$idplot
@@ -80,7 +80,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
   nx <- nrow(x)
 
   # Abscissae intervals for species present in the plot.
-  h <- unlist(x[2, ] - x[1, ])
+  h <- x[2, ] - x[1, ]
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
