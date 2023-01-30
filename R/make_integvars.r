@@ -15,15 +15,9 @@
 make_integvars <- function(species, min_dbh, max_dbh, length = length) {
 
   # Checks.
-  if (!is.null(min_dbh)) {
-    stopifnot(is.vector(min_dbh))
-    attr(a, "min_dbh") <- min_dbh
-  }
-
-  if (!is.null(max_dbh)) {
-    stopifnot(is.vector(max_dbh))
-    attr(a, "max_dbh") <- max_dbh
-  }
+  stopifnot(is.vector(species))
+  stopifnot(is.vector(min_dbh))
+  stopifnot(is.vector(max_dbh))
 
   if (length(species) != length(min_dbh) | length(species) != length(max_dbh))
     stop("Length of 'species', 'min_dbh' and 'max_dbh' do not match")

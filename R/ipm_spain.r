@@ -107,19 +107,11 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
       # Continue if stand_type is "ipm".
       if (a$stand_type[[i]] == "ipm") {
 
-        trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
-        species <- colnames(trees)
-        nsp <- ncol(trees)
-
-        # if (!all(sp %in% colnames(variance_growth)))
-        #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
-        #
-        # # Check min_dbh.
-        # if (!all(sp %in% names(min_dbh))) stop("Species and integvars column names do not match")
-
-        # if (!all(sp %in% colnames(x))) stop(paste0("Species for plot ", b$idplot, " and integvars column names do not match"))
-
         if (!any(is.na(dat[i, ]))) {
+
+          trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
+          species <- colnames(trees)
+          nsp <- ncol(trees)
 
           # data.frame for predictions.
           newdata <- as.data.frame(lapply(dat[i, ], rep, nx))
@@ -162,17 +154,29 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
     ########################################## Ingrowth trees.
 
-    df <- data.frame(a$saplings[[1]], check.names = F)
-    if (length(df) > 0) {
-browser()
 
-    }
 
 
     ########################################## Saplings.
 
+    saplings <- data.frame(a$saplings[[i]], check.names = F)
+    species <- saplings$species
+    if (length(saplings) > 0) {
+      for (ispecies in species) {
+        newdata <- cbind(dat[i, ], saplings = saplings[saplings$species == ispecies, ]$N)
+        nsap <- predict(reg_ingrowth[[ispecies]], newdata = newdata, type = "response")
+        saplings[, ispecies] <- predict()
+      }
+    }
+
+
+      newdata <- dat[i, ]
+      newdata$saplings <- saplings
+
+
+
   }
-  cat("\n")
+  cat("\n\n")
 
   return(a)
 }
