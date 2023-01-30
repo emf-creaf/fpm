@@ -53,7 +53,7 @@
 #' @export
 #'
 ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth,
-                      quadrature = "simpson", progressbar = T) {
+                      lambda_ingrowth, reg_saplings, quadrature = "simpson", progressbar = T) {
 
   id <- a$idplot %in% dat$idplot
   if (any(is.na(id))) stop("Inputs 'a' and 'dat' do not match")
@@ -72,8 +72,8 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
   # if (nrow(expected_growth) != nrow(variance_growth))
 
   # Minimum and maximum dbh per species.
-  mindbh <- attr(a, "min_dbh")
-  maxdbh <- attr(a, "max_dbh")
+  min_dbh <- attr(a, "min_dbh")
+  max_dbh <- attr(a, "max_dbh")
 
   # Abscissas per species.
   x <- attr(a, "integvars")
@@ -128,12 +128,11 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
             # Abscissas for ispecies.
             newdata$dbh <- x[, ispecies]
-            newdata$max_dbh <- max_dbh[max_dbh$species == ispecies,]$dbh
+            newdata$max_dbh <- max_dbh[ispecies]
 
             # Former tree distribution times survival per species.
             Nsu <- df[, ispecies] *
               predict(reg_survival[[ispecies]], newdata = newdata, type = "response")
-            Nsu <- as.vector(Nsu)
 
             # Growth term.
             growth <- predict(reg_growth[[ispecies]], newdata = newdata, type = "response")
@@ -143,7 +142,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
             # Big matrix for growth term.
             gmat <- matrix(0, nx, nx)
-            xx <- x[, ispecies] - mindbh[mindbh$species==ispecies,]$dbh
+            xx <- x[, ispecies] - min_dbh[ispecies]
             jseq <- 1:nx
             for (j in 1:nx) {
               gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
@@ -158,12 +157,6 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
         }
 
       }
-
-
-      ########################################## Saplings.
-
-
-
     }
   }
   cat("\n")
