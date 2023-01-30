@@ -48,6 +48,7 @@ set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
   if (!is.null(integvars)) {
     stopifnot(is.matrix(integvars))
     attr(a, "integvars") <- integvars
+    attr(a, "h") <- integvars[2, ] - integvars[1, ]
   }
 
   if (!is.null(min_dbh)) {

@@ -107,9 +107,9 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
       # Continue if stand_type is "ipm".
       if (a$stand_type[[i]] == "ipm") {
 
-        df <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
-        species <- colnames(df)
-        nsp <- ncol(df)
+        trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
+        species <- colnames(trees)
+        nsp <- ncol(trees)
 
         # if (!all(sp %in% colnames(variance_growth)))
         #   stop("Inputs 'expected_growth' and 'variance_growth' have different species")
@@ -131,7 +131,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             newdata$max_dbh <- max_dbh[ispecies]
 
             # Former tree distribution times survival per species.
-            Nsu <- df[, ispecies] *
+            Nsu <- trees[, ispecies] *
               predict(reg_survival[[ispecies]], newdata = newdata, type = "response")
 
             # Growth term.
@@ -150,14 +150,27 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
               jseq <- jseq[-1]
             }
             # Numerical quadrature with trapezoidal rule.
-            df[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
+            trees[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
           }
           # Update trees.
-          a$trees[[i]] <- df
+          a$trees[[i]] <- trees
         }
 
       }
     }
+
+
+    ########################################## Ingrowth trees.
+
+    df <- data.frame(a$saplings[[1]], check.names = F)
+    if (length(df) > 0) {
+browser()
+
+    }
+
+
+    ########################################## Saplings.
+
   }
   cat("\n")
 
