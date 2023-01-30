@@ -159,19 +159,26 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
     ########################################## Saplings.
 
+
+    ### MAKE SURE BASAL AREA = 0 WHEN THERE ARE NO TREES.
+
     saplings <- data.frame(a$saplings[[i]], check.names = F)
-    species <- saplings$species
     if (length(saplings) > 0) {
+      species <- saplings$species
+      browser()
       for (ispecies in species) {
         newdata <- cbind(dat[i, ], saplings = saplings[saplings$species == ispecies, ]$N)
         nsap <- predict(reg_ingrowth[[ispecies]], newdata = newdata, type = "response")
+        browser()
         saplings[, ispecies] <- predict()
       }
+      newdata <- dat[i, ]
+      newdata$saplings <- saplings
+
     }
 
 
-      newdata <- dat[i, ]
-      newdata$saplings <- saplings
+
 
 
 

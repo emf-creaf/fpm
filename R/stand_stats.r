@@ -124,7 +124,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
         # a$N_stand[i] <- sum(a[i,]$N_species[[1]]$N)
       }
     } else {
-      a$basal_area[i] <- NA # No data.
+      a$basal_area[i] <- 0 # No trees.
     }
   }
   cat("\n\n")
