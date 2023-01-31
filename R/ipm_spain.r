@@ -110,54 +110,51 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
     are_there_saplings <- F
     are_there_trees <- F
 
-    if (!is.na(a$stand_type[i])) {
+    # Continue if stand_type is "ipm".
+    if (!is.na(a$stand_type[i]) & (a$stand_type[[i]] == "ipm")) {
 
-      # Continue if stand_type is "ipm".
-      if (a$stand_type[[i]] == "ipm") {
+      are_there_trees <- T
+      trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
+      species_trees <- colnames(trees)
+      nsp <- ncol(trees)
 
-        are_there_trees <- T
-        trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
-        species_trees <- colnames(trees)
-        nsp <- ncol(trees)
+      if (!any(is.na(dat[i, ]))) {
 
-        if (!any(is.na(dat[i, ]))) {
+        # data.frame for predictions.
+        newdata <- as.data.frame(lapply(dat[i, ], rep, nx))
 
-          # data.frame for predictions.
-          newdata <- as.data.frame(lapply(dat[i, ], rep, nx))
+        for (j in species_trees) {
 
-          for (j in species_trees) {
+          # Abscissas for ispecies.
+          newdata$dbh <- x[, j]
+          newdata$max_dbh <- max_dbh[j]
 
-            # Abscissas for ispecies.
-            newdata$dbh <- x[, j]
-            newdata$max_dbh <- max_dbh[j]
+          # Former tree distribution times survival per species.
+          Nsu <- trees[, j] *
+            predict(reg_survival[[j]], newdata = newdata, type = "response")
 
-            # Former tree distribution times survival per species.
-            Nsu <- trees[, j] *
-              predict(reg_survival[[j]], newdata = newdata, type = "response")
+          # Growth term.
+          growth <- predict(reg_growth[[j]], newdata = newdata, type = "response")
 
-            # Growth term.
-            growth <- predict(reg_growth[[j]], newdata = newdata, type = "response")
+          # Term for standard deviation of growth term.
+          sd_growth <- sqrt(predict(reg_variance[[j]], newdata = dat, type = "response"))
 
-            # Term for standard deviation of growth term.
-            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = dat, type = "response"))
-
-            # Big matrix for growth term.
-            gmat <- matrix(0, nx, nx)
-            xx <- x[, j] - min_dbh[j]
-            jseq <- 1:nx
-            for (j in 1:nx) {
-              gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
-              xx <- xx[-length(xx)]
-              jseq <- jseq[-1]
-            }
-            # Numerical quadrature with trapezoidal rule.
-            trees[, j] <- numquad_vm(Nsu, gmat, h[j], quadrature)
+          # Big matrix for growth term.
+          gmat <- matrix(0, nx, nx)
+          xx <- x[, j] - min_dbh[j]
+          jseq <- 1:nx
+          for (j in 1:nx) {
+            gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
+            xx <- xx[-length(xx)]
+            jseq <- jseq[-1]
           }
-
+          # Numerical quadrature with trapezoidal rule.
+          trees[, j] <- numquad_vm(Nsu, gmat, h[j], quadrature)
         }
-      } else {
-        stop("All stands must be of 'ipm' type")
+
       }
+    } else {
+      stop("All stands must be of 'ipm' type")
     }
 
     ########################################## Ingrowth.
@@ -193,6 +190,9 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
     # There are two parts: one for the sapling species that are also present
     # as adult trees, and another for those that are not.
     if (are_there_saplings) {
+      browser()
+
+
       k <- match(species_sapl, species_trees)
       names(k) <- species_sapl
       for (j in species_sapl) {
