@@ -163,9 +163,10 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
     saplings <- data.frame(a$saplings[[i]], check.names = F)
     if (length(saplings) > 0) {
-      n <- nrow(saplings)
-      newsaplings <- data.frame(species = saplings$species, N = numeric(n))
-      for (j in 1:n) {
+      species <- saplings$species
+      ns <- nrow(saplings)
+      newsaplings <- data.frame(species = species, N = numeric(ns))
+      for (j in 1:ns) {
         newdata <- cbind(dat[i, ], saplings = saplings$N[j])
         newsaplings$N[j] <- predict(reg_ingrowth[[species[j]]], newdata = newdata, type = "response")
       }
