@@ -153,25 +153,39 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
       }
     }
 
-
-    ########################################## Ingrowth trees.
-
-
-
-
-    ########################################## Saplings.
-
+    # Needed below.
     saplings <- data.frame(a$saplings[[i]], check.names = F)
+
+    # Model for growth trees.
     if (length(saplings) > 0) {
       species <- saplings$species
+
+      # Stuff.
       ns <- nrow(saplings)
-      newsaplings <- data.frame(species = species, N = numeric(ns))
+      num_trees <- data.frame(species = species, N = numeric(ns))
+      dis_trees <- data.frame(matrix(0, nx, ns))
+
+
+      # Number of saplings.
       for (j in 1:ns) {
         newdata <- cbind(dat[i, ], saplings = saplings$N[j])
-        newsaplings$N[j] <- predict(reg_ingrowth[[species[j]]], newdata = newdata, type = "response")
+        num_trees$N[j] <- predict(reg_ingrowth[[species[j]]], newdata = newdata, type = "response")
+
+      # Distribution of sizes.
+browser()
+        dis_trees[, j] <- dtrexp(x[, species[j]], lambda_ingrowth[species[j]], min = min_dbh[species[j]])
+
       }
-      a$saplings[[i]] <- newsaplings
+      colnames(dis_trees) <- species
+
     }
+
+
+    # Model for saplings. There will be new saplings only if there were saplings
+    # before or the basal area for a species is >0.
+
+
+
   }
   cat("\n\n")
 
