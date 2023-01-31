@@ -161,24 +161,16 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
     ########################################## Saplings.
 
-
     saplings <- data.frame(a$saplings[[i]], check.names = F)
     if (length(saplings) > 0) {
-      species <- saplings$species
-      browser()
-      for (ispecies in species) {
-        newdata <- cbind(dat[i, ], saplings = saplings[saplings$species == ispecies, ]$N)
-  browser()
-        saplings[, ispecies] <- predict(reg_ingrowth[[ispecies]], newdata = newdata, type = "response")
+      n <- nrow(saplings)
+      newsaplings <- data.frame(species = saplings$species, N = numeric(n))
+      for (j in 1:n) {
+        newdata <- cbind(dat[i, ], saplings = saplings$N[j])
+        newsaplings$N[j] <- predict(reg_ingrowth[[species[j]]], newdata = newdata, type = "response")
       }
-      a$saplings[[i]] <- saplings
+      a$saplings[[i]] <- newsaplings
     }
-
-
-
-
-
-
   }
   cat("\n\n")
 
