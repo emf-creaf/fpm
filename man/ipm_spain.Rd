@@ -20,6 +20,8 @@ ipm_spain(
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
 
+\item{lambda_ingrowth}{}
+
 \item{progressbar}{}
 
 \item{idplot}{identifier of single POINT, representing a tree stand, to modify.}
