@@ -203,6 +203,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
           trees[, j] <- trees[, j] + newtrees[, j]
         }
       }
+      browser()
     }
 
     a$trees[[i]] <- trees
