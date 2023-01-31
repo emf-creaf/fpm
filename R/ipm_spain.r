@@ -104,39 +104,46 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
     ########################################## Adult trees.
 
+    # Initialize some variables.
+    species_sapl <- NULL
+    species_trees <- NULL
+    are_there_saplings <- F
+    are_there_trees <- F
+
     if (!is.na(a$stand_type[i])) {
 
       # Continue if stand_type is "ipm".
       if (a$stand_type[[i]] == "ipm") {
 
-        if (!any(is.na(dat[i, ]))) {
+        are_there_trees <- T
+        trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
+        species_trees <- colnames(trees)
+        nsp <- ncol(trees)
 
-          trees <- data.frame(a$trees[[i]], check.names = F)    # Shorter than writing a$trees[[i]].
-          species <- colnames(trees)
-          nsp <- ncol(trees)
+        if (!any(is.na(dat[i, ]))) {
 
           # data.frame for predictions.
           newdata <- as.data.frame(lapply(dat[i, ], rep, nx))
 
-          for (ispecies in species) {
+          for (j in species_trees) {
 
             # Abscissas for ispecies.
-            newdata$dbh <- x[, ispecies]
-            newdata$max_dbh <- max_dbh[ispecies]
+            newdata$dbh <- x[, j]
+            newdata$max_dbh <- max_dbh[j]
 
             # Former tree distribution times survival per species.
-            Nsu <- trees[, ispecies] *
-              predict(reg_survival[[ispecies]], newdata = newdata, type = "response")
+            Nsu <- trees[, j] *
+              predict(reg_survival[[j]], newdata = newdata, type = "response")
 
             # Growth term.
-            growth <- predict(reg_growth[[ispecies]], newdata = newdata, type = "response")
+            growth <- predict(reg_growth[[j]], newdata = newdata, type = "response")
 
             # Term for standard deviation of growth term.
-            sd_growth <- sqrt(predict(reg_variance[[ispecies]], newdata = dat, type = "response"))
+            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = dat, type = "response"))
 
             # Big matrix for growth term.
             gmat <- matrix(0, nx, nx)
-            xx <- x[, ispecies] - min_dbh[ispecies]
+            xx <- x[, j] - min_dbh[j]
             jseq <- 1:nx
             for (j in 1:nx) {
               gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
@@ -144,44 +151,64 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
               jseq <- jseq[-1]
             }
             # Numerical quadrature with trapezoidal rule.
-            trees[, ispecies] <- numquad_vm(Nsu, gmat, h[ispecies], quadrature)
+            trees[, j] <- numquad_vm(Nsu, gmat, h[j], quadrature)
           }
-          # Update trees.
-          a$trees[[i]] <- trees
-        }
 
+        }
+      } else {
+        stop("All stands must be of 'ipm' type")
       }
     }
+
+    ########################################## Ingrowth.
 
     # Needed below.
     saplings <- data.frame(a$saplings[[i]], check.names = F)
 
-    # Model for growth trees.
+    # Model for new trees.
     if (length(saplings) > 0) {
-      species <- saplings$species
+      are_there_saplings <- T
+      saplings <- saplings %>% tidyr::spread(species, N) # From long to wide.
+      species_sapl <- colnames(saplings)
+      newtrees <- data.frame(matrix(0, nx, length(species_sapl)))
+      colnames(newtrees) <- species_sapl
 
-      # Stuff.
-      ns <- nrow(saplings)
-      num_trees <- data.frame(species = species, N = numeric(ns))
-      dis_trees <- data.frame(matrix(0, nx, ns))
-
-
-      # Number of saplings.
-      for (j in 1:ns) {
-        newdata <- cbind(dat[i, ], saplings = saplings$N[j])
-        num_trees$N[j] <- predict(reg_ingrowth[[species[j]]], newdata = newdata, type = "response")
-
-      # Distribution of sizes.
-browser()
-        dis_trees[, j] <- dtrexp(x[, species[j]], lambda_ingrowth[species[j]], min = min_dbh[species[j]])
-
+      # Number of saplings as a function of dbh.
+      for (j in species_sapl) {
+        newdata <- cbind(dat[i, ], saplings = saplings[j])
+        N <- predict(reg_ingrowth[[j]], newdata = newdata, type = "response")
+        newtrees[, j] <- N * dtrexp(x[, j], lambda_ingrowth[j], min = min_dbh[j])
       }
-      colnames(dis_trees) <- species
-
     }
 
+    # We know that there are either trees or saplings in the plot. If there are
+    # no trees, we create a data.frame for the new trees.
+    if (!are_there_trees) {
+      species_trees <- species_sapl
+      trees <- data.frame(matrix(0, nx, length(species_trees)))
+      colnames(trees) <- species_trees
+    }
 
-    # Model for saplings. There will be new saplings only if there were saplings
+    # We add new trees to the pool of adult trees that just grew, if any.
+    # There are two parts: one for the sapling species that are also present
+    # as adult trees, and another for those that are not.
+    if (are_there_saplings) {
+      k <- match(species_sapl, species_trees)
+      names(k) <- species_sapl
+      for (j in species_sapl) {
+        if (is.na(k[j])) {
+          trees <- cbind(trees, newtrees[, j])
+          colnames(trees)[ncol(trees)] <- j
+        } else {
+          trees[, j] <- trees[, j] + newtrees[, j]
+        }
+      }
+    }
+
+    a$trees[[i]] <- trees
+
+    ########################################## Saplings.
+    # There will be new saplings only if there were saplings
     # before or the basal area for a species is >0.
 
 
