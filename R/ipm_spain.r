@@ -58,7 +58,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
                       lambda_ingrowth, reg_saplings, quadrature = "simpson", progressbar = T, system_time = T) {
 
   # Info about total computing time.
-  if (system_time) time1 <- Sys.time()
+  if (system_time) time1 <- as.numeric(Sys.time())
 
   # Check idplot
   id <- a$idplot %in% dat$idplot
@@ -219,15 +219,18 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
               saplings_model(reg_saplings[[j]], newdata = newdata)
         }
 
-        # Back from wide to long.
-        a$saplings[[i]] <- new_sapl %>% tidyr::gather()
+        # Back to long.
+        a$saplings[[i]] <- data.frame(species=names(new_sapl), N = unname(new_sapl))
       }
     }
 
   }
   cat("\n\n")
 
-  if (system_time) cat(paste0("\n ipm_spain: Total computing time = ",numeric(Sys.time()-time1), "\n\n"))
+  if (system_time) {
+    time2 <- as.numeric(Sys.time())
+    cat(paste0("\n ipm_spain: Total computing time = ",(time2-time1)/60, " minutes\n\n"))
+  }
 
   return(a)
 }
