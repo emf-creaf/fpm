@@ -51,8 +51,8 @@ start_stand <- function(idplot, x, y, crs = NA) {
   z$sapling_species[[1]] <- list()
 
   # Aggregated info.
-  z$basal_area <- NA                # Total basal area in stand. A single number.
-  z$basal_area_species <- NA        # Total basal area per species in stand. A named vector.
+  z$basal_area <- NA                    # Total basal area in stand. A single number.
+  z$basal_area_species[[1]] <- list()    # Total basal area per species in stand. A named vector.
 
   return(z)
 }
