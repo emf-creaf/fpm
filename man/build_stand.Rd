@@ -44,8 +44,8 @@ each tree stand.
 When \code{stand_type = "individual"} and the attribute \code{country = "spain"},
 the \code{df} \code{data.frame} for
 trees (that is, when \code{data_type = "trees"}) must have three columns,
-labeled "species", "dbh" and "factor_diam". When it is saplings that want
-to add to \code{a}, that \code{data.frame} must have two columns, labeled
+labeled "species", "dbh" and "factor_diam". When it is saplings that we want
+to add to \code{a}, its format must be long, i.e. the input \code{data.frame} must have two columns, labeled
 "species" and "N".
 }
 \examples{

@@ -14,7 +14,8 @@ ipm_spain(
   lambda_ingrowth,
   reg_saplings,
   quadrature = "simpson",
-  progressbar = T
+  progressbar = T,
+  system_time = T
 )
 }
 \arguments{

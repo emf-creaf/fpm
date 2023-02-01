@@ -55,8 +55,12 @@
 #' @export
 #'
 ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrowth,
-                      lambda_ingrowth, reg_saplings, quadrature = "simpson", progressbar = T) {
+                      lambda_ingrowth, reg_saplings, quadrature = "simpson", progressbar = T, system_time = T) {
 
+  # Info about total computing time.
+  if (system_time) time1 <- Sys.time()
+
+  # Check idplot
   id <- a$idplot %in% dat$idplot
   if (any(is.na(id))) stop("Inputs 'a' and 'dat' do not match")
 
@@ -158,7 +162,9 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
       # Model predictions for new trees.
       if (flag_saplings) {
-        saplings <- a$saplings[[i]] %>% select(species, N) %>% tidyr::spread(species, N) # From long to wide.
+
+        # From long to wide.
+        saplings <- a$saplings[[i]] %>% select(species, N) %>% tidyr::spread(species, N)
         species_sapl <- colnames(saplings)
         newtrees <- data.frame(matrix(0, nx, length(species_sapl)))
         colnames(newtrees) <- species_sapl
@@ -212,12 +218,16 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
           if (newdata$saplings > 0 | newdata$basal_area_species > 0) new_sapl[j] <-
               saplings_model(reg_saplings[[j]], newdata = newdata)
         }
-        a$saplings[[i]] <- new_sapl
+
+        # Back from wide to long.
+        a$saplings[[i]] <- new_sapl %>% tidyr::gather()
       }
     }
 
   }
   cat("\n\n")
+
+  if (system_time) cat(paste0("\n ipm_spain: Total computing time = ",numeric(Sys.time()-time1), "\n\n"))
 
   return(a)
 }
