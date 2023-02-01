@@ -82,7 +82,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
     if (length(a$trees[[i]]) > 0) {
 
       # If "individual", use dplyr.
-      if (tolower(a$stand_type[i]) == "individual") {
+      if (!is.na(a$stand_type[i]) & tolower(a$stand_type[i]) == "individual") {
         if (country == "spain") {
           a$tree_species[[i]] <- unique(a$trees[[i]]$species)
           a$basal_area_species[[i]] <- unlist(a$trees[[i]] %>%

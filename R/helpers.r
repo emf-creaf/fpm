@@ -114,3 +114,8 @@ quad_growth <- function(N, x, mean_growth, sd_growth, prob_surv, meandbh,
 
   return(b)
 }
+
+find2 <- function(x, y) {
+  i <- match(x, names(y))
+  return(ifelse(is.na(i), 0, unlist(y[i])))
+}

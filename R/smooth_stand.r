@@ -69,7 +69,7 @@ smooth_stand <- function(a, idplot, smooth_type = "gaussian", width = 2, progres
                          style = 3,
                          width = 50,
                          char = "=")
-    cat("\n-> smooth_stand: Calculating descriptive statistics...\n")
+    cat("\n-> smooth_stand: Transforming discrete data to continuous...\n")
   }
 
   # Loop along all plots.
