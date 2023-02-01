@@ -91,12 +91,14 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
                          style = 3,
                          width = 50,
                          char = "=")
-    cat("\n-> ipm_spain: Calculating descriptive statistics...\n")
+    cat("\n-> ipm_spain: Calculating model...\n")
   }
 
   # Main loop.
   icount <- 1
   for (i in id) {
+
+
 
     # Progress bar.
     if (progressbar) setTxtProgressBar(pb, icount)
@@ -142,41 +144,38 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
           # Big matrix for growth term.
           gmat <- matrix(0, nx, nx)
           xx <- x[, j] - min_dbh[j]
-          jseq <- 1:nx
-          for (j in 1:nx) {
-            gmat[j, jseq] <- dlnorm(xx, meanlog = growth[j], sdlog = sd_growth[j])
+          kseq <- 1:nx
+          for (k in 1:nx) {
+            gmat[k, kseq] <- dlnorm(xx, meanlog = growth[k], sdlog = sd_growth[k])
             xx <- xx[-length(xx)]
-            jseq <- jseq[-1]
+            kseq <- kseq[-1]
           }
           # Numerical quadrature with trapezoidal rule.
           trees[, j] <- numquad_vm(Nsu, gmat, h[j], quadrature)
         }
 
       }
-    } else {
-      stop("All stands must be of 'ipm' type")
     }
 
     ########################################## Ingrowth.
 
-    # Needed below.
-    saplings <- data.frame(a$saplings[[i]], check.names = F)
-
     # Model for new trees.
-    if (length(saplings) > 0) {
+    if (length(a$saplings[[i]]) > 0) {
       are_there_saplings <- T
-      saplings <- saplings %>% tidyr::spread(species, N) # From long to wide.
+      saplings <- a$saplings[[i]] %>% select(species, N) %>% tidyr::spread(species, N) # From long to wide.
       species_sapl <- colnames(saplings)
       newtrees <- data.frame(matrix(0, nx, length(species_sapl)))
       colnames(newtrees) <- species_sapl
 
       # Number of saplings as a function of dbh.
       for (j in species_sapl) {
-        newdata <- cbind(dat[i, ], saplings = saplings[j])
+        newdata <- cbind(dat[i, ], saplings = saplings[, j])
         N <- predict(reg_ingrowth[[j]], newdata = newdata, type = "response")
         newtrees[, j] <- N * dtrexp(x[, j], lambda_ingrowth[j], min = min_dbh[j])
       }
     }
+
+    if (!are_there_trees & !are_there_saplings) stop("Something is wrong. There are no trees or saplings")
 
     # We know that there are either trees or saplings in the plot. If there are
     # no trees, we create a data.frame for the new trees.
@@ -190,9 +189,6 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
     # There are two parts: one for the sapling species that are also present
     # as adult trees, and another for those that are not.
     if (are_there_saplings) {
-      browser()
-
-
       k <- match(species_sapl, species_trees)
       names(k) <- species_sapl
       for (j in species_sapl) {
@@ -200,10 +196,10 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
           trees <- cbind(trees, newtrees[, j])
           colnames(trees)[ncol(trees)] <- j
         } else {
+          if (are_there_saplings & are_there_trees) browser()
           trees[, j] <- trees[, j] + newtrees[, j]
         }
       }
-      browser()
     }
 
     a$trees[[i]] <- trees

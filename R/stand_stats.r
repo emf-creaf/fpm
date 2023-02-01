@@ -85,8 +85,9 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
       if (tolower(a$stand_type[i]) == "individual") {
         if (country == "spain") {
           df <- a$trees[[i]] %>% group_by(species)
-          a$species[[i]] <- data.frame(species = (df %>% distinct(species))$species)
+          a$species[[i]] <- as.vector((df %>% distinct(species))$species)
           a$basal_area[i] <- sum(df$factor_diam * df$dbh^2) * (pi/40000)
+          a$basal_area_species[[i]] <- data.frame(df %>% summarise(basal_area_species = sum(factor_diam * dbh^2) * (pi/40000)))
         } else if (country == "usa") {
         } else if (country == "france") {
         }
@@ -109,7 +110,8 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
           if (any(tolower(a$stand_type) == "ipm")) {
             x <- attr(a, "integvars")
             if (is.null(x)) stop("Attribute 'integvars' has not been set")
-            h <- unlist(x[2,]-x[1,])
+            h <- attr(a, "h")
+            if (is.null(x)) stop("Attribute 'h' has not been set")
           }
           flag.ipm <- TRUE
         }
@@ -120,10 +122,12 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
         } else if (country == "usa") {
         } else if (country == "france") {
         }
-        a$basal_area[i] <- sum(sapply(coln, function(j) q(a$trees[[i]][, j]*x[, j]^2, h[j]))*(pi/40000))
-        # a$N_stand[i] <- sum(a[i,]$N_species[[1]]$N)
+        a$basal_area_species[[i]] <- sapply(coln, function(j) q(a$trees[[i]][, j]*x[, j]^2, h[j]))*(pi/40000)
+        a$basal_area[i] <- sum(basal_area_species[[i]])
       }
     } else {
+      a$species[[i]] <- list()
+      a$basal_area_species[[i]] <- list()
       a$basal_area[i] <- 0 # No trees.
     }
   }
