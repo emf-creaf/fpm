@@ -198,7 +198,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             trees <- cbind(trees, newtrees[, j])
             colnames(trees)[ncol(trees)] <- j
           } else {
-            if (a$basal_area < 15) {
+            if (a$basal_area[[i]] < 15) {
               trees[, j] <- trees[, j] + newtrees[, j]
             }
           }
