@@ -169,7 +169,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
         newtrees <- data.frame(matrix(0, nx, length(species_sapl)))
         colnames(newtrees) <- species_sapl
 
-        # Number of saplings as a function of dbh. Internally ingrowth_model converts to feet per ha.
+        # Number of saplings as a function of dbh. Internally ingrowth_model converts to individuals per ha.
         for (j in species_sapl) {
           newdata <- cbind(dat[i, ], saplings = saplings[, j])
           newtrees[, j] <- ingrowth_model(reg_ingrowth[[j]], newdata, x[, j], lambda_ingrowth[j], min_dbh[j])
@@ -198,7 +198,9 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             trees <- cbind(trees, newtrees[, j])
             colnames(trees)[ncol(trees)] <- j
           } else {
-            trees[, j] <- trees[, j] + newtrees[, j]
+            if (a$basal_area < 15) {
+              trees[, j] <- trees[, j] + newtrees[, j]
+            }
           }
         }
       }
