@@ -47,7 +47,6 @@ remove_empty <- function(a, idplot = NULL) {
   j <- rep(NA, length(id))
   icount <- 1
   for (i in id) {
-    # if (length(a$trees[[i]]) == 0 & length(a$saplings[[i]]) == 0) j <- c(j, i)
     if (length(a$trees[[i]]) == 0 & length(a$saplings[[i]]) == 0) j[icount] <- i
     icount <- icount + 1
   }
@@ -56,23 +55,3 @@ remove_empty <- function(a, idplot = NULL) {
 
   return(a)
 }
-
-
-x <- runif(1000000)
-t1 <- system.time({
-  j <- NULL
-  for (i in 1:length(x)) {
-    if (x[i]>.5) j <- c(j, i)
-  }
-})
-
-t2 <- system.time({
-  k <- rep(NA, length(x))
-  for (i in 1:length(x)) {
-    if (x[i]>.5) k[i] <- i
-  }
-  k <- k[!is.na(k)]
-})
-
-
-
