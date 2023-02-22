@@ -4,10 +4,12 @@
 \alias{remove_empty}
 \title{Removal of empty POINT}
 \usage{
-remove_empty(a, idplot = NULL)
+remove_empty(a, idplot = NULL, verbose = T)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
+
+\item{verbose}{logical, if TRUE the total number of removed stands is plotted on screen.}
 }
 \value{
 \code{remove_empty} returns the input \code{sf} object but without rows

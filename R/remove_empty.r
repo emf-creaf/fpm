@@ -4,6 +4,8 @@
 #' \code{remove_empty} removes empty POINT rows in a \code{stand} \code{sf} object.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param idplot
+#' @param verbose logical, if TRUE the total number of removed stands is plotted on screen.
 #'
 #' @details
 #' \code{remove_empty} first uses \code{check_stand} to calculate the number of
@@ -39,19 +41,26 @@
 #' }
 #'
 #'
-remove_empty <- function(a, idplot = NULL) {
+remove_empty <- function(a, idplot = NULL, verbose = T) {
 
   id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
   if (any(is.na(i))) stop(cat(paste0("Could not find ",sum(is.na(i))," plots\n")))
 
-  j <- rep(NA, length(id))
+  nid <- length(id)
+  j <- rep(NA, nid)
   icount <- 1
   for (i in id) {
     if (length(a$trees[[i]]) == 0 & length(a$saplings[[i]]) == 0) j[icount] <- i
     icount <- icount + 1
   }
   j <- j[!is.na(j)]
-  if (length(j) > 0) a <- a[-j, ]
+  nj <- length(j)
+  if (nj > 0) {
+    a <- a[-j, ]
+    if (verbose) cat(paste0("\n-> remove_empty: ", nj, " stands removed from a total of ", nid, " stands\n\n"))
+  } else {
+      if (verbose) cat(paste0("\n-> remove_empty: No stands removed from a total of ", nid, " stands\n\n"))
+  }
 
   return(a)
 }
