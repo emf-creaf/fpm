@@ -140,7 +140,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             growth <- predict(reg_growth[[j]], newdata = newdata, type = "response")
 
             # Term for standard deviation of growth term.
-            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = dat, type = "response"))
+            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = newdat, type = "response"))
 
             # Big matrix for growth term.
             gmat <- matrix(0, nx, nx)
@@ -148,9 +148,11 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             kseq <- 1:nx
             for (k in 1:nx) {
               gmat[k, kseq] <- dlnorm(xx, meanlog = growth[k], sdlog = sd_growth[k])
+              if (sum(is.na(dlnorm(xx, meanlog = growth[k], sdlog = sd_growth[k])))>0) browser()
               xx <- xx[-length(xx)]
               kseq <- kseq[-1]
             }
+
             # Numerical quadrature with trapezoidal rule.
             trees[, j] <- numquad_vm(Nsu, gmat, h[j], quadrature)
           }
