@@ -140,7 +140,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
             growth <- predict(reg_growth[[j]], newdata = newdata, type = "response")
 
             # Term for standard deviation of growth term.
-            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = newdat, type = "response"))
+            sd_growth <- sqrt(predict(reg_variance[[j]], newdata = newdata, type = "response"))
 
             # Big matrix for growth term.
             gmat <- matrix(0, nx, nx)
