@@ -44,7 +44,7 @@
 remove_empty <- function(a, idplot = NULL, verbose = T) {
 
   id <- if (is.null(idplot)) 1:length(a$idplot) else match(idplot, a$idplot)
-  if (any(is.na(i))) stop(cat(paste0("Could not find ",sum(is.na(i))," plots\n")))
+  if (any(is.na(id))) stop(cat(paste0("Could not find ",sum(is.na(id))," plots\n")))
 
   nid <- length(id)
   j <- rep(NA, nid)
