@@ -212,6 +212,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
       ########################################## Saplings.
       # There will be new saplings only if there were saplings
       # before or the basal area for a species is >0.
+
       if (flag_saplings | flag_ba) {
         species_all <- unique(c(species_sapl, names(a$basal_area_species[[i]])))
         new_sapl <- setNames(numeric(length(species_all)), species_all)
