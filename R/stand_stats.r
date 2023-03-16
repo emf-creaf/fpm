@@ -85,9 +85,9 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
       if (!is.na(a$stand_type[i]) & tolower(a$stand_type[i]) == "individual") {
         if (country == "spain") {
           a$tree_species[[i]] <- unique(a$trees[[i]]$species)
-          a$basal_area_species[[i]] <- unlist(a$trees[[i]] %>%
-                                   group_by(species) %>%
-                                   summarise(basal_area_species = sum(factor_diam * dbh^2) * (pi/40000)) %>%
+          a$basal_area_species[[i]] <- unlist(a$trees[[i]] |>
+                                   group_by(species) |>
+                                   summarise(basal_area_species = sum(factor_diam * dbh^2) * (pi/40000)) |>
                                    pivot_wider(names_from = species, values_from = basal_area_species))
           a$basal_area[i] <- sum(a$basal_area_species[[i]])
         } else if (country == "usa") {
