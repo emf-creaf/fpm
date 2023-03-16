@@ -61,7 +61,7 @@ stand_stats <- function(a, idplot = NULL, quadrature = c("trapezoidal", "simpson
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
-    pb <- txtProgressBar(min = 1,
+    pb <- txtProgressBar(min = 0,
                          max = length(id),
                          style = 3,
                          width = 50,

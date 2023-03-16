@@ -88,7 +88,7 @@ ipm_spain <- function(a, dat, reg_growth, reg_variance, reg_survival, reg_ingrow
 
   # If progress is TRUE, print a progress bar.
   if (progressbar) {
-    pb <- txtProgressBar(min = 1,
+    pb <- txtProgressBar(min = 0,
                          max = length(id),
                          style = 3,
                          width = 50,
