@@ -1,65 +1,92 @@
-#' Check consistency of tree stands
+#' Title
 #'
-#' @description
-#'
-#' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param a
+#' @param verbose
 #'
 #' @return
-#' A \code{list} containing the number of sapling and adult tree species presents
-#' in the stands.
-#'
 #' @export
 #'
 #' @examples
-check_stand <- function(a) {
+check_stand <- function(a, verbose = T) {
 
-  # Extract species of adult trees present in all plots.
-  b <- a %>% pull(trees)
-  species_adults <- sapply(1:length(b), function(i) {
-    if (is.na(a$stand_type[i])) {
-      NA
+  # 'a' must be an "sf" object with one row.
+  stopifnot("Input 'a' must be an 'sf' object" = any(class(a) == "sf"))
+  stopifnot("Input sf object must have one row only" = nrow(a) == 1)
+
+  # Little function to avoid repeating things.
+  flist <- function(b, lab = lab, colnam = c("species", "n")) {
+    flag <- TRUE
+    b <- b[[lab]]
+    if (!(inherits(b, "list") | inherits(a, "data.frame"))) {
+      flag <- FALSE
+      if (verbose) warning(paste("Column", lab," must be a data.frame or a list"))
     } else {
-      if (a$stand_type[i] == "individual") {
-        unique(b[[i]]$species)
-      } else if (a$stand_type[i] == "ipm") {
-        colnames(b[[i]])
+      b <- b[[1]]
+      if (!is.null(b)) {
+        if (!inherits(b, "data.frame")) {
+          flag <- FALSE
+          if (verbose) warning(paste("Elements in list element", lab," must be a data.frame"))
+        } else {
+          if (!all(colnames(b) %in% colnam)) {
+            flag <- FALSE
+            if (verbose) warning(paste("Column names in", lab, " are wrong"))
+          }
+        }
       }
     }
-  })
+    return(flag)
+  }
 
-  species_adults <- unique(na.omit(unlist(species_adults)))
 
-  # How many species per plot?
-  adults_species_number <- sapply(b, function(x) sum(!is.na(unique(x$species))))
+  flag <- TRUE
 
-  # How many NA's per plot in species name?
-  adults_species_NA <- sapply(b, function(x) sum(is.na(x$species)))
+  if (get_parameters(a, "country") == "spain") {
+    if (!all(names(a) %in% c("geometry", "idplot", "date", "stand_type", "seedlings", "saplings", "trees"))) {
+      flag <- FALSE
+      if (verbose) warning("Wrong column names in 'a' sf object")
+    } else {
 
-  # How many different non-NA adult trees per plot?
-  adults_number <- sapply(b, function(x) sum(!is.na((x$dbh1))))
+      # Check date column.
+      if (!(inherits(a$date, "character") | inherits(a$date, "Date"))) {
+        flag <- FALSE
+        if (verbose) warning("'date' column must be a character or a Date object")
+      }
 
-  # How many NA's per plot in dbh?
-  adults_dbh_NA <- sapply(b, function(x) sum(is.na(x$dbh1)))
+      # Stand type.
+      if (!(is.character(a$stand_type) & length(a$stand_type))) {
+        flag <- FALSE
+        if (verbose) warning("'stand_type' column must be a single character string")
+      }
 
-  # Same for seedlings and saplings.
-  seedlings <- a %>% pull(seedlings) %>% stat_minor_trees()
-  saplings <- a %>% pull(saplings) %>% stat_minor_trees()
+      # Check lists.
+      flag <- flist(a, "saplings")
+      flag <- flist(a, "seedlings")
 
-  return(list(species_adults = species_adults,
-              adults_species_number = adults_species_number,
-              adults_species_NA = adults_species_NA,
-              adults_number = adults_number,
-              adults_dbh_NA = adults_dbh_NA,
+      flag <- flist(a, "trees", c("species", "dbh", "factor_diam"))
 
-              species_seedlings = seedlings$species,
-              seedlings_species_number = seedlings$species_number,
-              seedlings_species_NA = seedlings$species_NA,
-              seedlings_number = seedlings$number,
-              seedlings_number_NA = seedlings$number_NA,
+    }
 
-              species_saplings = saplings$species,
-              saplings_species_number = saplings$species_number,
-              saplings_species_NA = saplings$species_NA,
-              saplings_number = saplings$number,
-              saplings_number_NA = saplings$number_NA))
+
+    # If 'stand_type' is 'individual' we check contents of 'tree' list elements
+    if (flag) {
+      for (i in a$idplot) {
+        if (a$stand_type != "") {
+          if (!(a$stand_type %in% c("individual", "ipm", "mpm"))) {
+            flag <- FALSE
+            if (verbose) warning("Wrong 'stand_type' value")
+          } else {
+            if (a$stand_type == "individual") {
+              if (!all(colnames(a$trees) %in% c("species", "dbh", "factor_diam"))) {
+                flag <- FALSE
+                if (verbose) warning("Wrong column names in 'trees'")
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return(flag)
+
 }
