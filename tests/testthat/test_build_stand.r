@@ -64,7 +64,12 @@ test_that("Building tree stands", {
                                 date = as.Date("2000-01-01"),
                                 country = "spain"))
 
-
+  # Fail when Date is missing.
+  expect_error(a <- build_stand(a, "ID2",
+                                data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = c(1, 1)),
+                                data_type = "saplings",
+                                stand_type = "individual",
+                                country = "spain"))
 
 
 })
