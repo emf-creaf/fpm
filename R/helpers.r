@@ -119,3 +119,108 @@ find2 <- function(x, y) {
   i <- match(x, names(y))
   return(ifelse(is.na(i), 0, unlist(y[i])))
 }
+
+# If stand_type is "individual", makes sure that the input data.frame
+# has the right columns depending on the country of origin.
+check_individual_type <- function(df, country) {
+  colnames(df) <- tolower(colnames(df))
+  if (country == "spain") {
+
+    stopifnot("Input 'df' has wrong column names" = all(c("species", "dbh", "factor_diam") %in% colnames(df)))
+  } else if (country == "usa") {
+
+  } else if (country == "france") {
+
+  }
+  return(df)
+}
+
+
+
+
+
+# Functions to check lower or upper bounds in "assert" call.
+is_larger <- function(bound, include.bound = F) {
+  the_call <- deparse(sys.call())
+  fun <- function(x) {
+    if (is.null(x)) stop("bounds must be checked on non-null element")
+    if (!is.numeric(x)) stop("bounds must only be checked on numerics")
+    operator <- if (!include.bound) `>` else `>=`
+    return(operator(x, bound) & !is.na(x))
+  }
+
+  attr(fun, "assertr_vectorized") <- TRUE
+  attr(fun, "call") <- the_call
+  return(fun)
+}
+
+is_smaller <- function(bound, include.bound = F) {
+  the_call <- deparse(sys.call())
+  fun <- function(x) {
+    if (is.null(x)) stop("bounds must be checked on non-null element")
+    if (!is.numeric(x)) stop("bounds must only be checked on numerics")
+    operator <- if (!include.bound) `<` else `<=`
+    return(operator(x, bound) & !is.na(x))
+  }
+
+  attr(fun, "assertr_vectorized") <- TRUE
+  attr(fun, "call") <- the_call
+  return(fun)
+}
+
+
+
+
+quad <- function(y, h, type = 1) {
+
+  if (!is.vector(y) & !is.matrix(y)) stop("y must be a vector or a matrix")
+  if (!any(type %in% c(1, 2))) stop("Input 'type' must be equal to 1 or 2")
+
+  ny <- ifelse(is.vector(y),length(y),nrow(y))
+
+  if (type == 1) {
+    if (ny < 6) stop("y must have length (if it is a vector) or number of rows (if it is a matrix) equal to or larger than 6")
+    if (is.vector(y)) {
+      q <- sum(y) - 5/8*(y[1]+y[ny]) + 1/6*(y[2]+y[ny-1]) - 1/24*(y[3]+y[ny-2])
+    } else {
+      q <- colSums(y) - 5/8*(y[1,]+y[ny,]) + 1/6*(y[2,]+y[ny-1,]) - 1/24*(y[3,]+y[ny-2,])
+    }
+  } else {
+    if (ny < 8) stop("y must have length (if it is a vector) or number of rows (if it is a matrix) equal to or larger than 8")
+    if (is.vector(y)) {
+      q <- sum(y) - 31/48*(y[1]+y[ny]) + 11/48*(y[2]+y[ny-1]) - 5/48*(y[3]+y[ny-2]) + 1/48*(y[4]+y[ny-3])
+    } else {
+      q <- colSums(y) - 31/48*(y[1,]+y[ny,]) + 11/48*(y[2,]+y[ny-1,]) - 5/48*(y[3,]+y[ny-2,]) + 1/48*(y[4,]+y[ny-3,])
+    }
+  }
+
+  return(h*q)
+
+}
+
+
+# NO FUNCIONA. log(x) inside drule[["dlnorm"]] is FALSE(X) for some reason.
+# drule[["dlnorm"]] <- make_drule()
+# ff <- Deriv(function(x, m, s) dlnorm(x, m, s), "x", drule = drule)
+# x <- seq(0,4,length=1000)
+# plot(diff(dlnorm(x))/(x[2]-x[1]))
+# points(ff(x, 0, 1),type="l")
+
+make_drule <- function() {
+  alist(x = -(sdlog^2 + log(x) - meanlog)/(x * sdlog^2) * dlnorm(x, meanlog, sdlog),
+        meanlog = (log(x) - meanlog)/sdlog^2 * dlnorm(x, meanlog, sdlog),
+        sdlog =(meanlog^2 + log(x)^2 - sdlog^2 - 2*meanlog*log(x))/sdlog^3 * dlnorm(x, meanlog, sdlog))
+
+}
+
+
+
+rep_dataframe <- function(df, n) {
+  # as.data.frame(lapply(df, rep, n))
+  # df[rep(seq_len(nrow(df)), n), ]
+  z <- setNames(data.frame(matrix(0, n, ncol(df))), colnames(df))
+  z[] <- df
+  return(z)
+}
+
+

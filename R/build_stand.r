@@ -102,6 +102,7 @@ build_stand <- function(a, idplot, df,
       if (stand_type == "individual") {
         stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
         df <- df |>
+          assertr::verify(assertr::has_only_names("dbh", "species")) |>
           assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, dbh) |>
           assertr::verify(dbh > 0)
 

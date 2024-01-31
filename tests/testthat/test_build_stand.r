@@ -1,16 +1,24 @@
 test_that("Building tree stands", {
 
+  # Load simulated IFN data.
+  load("..\\..\\data\\IFNtrees.Rdata")
 
-  # First initialize one single stand for the Spanish IFN.
-  a <- start_stands(paste0("ID", 1:10), x = runif(10), y = runif(10), "EPSG:4326")
+
+  # Initialize stands.
+  idplot <- unique(trees$idplot)
+  n <- length(idplot)
+  a <- start_stands(idplot = idplot, x = runif(n), y = runif(n), "EPSG:4326")
   a <- set_parameters(a, country = "spain")
+
+
+  # Plot identifiers.
 
 
   # Now we add tree information.
   df <- list()
-  for (i in 1:2) {
-    df[[i]] <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)), dbh = 7.5+runif(5)*20)
-    a <- build_stand(a, paste0("ID",i), df[[i]],
+  for (i in idplot) {
+    df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
+    a <- build_stand(a, i, df[[i]],
                      data_type = "trees",
                      stand_type = "individual",
                      date = as.Date("2000-01-01"),
@@ -19,10 +27,8 @@ test_that("Building tree stands", {
 
 
   # Tree data have been successfully saved in 'a'.
-  for (i in 1:2) {
-    x <- df[[i]]
-    expect_identical(a$trees[[i]], x)
-  }
+  for (i in idplot) expect_identical(a[a$idplot == i,]$trees[[1]], df[[i]])
+
 
 
   # Cannot save in plot that does not exist in 'a'.

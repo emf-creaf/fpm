@@ -25,7 +25,6 @@ test_that("Sapling model", {
   source("./R/fpm_growth.r")
   source("./R/fpm_quadrature.r")
   source("./R/fpm.r")
-  source("./R/fpm_copia.r")
 
   source("./R/collect_parts.R")
 

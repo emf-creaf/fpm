@@ -29,7 +29,7 @@ check_stand <- function(a, verbose = T) {
         } else {
           if (!all(colnames(b) %in% colnam)) {
             flag <- FALSE
-            if (verbose) warning(paste("Column names in", lab, " are wrong"))
+            if (verbose) warning(paste0("Column names in ", lab, " are wrong"))
           }
         }
       }
@@ -62,12 +62,12 @@ check_stand <- function(a, verbose = T) {
       flag <- flist(a, "saplings")
       flag <- flist(a, "seedlings")
 
-      flag <- flist(a, "trees", c("species", "dbh", "factor_diam"))
+      flag <- flist(a, "trees", c("species", "dbh"))
 
     }
 
 
-    # If 'stand_type' is 'individual' we check contents of 'tree' list elements
+    # If 'stand_type' is 'individual' we check contents of 'trees' list elements
     if (flag) {
       for (i in a$idplot) {
         if (a$stand_type != "") {
@@ -76,7 +76,7 @@ check_stand <- function(a, verbose = T) {
             if (verbose) warning("Wrong 'stand_type' value")
           } else {
             if (a$stand_type == "individual") {
-              if (!all(colnames(a$trees) %in% c("species", "dbh", "factor_diam"))) {
+              if (!all(colnames(a$trees) %in% c("species", "dbh"))) {
                 flag <- FALSE
                 if (verbose) warning("Wrong column names in 'trees'")
               }
