@@ -120,6 +120,11 @@ find2 <- function(x, y) {
   return(ifelse(is.na(i), 0, unlist(y[i])))
 }
 
+
+# Find index.
+frsf <- function(df, namecol, value) which(df[[namecol]] == value)
+
+
 # If stand_type is "individual", makes sure that the input data.frame
 # has the right columns depending on the country of origin.
 check_individual_type <- function(df, country) {

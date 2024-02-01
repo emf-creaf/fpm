@@ -61,7 +61,6 @@ check_stand <- function(a, verbose = T) {
       # Check lists.
       flag <- flist(a, "saplings")
       flag <- flist(a, "seedlings")
-
       flag <- flist(a, "trees", c("species", "dbh"))
 
     }

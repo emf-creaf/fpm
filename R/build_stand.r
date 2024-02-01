@@ -50,7 +50,7 @@
 #'
 build_stand <- function(a, idplot, df,
                         data_type = c("trees", "seedlings", "saplings"),
-                        stand_type = c("individual", "ipm"),
+                        stand_type = "individual",
                         date = NA,
                         country = c("spain", "usa", "france")) {
 
@@ -59,36 +59,47 @@ build_stand <- function(a, idplot, df,
   if (any(is.na(m[1:3]))) stop("Missing 'a' or 'idplot'")
 
 
-  # Check 'idplot'. It must exist in 'a' and cannot be a vector.
+  # Check a.
   stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
+
+
+  # Check 'idplot'. If it does not yet exist it adds a new empty row at the bottom.
   if (length(idplot) != 1) stop("Only one 'idplot' can be modified at the time")
   id <- match(idplot, a$idplot)
-  if (is.na(id)) stop("Could not find 'idplot' in 'a'")
+  if (is.na(id)) {
+    b <- a[1, ]
+    b$idplot <- idplot
+    b$date <- b$stand_type <- ""
+    b$trees <- b$saplings <- b$seedlings <- vector("list", 1)
+    a <- rbind(a, b)
+    id <- nrow(a)
+  }
 
 
   # Check data_type.
   data_type <- match.arg(data_type)
+
+
+  # Check stand_type if data_type is not empty.
+  if (data_type == "trees") stand_type <- match.arg(stand_type, c("individual", "ipm"))
+
+
+  # Check 'df' for data.frame or list.
+  if (stand_type == "individual") {
+    stopifnot("Input 'df' must be a data.frame when 'stand_type' = 'individual'" = inherits(df, "data.frame"))
+  } else if (stand_type == "ipm") {
+    stopifnot("Input 'df' must be a list when 'stand_type' = 'ipm'" = inherits(df, "list"))
+  }
+
+
+  # Check date.
   stopifnot("Input 'date' must be an object of class 'Date'" = inherits(date, "Date"))
+  a$date[[id]] <- date
 
 
   # Check country.
   country <- match.arg(country)
   stopifnot("Input 'country' must match the 'country' attribute of 'a'" = attr(a, "country") == country)
-
-
-  # Check stand_type.
-  stand_type <- match.arg(stand_type)
-  if (stand_type == "individual") stopifnot("Input 'df' must be a 'data.frame'" = is.data.frame(df))
-  if (stand_type == "ipm") stopifnot("Input 'df' must be a 'list'" = is.list(df))
-  # if (stand_type == "individual") df <- check_individual_type(df, country)
-
-
-  # Check data_type.
-  a$stand_type[[id]] <- match.arg(stand_type)
-
-
-  # If everything ok, add date.
-  a$date <- date
 
 
   # Checks that carried out below:
@@ -99,39 +110,28 @@ build_stand <- function(a, idplot, df,
 
   if (country == "spain") {
     if (data_type == "trees") {
+      a$stand_type[[id]] <- stand_type
       if (stand_type == "individual") {
-        stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
         df <- df |>
           assertr::verify(assertr::has_only_names("dbh", "species")) |>
           assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, dbh) |>
           assertr::verify(dbh > 0)
-
       } else if (stand_type == "ipm") {
         df <- df |> assertr::assert(is_larger(0), dplyr::everything()) |>
           assertr::assert(assertr::not_na, dplyr::everything())
       }
-
       a$trees[[id]] <- df
 
     } else {
-      stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
+      df <- df |>
+        assertr::verify(assertr::has_only_names("species", "n")) |>
+        assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, n) |>
+        assertr::assert_rows(assertr::col_concat, assertr::is_uniq, species)
 
       if (data_type == "seedlings") {
-
-        a$seedlings[[id]] <- df |>
-          assertr::verify(assertr::has_only_names("species", "n")) |>
-          assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, n) |>
-          assertr::assert_rows(assertr::col_concat, assertr::is_uniq, species) |>
-          assertr::assert(assertr::within_bounds(0, 1), n)
-
+        a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1), n)
       } else if (data_type == "saplings") {
-
-        a$saplings[[id]] <- df |>
-          assertr::verify(assertr::has_only_names("species", "n")) |>
-          assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, n) |>
-          assertr::assert_rows(assertr::col_concat, assertr::is_uniq, species) |>
-          assertr::assert(assertr::within_bounds(0, Inf), n)
-
+        a$saplings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, Inf), n)
       }
     }
   } else if (country == "usa") {

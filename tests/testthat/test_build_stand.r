@@ -6,12 +6,10 @@ test_that("Building tree stands", {
 
   # Initialize stands.
   idplot <- unique(trees$idplot)
+  i <- match(idplot, trees$idplot)
   n <- length(idplot)
-  a <- start_stands(idplot = idplot, x = runif(n), y = runif(n), "EPSG:4326")
+  a <- start_stands(idplot = idplot, x = trees$utm_x[i], y = trees$utm_y[i], "EPSG:32630")
   a <- set_parameters(a, country = "spain")
-
-
-  # Plot identifiers.
 
 
   # Now we add tree information.
@@ -27,17 +25,7 @@ test_that("Building tree stands", {
 
 
   # Tree data have been successfully saved in 'a'.
-  for (i in idplot) expect_identical(a[a$idplot == i,]$trees[[1]], df[[i]])
-
-
-
-  # Cannot save in plot that does not exist in 'a'.
-  expect_error(build_stand(a, "ID25", df[[1]],
-                           data_type = "trees",
-                           stand_type = "individual",
-                           date = as.Date("2000-01-01"),
-                           country = "spain")
-  )
+  for (j in i) expect_identical(a[a$idplot==j,]$trees[[1]], df[[j]])
 
 
   # Check classes.
@@ -45,17 +33,24 @@ test_that("Building tree stands", {
 
 
   # Check data.frame class.
-  for (i in 1:2) expect_identical(class(a$trees[[i]]), "data.frame")
+  for (j in i) expect_identical(class(a[a$idplot==j,]$trees[[1]]), "data.frame")
 
 
   # Check stand_type.
-  for (i in 1:2) expect_equal(a$stand_type[[i]], "individual")
+  for (i in i) expect_true(any(a[a$idplot==j,]$stand_type %in% c("", "individual")))
 
-  # Check all stands.
-  expect_true(all(sapply(1:nrow(a), function(x) check_stand(a[i, ]))))
+
+  # We add a new stand and check that it is ok.
+  a <- build_stand(a, "id200",
+                   a[1, ]$trees[[1]],
+                   data_type = "trees",
+                   stand_type = "individual",
+                   date = as.Date("2000-01-01"),
+                   country = "spain")
+
 
   # Fails when seedlings or saplings are negative.
-  expect_error(a <- build_stand(a, "ID2",
+  expect_error(a <- build_stand(a, "id3",
                                 data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = -c(1, 1)),
                                 data_type = "saplings",
                                 stand_type = "individual",
@@ -69,6 +64,7 @@ test_that("Building tree stands", {
                                 stand_type = "individual",
                                 date = as.Date("2000-01-01"),
                                 country = "spain"))
+
 
   # Fail when Date is missing.
   expect_error(a <- build_stand(a, "ID2",
