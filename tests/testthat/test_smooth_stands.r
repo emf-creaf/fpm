@@ -1,26 +1,36 @@
 test_that("Smoothing discrete tree data", {
 
-  # First initialize one single stand for the Spanish IFN.
-  a <- start_stands(paste0("ID", 1:100), x = runif(100), y = runif(100), "EPSG:4326")
+  # Load simulated IFN data.
+  load("..\\..\\data\\IFNtrees.Rdata")
+  load("..\\..\\data\\IFNseedlings.Rdata")
+  load("..\\..\\data\\IFNsaplings.Rdata")
+
+  # Initialize stands.
+  idplot <- unique(trees$idplot)
+  i <- match(idplot, trees$idplot)
+  n <- length(idplot)
+  a <- start_stands(idplot = idplot, x = trees$utm_x[i], y = trees$utm_y[i], "EPSG:32630")
   a <- set_parameters(a, country = "spain")
 
 
-  # Now we add tree information.
+  # Now we add tree information for those known (although empty) 20 plots.
   df <- list()
-  for (i in 1:100) {
-    dbh <- 7.5+runif(5)*20
-    df[[i]] <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-                          dbh = dbh, factor_diam = factor_diam_IFN(dbh, "area"))
-    a <- build_stand(a, paste0("ID",i), df[[i]],
-                      data_type = "trees",
-                      stand_type = "individual",
-                      date = as.Date("2000-01-01"),
-                      country = "spain")
+  for (i in idplot) {
+    df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
+    a <- build_stand(a, i, df[[i]],
+                     data_type = "trees",
+                     stand_type = "individual",
+                     date = as.Date("2000-01-01"),
+                     country = "spain")
   }
 
 
-  # Convolve to obtain a continuous distribution and update.
-  x <- list(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1500))
+
+
+  # Convolve to obtain a continuous distribution and pdate.
+  x <- list('Pinus nigra' = seq(7.5,220,length=1000),
+            'Pinus halepensis' = seq(7.5,250,length=1500),
+            'Quercus ilex' = seq(7.5,250,length=2000))
   a <- set_parameters(a, integvars = x)
   b <- smooth_stands(a, verbose = F)
 

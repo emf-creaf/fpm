@@ -50,7 +50,7 @@
 #'
 build_stand <- function(a, idplot, df,
                         data_type = c("trees", "seedlings", "saplings"),
-                        stand_type = "individual",
+                        stand_type = c("individual", "ipm"),
                         date = NA,
                         country = c("spain", "usa", "france")) {
 
@@ -80,9 +80,14 @@ build_stand <- function(a, idplot, df,
   data_type <- match.arg(data_type)
 
 
-  # Check stand_type if data_type is not empty.
-  if (data_type == "trees") stand_type <- match.arg(stand_type, c("individual", "ipm"))
+  # Check stand_type.
+  stand_type <- match.arg(stand_type)
 
+
+  # Check stand_type depending on the data_type value.
+  if (data_type == "trees") {
+    stopifnot("'stand_type' value must be 'individual' or 'ipm' if 'data_type' is 'trees'" = any(stand_type == c("individual", "ipm")))
+  }
 
   # Check 'df' for data.frame or list.
   if (stand_type == "individual") {
@@ -113,20 +118,21 @@ build_stand <- function(a, idplot, df,
       a$stand_type[[id]] <- stand_type
       if (stand_type == "individual") {
         df <- df |>
-          assertr::verify(assertr::has_only_names("dbh", "species")) |>
+          assertr::verify(assertr::has_only_names("species", "dbh")) |>
           assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, dbh) |>
           assertr::verify(dbh > 0)
-      } else if (stand_type == "ipm") {
+      } else {
         df <- df |> assertr::assert(is_larger(0), dplyr::everything()) |>
           assertr::assert(assertr::not_na, dplyr::everything())
       }
-      a$trees[[id]] <- df
+      a$trees[[id]] <- df[, c("species", "dbh")]
 
     } else {
       df <- df |>
         assertr::verify(assertr::has_only_names("species", "n")) |>
         assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, species, n) |>
         assertr::assert_rows(assertr::col_concat, assertr::is_uniq, species)
+      df <- df[, c("species", "n")]
 
       if (data_type == "seedlings") {
         a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1), n)

@@ -23,10 +23,9 @@
 #'
 factor_diam_IFN <- function(x, type = "area") {
 
-  stopifnot("Two arguments must be supplied" = nargs() == 2)
-
   stopifnot("Input must be a numeric vector" = (is.vector(x) & is.numeric(x) ))
   type <- match.arg(tolower(type), c("area", "radius", "interval"))
+
 
   y <- ifelse(x < 7.5, NA,
               ifelse(x >= 7.5 & x < 12.5, 5,
@@ -34,7 +33,7 @@ factor_diam_IFN <- function(x, type = "area") {
                             ifelse(x >= 22.5 & x < 42.5, 15, 25))))
   if (type == "area") {
     y <- 10000/(pi*y^2)
-  } else if (type == "interval") {
+  } else {
     y <- data.frame(c("x >= 7.5cm & x < 12.5cm",
                       "x >= 12.5cm & x < 22.5cm",
                       "x >= 22.5cm & x < 42.5cm",

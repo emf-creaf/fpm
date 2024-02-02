@@ -52,11 +52,6 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
   m <- match(c("a", "idplot", "smooth_type", "width", "verbose"), tolower(names(mf)[-1]))
 
 
-  # Does 'idplot' exist?
-  id <- if (is.na(m[2])) 1:length(a$idplot) else match(idplot, a$idplot)
-  stopifnot("Could not find some 'idplot' in 'a'" = all(!is.na(id)))
-
-
   # We need the integration variable for the calculations if any stand is "ipm".
   x <- get_parameters(a, "integvars")
   h <- get_parameters(a, "h")
@@ -79,7 +74,7 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
 
   # Loop along all plots.
   icount <- 0
-  for (i in id) {
+  for (i in 1:nrow(a)) {
 
     # Progress bar.
     icount <- icount + 1
@@ -100,6 +95,7 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
             # Loop through species and individual trees.
             for (j in unique(b$trees[[1]]$species)) {
               y <- b$trees[[1]] |> dplyr::filter(species == j)
+              y$factor_diam <- factor_diam_IFN(y$dbh, "area")
               z <- sapply(1:nrow(y), function(k) kernsmooth(x[[j]], y$dbh[k], width = width) * y$factor_diam[k])
               df[[j]] <- apply(z, 1, sum)
             }
