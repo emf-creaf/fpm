@@ -21,6 +21,7 @@ calc_ba <- function(a, x = NULL, h = NULL) {
   # If x is not specified, stand_type is individual.
   b <- a$trees[[1]]
   if (a$stand_type == "individual") {
+    b$factor_diam <- factor_diam_IFN(b$dbh)
     y <- b |> dplyr::group_by(species) |> dplyr::summarise(ba = sum(factor_diam * dbh^2) * (pi/40000))
     ba_species <- setNames(unlist(sapply(1:nrow(y), function(i) y[i, "ba"], simplify = T)), unlist(y[,1]))
   } else if (a$stand_type == "ipm") {

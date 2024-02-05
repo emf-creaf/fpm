@@ -134,10 +134,11 @@ build_stand <- function(a, idplot, df,
         assertr::assert_rows(assertr::col_concat, assertr::is_uniq, species)
       df <- df[, c("species", "n")]
 
+      f <- function() stop("My error!")
       if (data_type == "seedlings") {
-        a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1), n)
+        a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1), n, error_fun = f)
       } else if (data_type == "saplings") {
-        a$saplings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, Inf), n)
+        a$saplings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, Inf), n, error_fun = f)
       }
     }
   } else if (country == "usa") {

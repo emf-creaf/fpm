@@ -5,7 +5,7 @@ test_that("Smoothing discrete tree data", {
   load("..\\..\\data\\IFNseedlings.Rdata")
   load("..\\..\\data\\IFNsaplings.Rdata")
 
-  # Initialize stands.
+  # Initialize only 20 stands.
   idplot <- unique(trees$idplot)
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
@@ -13,7 +13,7 @@ test_that("Smoothing discrete tree data", {
   a <- set_parameters(a, country = "spain")
 
 
-  # Now we add tree information for those known (although empty) 20 plots.
+  # Now we add tree information for those plots.
   df <- list()
   for (i in idplot) {
     df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
@@ -24,7 +24,30 @@ test_that("Smoothing discrete tree data", {
                      country = "spain")
   }
 
+  # Seedlings.
+  seedlings$n <- seedlings$n/3
+  for (i in idplot) {
+    z <- seedlings[seedlings$idplot == i, c("species", "n")]
+    if (nrow(z) > 0) {
+      a <- build_stand(a, i, z,
+                       data_type = "seedlings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01"),
+                       country = "spain")
+    }
+  }
 
+  # Saplings.
+  for (i in idplot) {
+    z <- saplings[saplings$idplot == i, c("species", "n")]
+    if (nrow(z) > 0) {
+      a <- build_stand(a, i, z,
+                       data_type = "saplings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01"),
+                       country = "spain")
+    }
+  }
 
 
   # Convolve to obtain a continuous distribution and pdate.
@@ -56,6 +79,13 @@ test_that("Smoothing discrete tree data", {
   expect_true(all(sapply(1:nrow(b), function(i) all(!is.na(b$trees[[i]]$trees)))))
 
   # Check that smooth_stand has not modified the number of trees.
+  sa <- get_stats(a, verbose = F)
+  sb <- get_stats(b, verbose = F)
 
+
+
+  # Check that seedlings and saplings have not been modified.
+  expect_true(all(sapply(idplot, function(x) identical(a[[x]]$seedlings, b[[x]]$seedlings))))
+  expect_true(all(sapply(idplot, function(x) identical(a[[x]]$saplings, b[[x]]$saplings))))
 
 })

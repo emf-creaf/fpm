@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 
-This package provides tree inventory simulated datasets with which to calculate the dynamics of tree plots from the Spanish Inventario Forestal Nacional.
+This package provides simulated tree inventory datasets that can be used to calculate the dynamics of tree plots.
 
 ## Available datasets
 

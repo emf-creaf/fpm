@@ -50,7 +50,6 @@ get_stats <- function(a, verbose = T) {
 
     b <- a[i, ]
 
-
     # Calculates basal areas for trees. If 'stand_type' is "individual", x and h are not used anyway.
     if (b$stand_type != "") {
       if (b$stand_type == "ipm") stopifnot("Parameter 'integvars' has not been specified" = !is.null(xabs))
