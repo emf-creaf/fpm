@@ -14,6 +14,7 @@
 #' @param min_dbh named vector containing the minimum dbh after which a tree will
 #' be considered as an adult individual.
 #' @param max_dbh named vector containing the maximum dbh reachable for each species.
+#' @param crs coordinate reference system of stand. If missing, NA will be assumed.
 #'
 #' @return
 #' A \code{sf} object with attributes \emph{country} and \emph{x} set.
@@ -26,24 +27,26 @@
 #' @export
 #'
 #' @examples
-#' a <- start_stands(c("ID1", "ID2"), c(4, 5), c(45, 45), "EPSG:4326")
+#' a <- start_stands()
 #' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, max_dbh = max_dbh)
+#' a <- set_parameters(a, max_dbh = max_dbh, crs =  "EPSG:4326")
 #'
-set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL) {
+set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL, crs = NULL) {
 
   # Must be an "sf" object.
   stopifnot("Input 'a' must be an 'sf' object" = any(class(a) == "sf"))
 
   # Any parameter?
-  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh)) {
+  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh) & is.null(crs)) {
     warning("No attribute has been set!")
     return(a)
   }
 
+
   if (!is.null(country)) {
     attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
   }
+
 
   if (!is.null(integvars)) {
     stopifnot("Input 'integvars' must be a named list" = is.list(integvars))
@@ -51,15 +54,23 @@ set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
     attr(a, "h") <- sapply(integvars, function(x) x[2]-x[1], simplify = F)
   }
 
+
   if (!is.null(min_dbh)) {
     stopifnot("Input 'min_dbh' must be a named list" = is.list(min_dbh))
     attr(a, "min_dbh") <- min_dbh
   }
 
+
   if (!is.null(max_dbh)) {
     stopifnot("Input 'max_dbh' must be a named list" = is.list(max_dbh))
     attr(a, "max_dbh") <- max_dbh
   }
+
+
+  if (!is.null(crs)) {
+    sf::st_crs(a) <- crs
+  }
+
 
   return(a)
 }

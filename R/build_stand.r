@@ -48,7 +48,7 @@
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", as.Date("1-1-2019", "%d-%m-%Y"))
 #' }
 #'
-build_stand <- function(a, idplot, df,
+build_stand <- function(a, idplot, x, y, df,
                         data_type = c("trees", "seedlings", "saplings"),
                         stand_type = c("individual", "ipm"),
                         date = NA,

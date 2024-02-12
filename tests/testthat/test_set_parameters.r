@@ -1,7 +1,7 @@
 test_that("Set attributes of sf tree stand object", {
 
   # Create sf stand.
-  a <- start_stands("ID1", 5, 45, "EPSG:4326")
+  a <- start_stands()
 
   # Wrong country.
   expect_error(set_attributes(a, "italy"))

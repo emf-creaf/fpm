@@ -13,30 +13,18 @@
 #' object to store all data for a single tree stand.
 #'
 #' @return
-#' A \code{sf} object with new fields.
+#' A \code{sf} object with new empty fields and attributes.
 #'
 #' @export
 #'
 #' @examples
-#' a <- start_stands(c("ID1", "ID2"), c(4, 5), c(45, 45), "EPSG:4326")
+#' a <- start_stands()
 #'
-start_stands <- function(idplot, x, y, crs = NA) {
-
-  mf <- match.call()
-  m <- match(c("idplot", "x", "y", "crs"), tolower(names(mf)))
-  if (any(is.na(m[1:3]))) stop("Missing 'idplot', 'x' or 'y'")
+start_stands <- function(idplot = idplot, crs = NA) {
 
 
-  if (!is.vector(idplot) | !is.vector(x) | !is.vector(y))
-    stop("Inputs 'idplot', 'x' and 'y' must be vectors")
-
-
-  if (length(unique(c(length(idplot), length(x), length(y)))) != 1)
-    stop("Length of 'idplot', 'x' and 'y' must be equal")
-
-
-  # Start sf object.
-  z <- sf::st_as_sf(data.frame(X=x, Y=y), coords = c("X", "Y"), crs = crs)
+  # Start sf object with dummy coordinates.
+  z <- sf::st_as_sf(data.frame(X = 0, Y = 0), coords = c("X", "Y"), crs = crs)
   z$idplot <- idplot
 
 
