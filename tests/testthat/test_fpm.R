@@ -30,17 +30,22 @@ test_that("Sapling model", {
 
 
 
+  # Load simulated IFN data.
+  load("..\\..\\data\\IFNtrees.Rdata")
+  load("..\\..\\data\\IFNseedlings.Rdata")
+  load("..\\..\\data\\IFNsaplings.Rdata")
+
+  # Initialize stands.
+  idplot <- unique(trees$idplot)
+  i <- match(idplot, trees$idplot)
+  n <- length(idplot)
+  a <- start_stands(idplot = idplot, x = trees$utm_x[i], y = trees$utm_y[i], "EPSG:32630")
+  a <- set_parameters(a, country = "spain")
 
 
-  # First initialize stands for the Spanish IFN.
-  a <- start_stands(paste0("ID", 1:100), x = runif(100), y = runif(100), "EPSG:4326")
-  a <- a|> set_parameters(country = "spain")
-
-
-  # Now we add tree and sapling information.
+  # Now we add trees to stands.
   df <- list()
-  for (i in 1:100) {
-    dbh <- 7.5+runif(5)*20
+  for (i in idplot) {
     df[[i]] <- data.frame(species = c(sample(c("Pinus nigra","Pinus halepensis"),5,replace=T)),
                           dbh = dbh, factor_diam = factor_diam_IFN(dbh, "area"))
     a <- build_stand(a, paste0("ID",i), df[[i]],
