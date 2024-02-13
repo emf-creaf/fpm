@@ -22,12 +22,6 @@ test_that("Get attributes of sf tree stand object", {
   expect_identical(get_parameters(a, "max_dbh"), max_dbh)
   expect_identical(colnames(sf::st_coordinates(a)), c("X","Y"))
   expect_identical(sf::st_crs(a)$input, "EPSG:4326")
-#   b <- start_stands("ID10", 5, 45, "EPSG:4326")
-#   expect_equal(sf::st_coordinates(a), "EPSG:4326")
-#
-#   # Check bounding box.
-#   bb <- sf::st_bbox(a)
-#   expect_identical(class(bb), "bbox")
-#   expect_equal(as.vector(bb), c(5,44,6,45))
+
 
 })

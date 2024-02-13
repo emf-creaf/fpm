@@ -57,12 +57,18 @@ set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
 
   if (!is.null(min_dbh)) {
     stopifnot("Input 'min_dbh' must be a named list" = is.list(min_dbh))
+    if (!is.null(integvars)) {
+      stopifnot("Names in 'integvars' and 'min_dbh' must match" = all(names(min_dbh) %in% names(integvars)))
+    }
     attr(a, "min_dbh") <- min_dbh
   }
 
 
   if (!is.null(max_dbh)) {
     stopifnot("Input 'max_dbh' must be a named list" = is.list(max_dbh))
+    if (!is.null(integvars)) {
+      stopifnot("Names in 'integvars' and 'max_dbh' must match" = all(names(max_dbh) %in% names(integvars)))
+    }
     attr(a, "max_dbh") <- max_dbh
   }
 
