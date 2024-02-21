@@ -2,31 +2,31 @@ test_that("Sapling model", {
 
 
 
-  source("./R/start_stands.r")
-  source("./R/set_parameters.r")
-  source("./R/build_stand.r")
-  source("./R/smooth_stands.r")
-  source("./R/helpers.r")
-  source("./R/factor_diam_IFN.r")
-  source("./R/get_parameters.r")
-  source("./R/kernsmooth.r")
-  source("./R/get_stats.r")
-  source("./R/calc_ba.r")
-  source("./R/calc_ntrees.r")
-  source("./R/get_species.r")
-  source("./R/dtrexp.r")
-  source("./R/clear_stands.r")
-  source("./R/numquad_vm.r")
-
-  source("./R/fpm_seedling.r")
-  source("./R/fpm_sapling.r")
-  source("./R/fpm_ingrowth.r")
-  source("./R/fpm_survival.r")
-  source("./R/fpm_growth.r")
-  source("./R/fpm_quadrature.r")
-  source("./R/fpm.r")
-
-  source("./R/collect_parts.R")
+  # source("./R/start_stands.r")
+  # source("./R/set_parameters.r")
+  # source("./R/build_stand.r")
+  # source("./R/smooth_stands.r")
+  # source("./R/helpers.r")
+  # source("./R/factor_diam_IFN.r")
+  # source("./R/get_parameters.r")
+  # source("./R/kernsmooth.r")
+  # source("./R/get_stats.r")
+  # source("./R/calc_ba.r")
+  # source("./R/calc_ntrees.r")
+  # source("./R/get_species.r")
+  # source("./R/dtrexp.r")
+  # source("./R/clear_stands.r")
+  # source("./R/numquad_vm.r")
+  #
+  # source("./R/fpm_seedling.r")
+  # source("./R/fpm_sapling.r")
+  # source("./R/fpm_ingrowth.r")
+  # source("./R/fpm_survival.r")
+  # source("./R/fpm_growth.r")
+  # source("./R/fpm_quadrature.r")
+  # source("./R/fpm.r")
+  #
+  # source("./R/collect_parts.R")
 
 
 
