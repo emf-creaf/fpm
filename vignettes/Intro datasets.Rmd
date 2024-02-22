@@ -1,0 +1,36 @@
+---
+title: "Available datasets"
+author: "Roberto Molowny-Horas"
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Available datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+This package provides simulated tree inventory datasets that can be used to calculate the dynamics of tree plots.
+
+## Available datasets
+
+* IFNtrees
+* IFNseedlings
+* IFNsaplings
+
+## Demographic traits
+
+The demographic traits that are required to run the \cite{fpm} software is described elsewhere. Namely, to run the model one must previously compute the following functions:
+
+* adult survival,
+* adult growth, conditioned on survival,
+* adult ingrowth, and
+* seedling and sapling dynamics.
+
