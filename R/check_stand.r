@@ -7,6 +7,7 @@
 #' @export
 #'
 #' @examples
+#'
 check_stand <- function(a, verbose = T) {
 
   # 'a' must be an "sf" object with one row.
@@ -40,44 +41,47 @@ check_stand <- function(a, verbose = T) {
 
   flag <- TRUE
 
-  if (get_parameters(a, "country") == "spain") {
-    if (!all(names(a) %in% c("geometry", "idplot", "date", "stand_type", "seedlings", "saplings", "trees"))) {
-      flag <- FALSE
-      if (verbose) warning("Wrong column names in 'a' sf object")
-    } else {
+  if (!is.null(get_parameters(a, "country"))) {
 
-      # Check date column.
-      if (!(inherits(a$date, "character") | inherits(a$date, "Date"))) {
+    if (get_parameters(a, "country") == "spain") {
+      if (!all(names(a) %in% c("geometry", "idplot", "date", "stand_type", "seedlings", "saplings", "trees"))) {
         flag <- FALSE
-        if (verbose) warning("'date' column must be a character or a Date object")
+        if (verbose) warning("Wrong column names in 'a' sf object")
+      } else {
+
+        # Check date column.
+        if (!(inherits(a$date, "character") | inherits(a$date, "Date"))) {
+          flag <- FALSE
+          if (verbose) warning("'date' column must be a character or a Date object")
+        }
+
+        # Stand type.
+        if (!(is.character(a$stand_type) & length(a$stand_type))) {
+          flag <- FALSE
+          if (verbose) warning("'stand_type' column must be a single character string")
+        }
+
+        # Check lists.
+        flag <- flist(a, "saplings")
+        flag <- flist(a, "seedlings")
+        flag <- flist(a, "trees", c("species", "dbh"))
+
       }
 
-      # Stand type.
-      if (!(is.character(a$stand_type) & length(a$stand_type))) {
-        flag <- FALSE
-        if (verbose) warning("'stand_type' column must be a single character string")
-      }
 
-      # Check lists.
-      flag <- flist(a, "saplings")
-      flag <- flist(a, "seedlings")
-      flag <- flist(a, "trees", c("species", "dbh"))
-
-    }
-
-
-    # If 'stand_type' is 'individual' we check contents of 'trees' list elements
-    if (flag) {
-      for (i in a$idplot) {
-        if (a$stand_type != "") {
-          if (!(a$stand_type %in% c("individual", "ipm", "mpm"))) {
-            flag <- FALSE
-            if (verbose) warning("Wrong 'stand_type' value")
-          } else {
-            if (a$stand_type == "individual") {
-              if (!all(colnames(a$trees) %in% c("species", "dbh"))) {
-                flag <- FALSE
-                if (verbose) warning("Wrong column names in 'trees'")
+      # If 'stand_type' is 'individual' we check contents of 'trees' list elements
+      if (flag) {
+        for (i in a$idplot) {
+          if (a$stand_type != "") {
+            if (!(a$stand_type %in% c("individual", "ipm", "mpm"))) {
+              flag <- FALSE
+              if (verbose) warning("Wrong 'stand_type' value")
+            } else {
+              if (a$stand_type == "individual") {
+                if (!all(colnames(a$trees) %in% c("species", "dbh"))) {
+                  flag <- FALSE
+                  if (verbose) warning("Wrong column names in 'trees'")
+                }
               }
             }
           }

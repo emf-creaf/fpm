@@ -51,26 +51,19 @@
 #' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", as.Date("1-1-2019", "%d-%m-%Y"))
 #' }
 #'
-build_stand <- function(a = NULL, idplot = NULL, x = NULL, y = NULL, df = NULL,
+build_stand <- function(a, idplot = NULL, x = NULL, y = NULL, df = NULL,
                         data_type = c("trees", "seedlings", "saplings"),
                         stand_type = c("individual", "ipm"),
-                        date = NA,
-                        country = c("spain", "usa", "france"),
-                        control = list()) {
+                        date = NA) {
+
+
+  # Check that input 'a' is an 'sf' object.
+  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
 
 
   # Check idplot.
   stopifnot("Input 'idplot' is missing" = !is.null(idplot))
   stopifnot("Input 'idplot' must have length = 1" = (length(idplot) == 1))
-
-
-  # 'a' object may have to be created from scratch. If not, check that it is 'sf'.
-  if (is.null(a)) {
-    a <- start_stands(control)
-    a$idplot <- idplot
-  } else {
-    stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  }
 
 
   # If idplot does not yet exist, we add a new empty row at the bottom.
@@ -80,7 +73,7 @@ build_stand <- function(a = NULL, idplot = NULL, x = NULL, y = NULL, df = NULL,
     b$idplot <- idplot
     b$date <- b$stand_type <- ""
     b$trees <- b$saplings <- b$seedlings <- vector("list", 1)
-    a <- rbind(a, b)
+    a[nrow(a) + 1,] <- b
     id <- nrow(a)
   }
 
@@ -129,9 +122,8 @@ build_stand <- function(a = NULL, idplot = NULL, x = NULL, y = NULL, df = NULL,
   a$date[[id]] <- date
 
 
-  # Check country.
-  country <- match.arg(country)
-  stopifnot("Input 'country' must match the 'country' attribute of 'a'" = attr(a, "country") == country)
+  # Which country?
+  country <- attr(a, "country")
 
 
   # Checks that carried out below:

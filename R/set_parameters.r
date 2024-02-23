@@ -5,51 +5,54 @@
 #' calculations of stand properties
 #'
 #' @param a a \code{sf} stand object created with \code{\link{start_stand}}.
-#' @param country string indicating which country the stand belongs to.
-#' At this moment, "spain" (default), "france" or "usa" are valid inputs, though
-#' only calculations for the Spanish Inventario Forestal Nacional have been
-#' implemented. Lower or upper case letters can be used. No default value is set.
-#' @param integvars optional \code{list} where each named element contains the abscissas for
-#' the species to be modeled.
-#' @param min_dbh named vector containing the minimum dbh after which a tree will
-#' be considered as an adult individual.
-#' @param max_dbh named vector containing the maximum dbh reachable for each species.
-#' @param crs coordinate reference system of stand. If missing, NA will be assumed.
+#' @param control a named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).
+#' @param verbose logical, if set to TRUE warning messages will be shown, if required.
 #'
 #' @return
 #' A \code{sf} object with attributes \emph{country} and \emph{x} set.
 #'
 #' @details
-#' Attribute \emph{country} must be set to either of the three possible values.
-#' The default is "Spain", and in fact it is the only country for which
-#' stand dynamics calculations have been implemented at this stage.
+#' The elements in \code{control} input list are described in \code{\link{start_stand}}.
+#' Notice that parameter \code{country} must be set previously in \code{\link{start_stand}}
+#' and is ignored by \code{set_parameters} with a warning.
+#'
+#' Setting parameter \code{integvars} automatically creates a new parameter called \code{h}
+#' (also a list) which is the integration step per species.
 #'
 #' @export
 #'
 #' @examples
 #' a <- start_stands()
 #' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, max_dbh = max_dbh, crs =  "EPSG:4326")
+#' a <- set_parameters(a, control = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 #'
-set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL, crs = NULL) {
+set_parameters <- function(a, control = list(), verbose = T) {
 
   # Must be an "sf" object.
-  stopifnot("Input 'a' must be an 'sf' object" = any(class(a) == "sf"))
+  stopifnot("Input 'a' must be an 'sf' object" = inherits(a, "sf"))
 
-  # Any parameter?
-  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh) & is.null(crs)) {
-    warning("No attribute has been set!")
-    return(a)
+
+  # First checks.
+  if (verbose) {
+
+    # Any parameter at all?
+    if (length(control) == 0) warning("Input list 'control' is empty. Returning 'a'")
+
+    # Parameter "country" is ignored with a warning.
+    if (!is.null(control[["country"]])) warning("Parameter 'country' in input list is ignored")
+
   }
 
 
-  if (!is.null(country)) {
-    attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
-  }
-
+  # Other parameters.
+  integvars <- control[["integvars"]]
+  min_dbh <- control[["min_dbh"]]
+  max_dbh <- control[["max_dbh"]]
+  crs <- control[["crs"]]
 
   if (!is.null(integvars)) {
-    stopifnot("Input 'integvars' must be a named list" = is.list(integvars))
+    stopifnot("Parameter 'integvars' must be a named list" = is.list(integvars))
+    stopifnot("Names of list elements (i.e. species) in 'integvars' are missing" = !is.null(names(integvars)))
     attr(a, "integvars") <- integvars
     attr(a, "h") <- sapply(integvars, function(x) x[2]-x[1], simplify = F)
   }
@@ -57,18 +60,14 @@ set_parameters <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, 
 
   if (!is.null(min_dbh)) {
     stopifnot("Input 'min_dbh' must be a named list" = is.list(min_dbh))
-    if (!is.null(integvars)) {
-      stopifnot("Names in 'integvars' and 'min_dbh' must match" = all(names(min_dbh) %in% names(integvars)))
-    }
+    stopifnot("Names of list elements (i.e. species) in 'min_dbh' are missing" = !is.null(names(min_dbh)))
     attr(a, "min_dbh") <- min_dbh
   }
 
 
   if (!is.null(max_dbh)) {
     stopifnot("Input 'max_dbh' must be a named list" = is.list(max_dbh))
-    if (!is.null(integvars)) {
-      stopifnot("Names in 'integvars' and 'max_dbh' must match" = all(names(max_dbh) %in% names(integvars)))
-    }
+    stopifnot("Names of list elements (i.e. species) in 'max_dbh' are missing" = !is.null(names(max_dbh)))
     attr(a, "max_dbh") <- max_dbh
   }
 

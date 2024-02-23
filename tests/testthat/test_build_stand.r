@@ -16,14 +16,13 @@ test_that("Building tree stands", {
   n <- length(idplot)
 
   df <- list()
-  a <- NULL
+  a <- start_stands()
   for (j in idplot) {
     df[[j]] <- trees[trees$idplot == j, c("dbh", "species")]
-    a <- a |> build_stand(idplot = j, df  = trees[trees$idplot == j, c("dbh", "species")],
+    a <- a |> build_stand(idplot = j, df  = df[[j]],
                      data_type = "trees",
                      stand_type = "individual",
-                     date = as.Date("2000-01-01"),
-                     country = "spain")
+                     date = as.Date("2000-01-01"))
   }
 
 
@@ -35,8 +34,7 @@ test_that("Building tree stands", {
       a <- build_stand(a, j, df = z,
                        data_type = "seedlings",
                        stand_type = "individual",
-                       date = as.Date("2000-01-01"),
-                       country = "spain")
+                       date = as.Date("2000-01-01"))
     }
   }
 
@@ -48,14 +46,17 @@ test_that("Building tree stands", {
       a <- build_stand(a, j, df = z,
                        data_type = "saplings",
                        stand_type = "individual",
-                       date = as.Date("2000-01-01"),
-                       country = "spain")
+                       date = as.Date("2000-01-01"))
     }
   }
 
 
   # Tree data have been successfully saved in 'a'.
-  for (j in idplot) expect_identical(a[a$idplot==j,]$trees[[1]], df[[j]][c("species", "dbh")])
+  check <-  T
+  for (j in idplot) {
+    check <- check & identical(a[a$idplot==j,]$trees[[1]], df[[j]][c("species", "dbh")])
+  }
+  expect_true(check)
 
 
   # Check classes.
@@ -63,20 +64,26 @@ test_that("Building tree stands", {
 
 
   # Check data.frame class.
-  for (j in idplot) expect_identical(class(a[a$idplot==j,]$trees[[1]]), "data.frame")
+  check <-  T
+  for (j in idplot) {
+    check <- check & identical(class(a[a$idplot==j,]$trees[[1]]), "data.frame")
+  }
+  expect_true(check)
 
 
   # Check stand_type.
-  for (i in idplot) expect_true(any(a[a$idplot==j,]$stand_type == "individual"))
-
+  check <-  T
+  for (i in idplot) {
+    check <- check & (a[a$idplot==j,]$stand_type == "individual")
+  }
+  expect_true(check)
 
   # We add a new stand and check that it is ok.
   a <- build_stand(a, idplot = "id200",
                    df = a[1, ]$trees[[1]],
                    data_type = "trees",
                    stand_type = "individual",
-                   date = as.Date("2000-01-01"),
-                   country = "spain")
+                   date = as.Date("2000-01-01"))
   df[["id200"]] <- a[1, ]$trees[[1]]
   expect_identical(a[a$idplot == "id200",]$trees[[1]], df[["id200"]][c("species", "dbh")])
 
@@ -86,24 +93,21 @@ test_that("Building tree stands", {
                                 data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = -c(1, 1)),
                                 data_type = "saplings",
                                 stand_type = "individual",
-                                date = as.Date("2000-01-01"),
-                                country = "spain"))
+                                date = as.Date("2000-01-01")))
 
 
   expect_error(a <- build_stand(a, "ID2",
                                 data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = - runif(2)),
                                 data_type = "seedlings",
                                 stand_type = "individual",
-                                date = as.Date("2000-01-01"),
-                                country = "spain"))
+                                date = as.Date("2000-01-01")))
 
 
   # Fail when Date is missing.
   expect_error(a <- build_stand(a, "ID2",
                                 data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = c(1, 1)),
                                 data_type = "saplings",
-                                stand_type = "individual",
-                                country = "spain"))
+                                stand_type = "individual"))
 
 
 })
