@@ -5,14 +5,14 @@
 #' calculations of stand properties
 #'
 #' @param a a \code{sf} stand object created with \code{\link{start_stand}}.
-#' @param control a named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).
+#' @param param a named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).
 #' @param verbose logical, if set to TRUE warning messages will be shown, if required.
 #'
 #' @return
 #' A \code{sf} object with attributes \emph{country} and \emph{x} set.
 #'
 #' @details
-#' The elements in \code{control} input list are described in \code{\link{start_stand}}.
+#' The elements in \code{param} input list are described in \code{\link{start_stand}}.
 #' Notice that parameter \code{country} must be set previously in \code{\link{start_stand}}
 #' and is ignored by \code{set_parameters} with a warning.
 #'
@@ -24,9 +24,9 @@
 #' @examples
 #' a <- start_stands()
 #' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, control = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 #'
-set_parameters <- function(a, control = list(), verbose = T) {
+set_parameters <- function(a, param = list(), verbose = T) {
 
   # Must be an "sf" object.
   stopifnot("Input 'a' must be an 'sf' object" = inherits(a, "sf"))
@@ -36,19 +36,23 @@ set_parameters <- function(a, control = list(), verbose = T) {
   if (verbose) {
 
     # Any parameter at all?
-    if (length(control) == 0) warning("Input list 'control' is empty. Returning 'a'")
+    if (length(param) == 0) warning("Input list 'param' is empty. Returning 'a'")
 
     # Parameter "country" is ignored with a warning.
-    if (!is.null(control[["country"]])) warning("Parameter 'country' in input list is ignored")
+    if (!is.null(param[["country"]])) warning("Parameter 'country' in input list is ignored")
 
   }
 
 
+  # Check that 'country' is correct.
+  attr(a, "country") <- match.arg(param[["country"]], choices = c("spain", "usa", "france"))
+
+
   # Other parameters.
-  integvars <- control[["integvars"]]
-  min_dbh <- control[["min_dbh"]]
-  max_dbh <- control[["max_dbh"]]
-  crs <- control[["crs"]]
+  integvars <- param[["integvars"]]
+  min_dbh <- param[["min_dbh"]]
+  max_dbh <- param[["max_dbh"]]
+  crs <- param[["crs"]]
 
   if (!is.null(integvars)) {
     stopifnot("Parameter 'integvars' must be a named list" = is.list(integvars))

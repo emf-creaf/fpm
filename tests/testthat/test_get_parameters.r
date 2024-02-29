@@ -9,7 +9,7 @@ test_that("Get attributes of sf tree stand object", {
   min_dbh <- list('Pinus halepensis' = 7.5, 'Quercus ilex' = 7.5)
   max_dbh <- list('Pinus halepensis' = 120, 'Quercus ilex' = 150)
   crs <-  "EPSG:4326"
-  a <- set_parameters(a, control = list(integvars = x,
+  a <- set_parameters(a, param = list(integvars = x,
                                         min_dbh = min_dbh,
                                         max_dbh = max_dbh,
                                         crs = crs))

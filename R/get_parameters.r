@@ -5,7 +5,7 @@
 #'
 #'
 #' @param a \code{sf} object containing a number of POINT geometry types
-#' @param parameters character vector with names of parameters to be extracted:
+#' @param param character vector with names of parameters to be extracted:
 #' \code{country}, \code{integvars}, \code{h}, \code{min_dbh}, \code{max_dbh},
 #' \code{species} or \code{crs}. If not provided, all those parameters will
 #' be retrieved.
@@ -21,34 +21,33 @@
 #' @examples
 #' a <- start_stands()
 #' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, control = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 #' p <- get_parameters(a)
 #'
-get_parameters <- function(a, parameters = NULL) {
+get_parameters <- function(a, param = NULL) {
 
   # Must be an "sf" object.
   stopifnot("Input 'a' must be an 'sf' object" = any(class(a) == "sf"))
 
 
   # Check that parameters are correct. If NULL, all parameters.
-  param <- c("country", "integvars", "h", "min_dbh", "max_dbh", "crs", "species")
+  par <- c("country", "integvars", "h", "min_dbh", "max_dbh", "crs")
 
-  if (is.null(parameters)) {
-
-    parameters <- param
+  if (is.null(param)) {
+    param <- par
 
   } else {
     # It should be a vector.
-    stopifnot("Input 'parameters' must be a character vector" = is.vector(parameters))
+    stopifnot("Input 'parameters' must be a character vector" = is.vector(param))
 
     # Check that parameters are correct.
-    stopifnot("Incorrect 'parameters' names" = all(parameters %in% param))
+    stopifnot("Incorrect 'param' names" = all(param %in% par))
 
   }
 
 
   # Extract parameters.
-  p <- sapply(parameters,
+  p <- sapply(param,
               function(x) {
                 if (x == "crs") {
                   sf::st_crs(a)
@@ -57,7 +56,10 @@ get_parameters <- function(a, parameters = NULL) {
                 }
               },
               simplify = F)
-  if (length(parameters) == 1) p <- p[[1]]
+
+
+  # Check that 'country', if present, is correct.
+  if ("country" %in% param) p$country <- match.arg(attr(a, "country"), choices = c("spain", "usa", "france"))
 
 
   return(p)

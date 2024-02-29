@@ -1,9 +1,13 @@
-#' Title
+#' Extract species names
+#'
+#' @description
+#' Extract names of all species (i.e. seedlings, saplings, trees) per plot.
 #'
 #' @param a
 #' @param verbose
 #'
 #' @return
+#'
 #' @export
 #'
 #' @examples
@@ -28,9 +32,11 @@ get_species<- function(a, verbose = T) {
 
   # Create a new 'sf' object to store the names of the species per plot.
   x <- a
-  x$trees <- x$seedlings <- x$saplings <- NULL
-  x$species <- x$species_all <- vector("list", length(x$idplot))
-  x$nspecies <- 0
+  if (attr(x, "country") == "spain") {
+    x$trees <- x$seedlings <- x$saplings <- NULL
+    x$species <- x$species_all <- vector("list", length(x$idplot))
+    x$nspecies <- 0
+  }
 
 
   # Go plot by plot.

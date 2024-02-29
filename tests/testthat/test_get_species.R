@@ -10,14 +10,15 @@ test_that("Building tree stands", {
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
   a <- start_stands(idplot = idplot, x = trees$utm_x[i], y = trees$utm_y[i], "EPSG:32630")
-  a <- set_parameters(a, country = "spain")
+  a <- set_parameters(a, control = list(country = "spain",
+                                        crs = "EPSG:32630"))
 
 
   # Now we add tree information for those known (although empty) 20 plots.
   df <- list()
   for (i in idplot) {
     df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
-    a <- build_stand(a, i, df[[i]],
+    a <- build_stand(a, i,x = x[i] df[[i]],
                      data_type = "trees",
                      stand_type = "individual",
                      date = as.Date("2000-01-01"),

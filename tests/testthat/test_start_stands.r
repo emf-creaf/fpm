@@ -10,7 +10,7 @@ test_that("We create an sf object for a single stand", {
   expect_true(all(c("idplot","date", "stand_type", "seedlings", "saplings", "trees") %in% colnames(a)))
 
   # Create silly single stand with right or wrong settings.
-  expect_error(a <- start_stands(control = list(country = "italy")))
+  expect_error(a <- start_stands(param = list(country = "italy")))
 
 
 })
