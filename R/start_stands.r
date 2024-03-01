@@ -41,7 +41,8 @@ start_stands <- function(param = list(country = "spain")) {
   # At least parameter country must be set at the start.
   stopifnot("Input list 'param' cannot be empty" = length(param) > 0)
   stopifnot("Parameter 'country' in input list 'param' is mandatory" = !is.null(param[["country"]]))
-  attr(a, "country") <- match.arg(param[["country"]], choices = c("spain", "usa", "france"))
+  country <- param[["country"]]
+  attr(a, "country") <- match.arg(country, choices = c("spain", "usa", "france"))
 
 
   # Set remaining parameters, but only if there is any (apart from "country").
@@ -51,7 +52,7 @@ start_stands <- function(param = list(country = "spain")) {
   }
 
 
-  if (param[["country"]] == "spain") {
+  if (country == "spain") {
 
     # Empty identifier column.
     a$idplot <- ""
@@ -66,6 +67,13 @@ start_stands <- function(param = list(country = "spain")) {
 
     # Empty lists that will contain seedlings, saplings and trees.
     a$seedlings <- a$saplings <- a$trees <- vector("list", 1)
+
+  } else if (country == "usa") {
+    stop("Calculations for country = 'usa' have not yet been implemented")
+
+  } else if (country == "france") {
+    stop("Calculations for country = 'france' have not yet been implemented")
+
   }
 
 

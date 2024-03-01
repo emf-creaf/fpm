@@ -23,38 +23,30 @@
 #'
 #' @examples
 #'
-#' # First initialize one single stand.
-#' a <- start_stand("ID1", 5, 45, "EPSG:4326")
-#' a <- set_attributes(a)
+#' a <- start_stands()
+#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 #'
-#' # Next, we merge other stands.
-#' for (i in 2:10) {
-#' b <- start_stand(paste0("ID",i), 5, 45, "EPSG:4326")
-#' b <- set_attributes(b)
-#' a <- merge_stands(a,b)
-#' }
+#' # Next, we add one stand.
+#' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
+#' a <- build_stand(a, "id1", data = list(df = df), verbose = T)
 #'
-#' # Now we add tree information.
-#' for (i in 1:10) {
-#' df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-#' dbh = 7.5+runif(5)*20, factor_diam = sample(c(127.324, 31.83099),5,replace=T))
-#' a <- build_stand(a, paste0("ID",i), df, "trees", "individual", 1990)
-#' }
-#'
-#' # Convolve to obtain a continuous distribution.
-#' x <- data.frame(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1000))
-#' a <- set_attributes(a, integvars = x)
-#' b <- smooth_stand(a)
+#' # Convolve every tree in every plot with a Gaussian window.
+#' b <- smooth_stands(a)
 #'
 smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
+
+  # Check that input 'a' is an 'sf' object.
+  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
+
 
   mf <- match.call()
   m <- match(c("a", "idplot", "smooth_type", "width", "verbose"), tolower(names(mf)[-1]))
 
 
   # We need the integration variable for the calculations if any stand is "ipm".
-  x <- get_parameters(a, "integvars")
-  h <- get_parameters(a, "h")
+  x <- get_parameters(a, "integvars")$integvars
+  h <- get_parameters(a, "h")$h
   stopifnot("Attribute 'integvars' is missing" = !is.null(x))
 
 
@@ -83,11 +75,11 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
 
     # Calculate only if there are trees.
     b <- a[i, ]
-    if (length(b) > 0) {
+    if (length(b$trees[[1]]) > 0) {
 
-      if (b$stand_type == "individual") {
+      if (country == "spain") {
 
-        if (country == "spain") {
+        if (b$stand_type == "individual") {
 
             # list object to store results per species.
             df <- list()
@@ -104,6 +96,10 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
             b$trees[[1]] <- df
             b$stand_type <- "ipm"
         }
+      }  else if (country == "usa") {
+        stop("Calculations for country = 'usa' have not yet been implemented")
+      } else if (country == "france") {
+        stop("Calculations for country = 'france' have not yet been implemented")
       }
     }
     a[i, ] <- b

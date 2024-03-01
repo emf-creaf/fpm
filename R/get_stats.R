@@ -1,12 +1,33 @@
-#' Title
+#' Calculate descriptive statistics of \code{sf} stands object.
+#'
+#' @description
+#' New fields are added to the \code{stands} \code{sf} object containing plot statistics.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param verbose
 #'
 #' @return
+#' The same \code{sf} input object with new fields containing plot statistics.
+#'
+#' @details
+#' Fields are added to the \code{a} object containing the basal area per species (\code{ba_species}),
+#' total basal area (\code{ba}), number of trees per species (\code{ntrees_species})
+#' and total number of trees (\code{ntrees}).
+#'
 #' @export
 #'
 #' @examples
+#' #' a <- start_stands()
+#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#'
+#' # Next, we add one stand.
+#' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
+#' a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+#'
+#' # Add fields with statistics.
+#' a <- get_stats(a)
+#'
 get_stats <- function(a, verbose = T) {
 
 
@@ -15,8 +36,8 @@ get_stats <- function(a, verbose = T) {
 
 
   # We may (or may not) need this below.
-  xabs <- get_parameters(a, "integvar")
-  h <- get_parameters(a, "h")
+  xabs <- get_parameters(a, "integvars")[[1]]
+  h <- get_parameters(a, "h")[[1]]
 
 
   # If verbose is TRUE, print a progress bar.

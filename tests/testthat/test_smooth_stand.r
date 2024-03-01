@@ -1,56 +1,91 @@
 test_that("Smoothing discrete tree data", {
 
-  # First initialize one single stand.
-  a <- start_stand("ID1", 5, 45, "EPSG:4326")
-  a <- set_attributes(a, country = "spain")
+  # Load simulated IFN data.
+  load("..\\..\\data\\IFNtrees.Rdata")
+  load("..\\..\\data\\IFNseedlings.Rdata")
+  load("..\\..\\data\\IFNsaplings.Rdata")
 
-  # Next, we merge other stands.
-  for (i in 2:10) {
-    b <- start_stand(paste0("ID",i), 5, 45, "EPSG:4326")
-    b <- set_attributes(b, country = "spain")
-    a <- merge_stands(a,b)
-  }
+  # load(".\\data\\IFNtrees.Rdata")
+  # load(".\\data\\IFNseedlings.Rdata")
+  # load(".\\data\\IFNsaplings.Rdata")
 
-  # Now we add tree information.
-  for (i in 1:10) {
-    df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)),
-    dbh1 = 7.5+runif(5)*20, factor_diam1 = sample(c(127.324, 31.83099),5,replace=T))
-    a <- build_stand(a, paste0("ID",i), df,
+
+  # Initialize only 20 stands.
+  idplot <- unique(trees$idplot)
+  i <- match(idplot, trees$idplot)
+  n <- length(idplot)
+  a <- start_stands()
+  a <- set_parameters(a, param = list(crs = "EPSG:32630"))
+
+
+  # Now we add tree information for those plots.
+  df <- list()
+  for (i in idplot) {
+    df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
+    a <- build_stands(a, i, data = list(df = df[[i]],
                      data_type = "trees",
                      stand_type = "individual",
-                     date = 2000,
-                     country = "spain")
-
+                     date = as.Date("2000-01-01")), verbose = F)
   }
 
-  # Convolve to obtain a continuous distribution.
-  x <- data.frame(Pnigra = seq(7.5,200,length=1000), Phalep = seq(7.5,250,length=1000))
-  a <- set_attributes(a, integvars = x)
-  b <- smooth_stand(a)
+  # Seedlings.
+  seedlings$n <- seedlings$n/3
+  for (i in idplot) {
+    z <- seedlings[seedlings$idplot == i, c("species", "n")]
+    if (nrow(z) > 0) {
+      a <- build_stands(a, i, data = list(df = z,
+                       data_type = "seedlings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01")))
+    }
+  }
+
+  # Saplings.
+  for (i in idplot) {
+    z <- saplings[saplings$idplot == i, c("species", "n")]
+    if (nrow(z) > 0) {
+      a <- build_stand(a, i, data = list(df = z,
+                       data_type = "saplings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01")))
+    }
+  }
+
+
+  # Convolve to obtain a continuous distribution and pdate.
+  x <- list('Pinus nigra' = seq(7.5,220,length=1000),
+            'Pinus halepensis' = seq(7.5,250,length=1500),
+            'Quercus ilex' = seq(7.5,250,length=2000))
+  a <- set_parameters(a, param = list(integvars = x))
+  b <- smooth_stands(a, verbose = F)
+
 
   # Check classes.
   expect_identical(class(b), c("sf", "data.frame"))
 
-  # Check data.frame class.
-  expect_identical(sapply(1:nrow(b), function(i) class(a[i,]$trees[[1]])),
-                   rep("data.frame",nrow(b)))
-
   # Check type of stand.
-  expect_true(all(sapply(1:nrow(b), function(i) b[i,]$stand_type == "ipm")))
+  expect_true(all(sapply(1:nrow(b), function(i) b$stand_type == "ipm")))
 
   # Check number of rows in tree data.frames.
-  expect_true(all(sapply(1:nrow(b), function(i) nrow(b[i,]$trees[[1]])) == nrow(x)))
+  expect_true(all(sapply(1:nrow(b), function(i) nrow(b$trees[[i]])) == nrow(x)))
 
-  # Check number of columns in tree data.frames.
-  expect_true(all(sapply(1:nrow(b), function(i) ncol(b[i,]$trees[[1]]) == length(unique(a[i,]$trees[[1]]$species)))))
+  # Check number of columns in tree list.
+  expect_true(all(sapply(1:nrow(b), function(i) length(b$trees[[i]]) == length(unique(a$trees[[i]]$species)))))
 
   # Check initial species are still there.
-  expect_true(all(sapply(1:nrow(b), function(i) all(colnames(b[i,]$trees[[1]]) %in% a[i,]$trees[[1]]$species))))
+  expect_true(all(sapply(1:nrow(b), function(i) all(names(b$trees[[i]]) %in% a$trees[[i]]$species))))
 
   # Check that smooth_stand has not generated any NA's.
-  expect_true(all(sapply(1:nrow(b), function(i) all(!is.na(b[i,]$trees[[1]])))))
+  expect_true(all(sapply(1:nrow(b), function(i) all(!is.na(b$trees[[i]]$trees)))))
 
-  # Check that smooth_stand has not modified the number of trees.
-
+  # # Check that smooth_stand has not modified the number of trees.
+  # sa <- get_stats(a, verbose = F)
+  # sb <- get_stats(b, verbose = F)
+  #
+  #
+  #
+  # # Check that seedlings and saplings have not been modified.
+  # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$seedlings, b[[x]]$seedlings))))
+  # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$saplings, b[[x]]$saplings))))
 
 })

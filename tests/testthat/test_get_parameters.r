@@ -16,11 +16,11 @@ test_that("Get attributes of sf tree stand object", {
 
 
   # Tests parameter names one by one.
-  expect_identical(get_parameters(a, "country"), "spain")
-  expect_identical(get_parameters(a, "integvars"), x)
-  expect_identical(get_parameters(a, "h"), sapply(x, function(y) y[2]-y[1], simplify = F))
-  expect_identical(get_parameters(a, "min_dbh"), min_dbh)
-  expect_identical(get_parameters(a, "max_dbh"), max_dbh)
+  expect_identical(get_parameters(a, "country")[[1]], "spain")
+  expect_identical(get_parameters(a, "integvars")[[1]], x)
+  expect_identical(get_parameters(a, "h")[[1]], sapply(x, function(y) y[2]-y[1], simplify = F))
+  expect_identical(get_parameters(a, "min_dbh")[[1]], min_dbh)
+  expect_identical(get_parameters(a, "max_dbh")[[1]], max_dbh)
 
   # All parameters at the same time.
   p <- get_parameters(a, c("country", "integvars", "h", "min_dbh", "max_dbh", "crs"))

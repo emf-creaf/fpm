@@ -20,7 +20,7 @@ test_that("Checking plots", {
   a <- NULL
   for (j in idplot) {
     df[[j]] <- trees[trees$idplot == j, c("dbh", "species")]
-    a <- a |> build_stand(idplot = j, df  = trees[trees$idplot == j, c("dbh", "species")],
+    a <- a |> build_stands(idplot = j, df  = trees[trees$idplot == j, c("dbh", "species")],
                           data_type = "trees",
                           stand_type = "individual",
                           date = as.Date("2000-01-01"),
@@ -33,7 +33,7 @@ test_that("Checking plots", {
   for (j in idplot) {
     z <- seedlings[seedlings$idplot == j, c("species", "n")]
     if (nrow(z) > 0) {
-      a <- build_stand(a, j, df = z,
+      a <- build_stands(a, j, df = z,
                        data_type = "seedlings",
                        stand_type = "individual",
                        date = as.Date("2000-01-01"),
@@ -46,7 +46,7 @@ test_that("Checking plots", {
   for (j in idplot) {
     z <- saplings[saplings$idplot == j, c("species", "n")]
     if (nrow(z) > 0) {
-      a <- build_stand(a, j, df = z,
+      a <- build_stands(a, j, df = z,
                        data_type = "saplings",
                        stand_type = "individual",
                        date = as.Date("2000-01-01"),
