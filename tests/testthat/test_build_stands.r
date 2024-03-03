@@ -1,9 +1,9 @@
 test_that("Building tree stands", {
 
   # Load simulated IFN data.
-  load("..\\..\\data\\IFNtrees.Rdata")
-  load("..\\..\\data\\IFNseedlings.Rdata")
-  load("..\\..\\data\\IFNsaplings.Rdata")
+  load("..\\..\\data\\trees.Rdata")
+  load("..\\..\\data\\seedlings.Rdata")
+  load("..\\..\\data\\saplings.Rdata")
 
   # Load simulated IFN data.
   # load(".\\data\\IFNtrees.Rdata")

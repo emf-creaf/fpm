@@ -1,80 +1,87 @@
-test_that("Sapling model", {
+test_that("full fpm model", {
 
 
 
-  # source("./R/start_stands.r")
-  # source("./R/set_parameters.r")
-  # source("./R/build_stand.r")
-  # source("./R/smooth_stands.r")
-  # source("./R/helpers.r")
-  # source("./R/factor_diam_IFN.r")
-  # source("./R/get_parameters.r")
-  # source("./R/kernsmooth.r")
-  # source("./R/get_stats.r")
-  # source("./R/calc_ba.r")
-  # source("./R/calc_ntrees.r")
-  # source("./R/get_species.r")
-  # source("./R/dtrexp.r")
-  # source("./R/clear_stands.r")
-  # source("./R/numquad_vm.r")
+  source("./R/start_stands.r")
+  source("./R/set_parameters.r")
+  source("./R/build_stands.r")
+  source("./R/smooth_stands.r")
+  source("./R/helpers.r")
+  source("./R/factor_diam_IFN.r")
+  source("./R/get_parameters.r")
+  source("./R/kernsmooth.r")
+  source("./R/get_stats.r")
+  source("./R/calc_ba.r")
+  source("./R/calc_ntrees.r")
+  source("./R/get_species.r")
+  source("./R/dtrexp.r")
+  source("./R/clear_stands.r")
+  source("./R/numquad_vm.r")
   #
-  # source("./R/fpm_seedling.r")
-  # source("./R/fpm_sapling.r")
-  # source("./R/fpm_ingrowth.r")
-  # source("./R/fpm_survival.r")
-  # source("./R/fpm_growth.r")
-  # source("./R/fpm_quadrature.r")
-  # source("./R/fpm.r")
+  source("./R/fpm_seedling.r")
+  source("./R/fpm_sapling.r")
+  source("./R/fpm_ingrowth.r")
+  source("./R/fpm_survival.r")
+  source("./R/fpm_growth.r")
+  source("./R/fpm_quadrature.r")
+  source("./R/fpm.r")
   #
-  # source("./R/collect_parts.R")
+  source("./R/collect_parts.R")
 
 
 
   # Load simulated IFN data.
-  load("..\\..\\data\\IFNtrees.Rdata")
-  load("..\\..\\data\\IFNseedlings.Rdata")
-  load("..\\..\\data\\IFNsaplings.Rdata")
+  # load("..\\..\\data\\trees.Rdata")
+  # load("..\\..\\data\\seedlings.Rdata")
+  # load("..\\..\\data\\saplings.Rdata")
+
+  load(".\\data\\trees.Rdata")
+  load(".\\data\\seedlings.Rdata")
+  load(".\\data\\saplings.Rdata")
 
   # Initialize stands.
   idplot <- unique(trees$idplot)
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
-  a <- start_stands(idplot = idplot, x = trees$utm_x[i], y = trees$utm_y[i], "EPSG:32630")
-  a <- set_parameters(a, country = "spain")
+  a <- start_stands()
 
 
   # Now we add trees to stands.
-  df <- list()
+  df <- dfseed <- dfsapl <- list()
+
   for (i in idplot) {
-    df[[i]] <- data.frame(species = c(sample(c("Pinus nigra","Pinus halepensis"),5,replace=T)),
-                          dbh = dbh, factor_diam = factor_diam_IFN(dbh, "area"))
-    a <- build_stand(a, paste0("ID",i), df[[i]],
-                      data_type = "trees",
-                      stand_type = "individual",
-                      date = as.Date("2000-01-01"),
-                      country = "spain")
+    df[[i]] <- trees[trees$idplot == i, c("species", "dbh")]
+    if (nrow(df[[i]]) > 0) {
+      a <- build_stands(a, i, data = list(df = df[[i]],
+                        data_type = "trees",
+                        stand_type = "individual",
+                        date = as.Date("2000-01-01")), verbose = F)
+    }
 
-    a <- build_stand(a, paste0("ID",i),
-                     data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = runif(2)),
-                     data_type = "seedlings",
-                     stand_type = "individual",
-                     date = as.Date("2000-01-01"),
-                     country = "spain")
+    dfseed[[i]] <- seedlings[seedlings$idplot == i, c("species", "n")]
+    if (nrow(dfseed[[i]]) > 0) {
+      dfseed[[i]]$n <- dfseed[[i]]$n/3
+      a <- build_stands(a, i, data = list(df = dfseed[[i]],
+                       data_type = "seedlings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01")))
+    }
 
-    a <- build_stand(a, paste0("ID",i),
-                     data.frame(species = c("Pinus nigra", "Pinus halepensis"), n = sample(1:50, 2)),
-                     data_type = "saplings",
-                     stand_type = "individual",
-                     date = as.Date("2000-01-01"),
-                     country = "spain")
+    dfsapl[[i]] <- saplings[saplings$idplot == i, c("species", "n")]
+    if (nrow(dfsapl[[i]]) > 0) {
+      a <- build_stands(a, i, data = list(df = dfsapl[[i]],
+                       data_type = "saplings",
+                       stand_type = "individual",
+                       date = as.Date("2000-01-01")))
+    }
   }
 
 
-
-
   # Setting parameters and converting to continuous.
-  x <- list('Pinus nigra' = seq(7.5,200,length=1000), 'Pinus halepensis' = seq(7.5,250,length=1500))
-  a <- set_parameters(a, integvars = x) |> smooth_stands(verbose = F)
+  x <- list('Pinus nigra' = seq(7.5,200,length=1000),
+            'Quercus ilex' = seq(7.5,250,length=1500),
+            'Pinus halepensis' = seq(7.5,270,length=1500))
+  a <- a|> set_parameters(param = list(integvars = x)) |> smooth_stands(verbose = F)
 
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Seedling models V9.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Sapling models V9.Rdata")
@@ -94,8 +101,7 @@ test_that("Sapling model", {
   df$idplot <- a$idplot
 
 
-  a <- a |> set_parameters(integvars = x) |> set_parameters(country = "spain") |>
-    set_parameters(max_dbh = lapply(x, max)) |> set_parameters(min_dbh = lapply(x, min))
+  a <- a |> set_parameters(param = list(integvars = x, max_dbh = lapply(x, max), min_dbh = lapply(x, min)))
 
   models_list <- list(seedlings_model = seedlings_model,
                       saplings_model = saplings_model,

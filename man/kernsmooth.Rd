@@ -40,7 +40,8 @@ h <- .01
 x <- seq(0, 100, by = h)
 y <- runif(10)
 
-# With and without normalization
+# With and without normalization. The output should be 10, i.e. the number
+# of points.
 znorm <- kernsmooth(x, y, width = 1)
 z <- kernsmooth(x, y, width = 1, normalization = F)
 print(c(With = trap(znorm, h), Without = trap(z, h)))

@@ -2,7 +2,7 @@
 #'
 #' @param a
 #' @param df
-#' @param verbose
+?R#' @param verbose
 #' @param models_list
 #' @param statistics
 #'

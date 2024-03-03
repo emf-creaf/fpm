@@ -104,6 +104,13 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
   }
 
 
+  # Check that df is not empty or NULL.
+  if (nrow(df) == 0 | is.null(df)) {
+    if (verbose) warning("Input 'df' in list 'data' is empty or NULL. Returning...")
+    return(a)
+  }
+
+
   # Calculations for spain.
   if (country == "spain") {
 
@@ -156,11 +163,10 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
 
 
         # Other checks.
-        ff <- function() stop("Error!")
         if (data_type == "seedlings") {
-          a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1, allow.na = F), n, error_fun = ff)
+          a$seedlings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, 1, allow.na = F), n)
         } else if (data_type == "saplings") {
-          a$saplings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, Inf, allow.na = F), n, error_fun = ff)
+          a$saplings[[id]] <- df |> assertr::assert(assertr::within_bounds(0, Inf, allow.na = F), n)
         }
       }
     }

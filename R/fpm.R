@@ -41,11 +41,12 @@ fpm <- function(a, df, models_list,  statistics = NULL, species = NULL, verbose 
 
 
   # Abscissas per species.
-  x <- get_parameters(a, "integvar")
-  h <- get_parameters(a, "h")
+  p <- get_parameters(a, param = c("integvars", "h", "min_dbh", "max_dbh"))
+  h <- p$h
+  x <- p$integvars
   nx <- lapply(x, length)
-  min_dbh <- get_parameters(a, "min_dbh")
-  max_dbh <- get_parameters(a, "max_dbh")
+  min_dbh <- p$min_dbh
+  max_dbh <- p$max_dbh
 
 
   # Compute young and ingrowth trees.

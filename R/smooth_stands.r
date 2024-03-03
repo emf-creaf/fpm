@@ -27,9 +27,14 @@
 #' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
 #' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 #'
+#' x <- list('Pinus nigra' = seq(7.5,220,length=1000),
+#'   'Pinus halepensis' = seq(7.5,250,length=1500),
+#'   'Quercus ilex' = seq(7.5,250,length=2000))
+#' a <- set_parameters(a, param = list(integvars = x))
+#'
 #' # Next, we add one stand.
 #' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-#' a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+#' a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 #'
 #' # Convolve every tree in every plot with a Gaussian window.
 #' b <- smooth_stands(a)
@@ -41,13 +46,13 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
 
 
   mf <- match.call()
-  m <- match(c("a", "idplot", "smooth_type", "width", "verbose"), tolower(names(mf)[-1]))
+  m <- match(c("a", "smooth_type", "width", "verbose"), tolower(names(mf)[-1]))
 
 
   # We need the integration variable for the calculations if any stand is "ipm".
   x <- get_parameters(a, "integvars")$integvars
-  h <- get_parameters(a, "h")$h
   stopifnot("Attribute 'integvars' is missing" = !is.null(x))
+  h <- get_parameters(a, "h")$h
 
 
   # Check country.
@@ -56,9 +61,11 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
 
   # If progress is TRUE, print a progress bar.
   if (verbose) {
-    cat("\n -> smooth_stands: Transforming discrete tree data to continuous...\n")
+
+    fname <- as.character(match.call()[[1]])
+    cat(paste0("\n -> ", fname, ": Transforming discrete tree data to continuous...\n"))
     pb <- txtProgressBar(min = 0,
-                         max = length(id),
+                         max = nrow(a),
                          style = 3,
                          width = 50,
                          char = "=")

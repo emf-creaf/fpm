@@ -27,6 +27,13 @@ fpm_seedling <- function(a, df, models_list,  statistics = NULL, species = NULL,
   country <- match.arg(tolower(attr(a, "country")), c("spain", "france", "usa"))
 
 
+  # Check that df is not empty or NULL.
+  if (nrow(df) == 0 | is.null(df)) {
+    if (verbose) warning("Input 'df' in list 'data' is empty or NULL. Returning...")
+    return(a)
+  }
+
+
   # Fetch models.
   seedlings_model <- models_list[["seedlings_model"]]
 
@@ -74,7 +81,14 @@ fpm_seedling <- function(a, df, models_list,  statistics = NULL, species = NULL,
 
         for (k in species$species_all[[i]]) {
           dat$ntrees_species <- if (length(statistics$ntrees_species[[i]])>0) with(statistics$ntrees_species[[i]], ntrees[species == k]) else 0
+          df2 <- b$seedlings[[1]]
+  kk<-if (length(b$seedlings[[1]])>0) with(b$seedlings[[1]], n[species == k]) else 0
+print(1)
+print(b$seedlings[[1]])
+print(2)
+print(k)
           dat$nseedlings <- if (length(b$seedlings[[1]])>0) with(b$seedlings[[1]], n[species == k]) else 0
+print(3)
           if (dat$ntrees_species > 0 | dat$nseedlings != 0) {
             nsee <- rbind(nsee, data.frame(species = k, n = predict(seedlings_model[[k]], type = "response", newdata = dat)))
           }

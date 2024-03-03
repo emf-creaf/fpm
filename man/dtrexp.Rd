@@ -33,6 +33,7 @@ y <- dtrexp(x,rate=rate,min=3,max=8)
 plot(x,y,type="l")
 
 # Its integral must be =1 for y to be a distribution.
-MiscMath::quad_ext_simpson(y,x[2]-x[1])
+trap <- function(y, h) (sum(y) - (y[1]+y[length(y)])/2)*h
+trap(y,x[2]-x[1])
 
 }

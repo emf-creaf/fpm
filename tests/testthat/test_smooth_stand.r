@@ -1,9 +1,9 @@
 test_that("Smoothing discrete tree data", {
 
   # Load simulated IFN data.
-  load("..\\..\\data\\IFNtrees.Rdata")
-  load("..\\..\\data\\IFNseedlings.Rdata")
-  load("..\\..\\data\\IFNsaplings.Rdata")
+  load("..\\..\\data\\trees.Rdata")
+  load("..\\..\\data\\seedlings.Rdata")
+  load("..\\..\\data\\saplings.Rdata")
 
   # load(".\\data\\IFNtrees.Rdata")
   # load(".\\data\\IFNseedlings.Rdata")
@@ -44,7 +44,7 @@ test_that("Smoothing discrete tree data", {
   for (i in idplot) {
     z <- saplings[saplings$idplot == i, c("species", "n")]
     if (nrow(z) > 0) {
-      a <- build_stand(a, i, data = list(df = z,
+      a <- build_stands(a, i, data = list(df = z,
                        data_type = "saplings",
                        stand_type = "individual",
                        date = as.Date("2000-01-01")))
