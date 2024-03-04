@@ -52,18 +52,16 @@ get_stats <- function(a, verbose = T) {
   }
 
 
-  # Create a new 'sf' object to store the statistics for each plot.
-  x <- a[, c("geometry", "idplot", "date", "stand_type")]
-  x$ba_species <- vector("list", length(x$idplot))
-  x$ba <- -1
-  x$ntrees_species <- vector("list", length(x$idplot))
-  x$ntrees <- -1
-
+  # Add new fields to 'a'.
+  a$ba_species <- vector("list", length(a$idplot))
+  a$ba <- -1
+  a$ntrees_species <- vector("list", length(a$idplot))
+  a$ntrees <- -1
 
 
   # Go plot by plot.
   icount = 0
-  for (i in 1:length(x$idplot)) {
+  for (i in 1:length(a$idplot)) {
 
     # Progress bar.
     icount <- icount + 1
@@ -71,13 +69,13 @@ get_stats <- function(a, verbose = T) {
 
     b <- a[i, ]
 
-    # Calculates basal areas for trees. If 'stand_type' is "individual", x and h are not used anyway.
-    if (b$stand_type != "") {
+    # Calculates basal areas for trees, if there is any.
+    if (length(b$trees) > 0) {
       if (b$stand_type == "ipm") stopifnot("Parameter 'integvars' has not been specified" = !is.null(xabs))
-      x$ba_species[[i]] <- calc_ba(b, xabs, h)
-      x$ntrees_species[[i]] <- calc_ntrees(b, xabs, h)
-      x$ba[i] <- sum(unlist(x$ba_species[[i]]$ba))
-      x$ntrees[i] <- sum(unlist(x$ntrees_species[[i]]$ntrees))
+      a$ba_species[[i]] <- calc_ba(b, xabs, h)
+      a$ntrees_species[[i]] <- calc_ntrees(b, xabs, h)
+      a$ba[i] <- sum(unlist(a$ba_species[[i]]$ba))
+      a$ntrees[i] <- sum(unlist(a$ntrees_species[[i]]$ntrees))
     }
   }
 
@@ -85,6 +83,6 @@ get_stats <- function(a, verbose = T) {
   # Extra carriage return.
   if (verbose) cat("\n")
 
-  return(x)
+  return(a)
 
 }

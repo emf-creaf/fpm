@@ -11,12 +11,13 @@
 #' be retrieved.
 #'
 #' @return
-#' A \code{list} whose elements correspond to the input parameters.
+#' A \code{list} whose elements correspond to the input parameters. Parameter
+#' \code{species} can only be computed via \code{\link{get_species}} function.
 #'
 #' @export
 #'
 #' @details
-#' See \code{\link{start_stand}} and \code{\link{set_parameters}}for details.
+#' See \code{\link{start_stand}} and \code{\link{set_parameters}} for details.
 #'
 #' @examples
 #' a <- start_stands()
@@ -31,7 +32,7 @@ get_parameters <- function(a, param = NULL) {
 
 
   # Check that parameters are correct. If NULL, all parameters.
-  par <- c("country", "integvars", "h", "min_dbh", "max_dbh", "crs")
+  par <- c("country", "integvars", "h", "min_dbh", "max_dbh", "crs", "species")
 
   if (is.null(param)) {
     param <- par

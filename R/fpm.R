@@ -16,43 +16,61 @@
 #' @export
 #'
 #' @examples
-fpm <- function(a, df, models_list,  statistics = NULL, species = NULL, verbose = T) {
+fpm <- function(a, data = list(), verbose = T) {
+
 
   # Time now.
   if (verbose) t1 <- proc.time()[3]
 
 
-  # First checks.
+  # Check sf.
   stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
 
 
-  # If idplot identifier in 'a' and 'df' do not match exactly, stop.
-  stopifnot("Index 'idplot' in a' and 'df' do not match exactly" = identical(a$idplot, df$idplot))
-
-
-  # Which country' inventory is it?
+  # Which country is it?
+  country <- get_parameters(a, "country")$country
   country <- match.arg(tolower(attr(a, "country")), c("spain", "france", "usa"))
 
 
+  # data is provided.
+  stopifnot("Input 'data' list must be provided" = !is.null(data))
+  stopifnot("Input 'data' must be a list" = inherits(data, "list"))
+
+
+  # Check df in data.
+  stopifnot("Input 'df' in list 'data' cannot be NULL" = !is.null(data$df))
+  stopifnot("Input 'df' must be a data.frame" = is.data.frame(data$df))
+  stopifnot("Input 'df' in list 'data' cannot be empty" = nrow(data$df) > 0)
+
+
+  # If idplot identifier in 'a' and 'df' do not match exactly, stop.
+  stopifnot("Index 'idplot' must be provided in data.frame 'df' of 'data' list" = "idplot" %in% names(data$df))
+  stopifnot("Index 'idplot' in a' and 'df' must match exactly" = identical(a$idplot, data$df$idplot))
+
+
+  # Check models_list is not NULL or empty.
+  stopifnot("Input 'models_list' in list 'data' cannot be NULL" = !is.null(data$models_list))
+  stopifnot("Input 'models_list' in list 'data' cannot be empty" = nrow(data$models_list) > 0)
+
+
   # Get stats and species per plot.
-  if (is.null(species) | !inherits(species, "sf")) species <- get_species(a, verbose = verbose)
-  if (is.null(statistics) | !inherits(statistics, "sf")) statistics <- get_stats(a, verbose = verbose)
+  a <- a |> get_stats(verbose = verbose) |> get_species(verbose = verbose)
 
 
   # Abscissas per species.
   p <- get_parameters(a, param = c("integvars", "h", "min_dbh", "max_dbh"))
-  h <- p$h
   x <- p$integvars
+  h <- p$h
   nx <- lapply(x, length)
   min_dbh <- p$min_dbh
   max_dbh <- p$max_dbh
 
 
   # Compute young and ingrowth trees.
-  seedling <- fpm_seedling(a, df, models_list, statistics, species, verbose = verbose)
-  sapling <- fpm_sapling(a, df, models_list, statistics, species, verbose = verbose)
-  ingrowth <- fpm_ingrowth(a, df, models_list, statistics, species, verbose = verbose)
+  seedlings <- fpm_elements(a, "seedlings", data = data, verbose = verbose)
+browser()
+  saplings <- fpm_elements(a, "saplings", data = data, verbose = verbose)
+  ingrowth <- fpm_elements(a, "ingrowth", data = data, verbose = verbose)
 
 
   # If verbose is TRUE, print a progress bar.

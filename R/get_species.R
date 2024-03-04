@@ -1,27 +1,43 @@
 #' Extract species names of \code{sf} stand object.
 #'
 #' @description
-#' Extract names of all species (i.e. seedlings, saplings, trees) per plot and stores their
-#' names in a new field.
+#' Extract names of all species (i.e. for Spain, seedlings, saplings and trees) per plot and stores their
+#' names in a new field. It also adds a new parameter to 'a' called "species" containing
+#' the names of all species present.
 #'
 #' @param a \code{sf} object containing a number of POINT geometry types
 #' @param verbose logical, if set to TRUE a progress bar will be printed on screen.
 #'
 #' @details
-#' Additional details...
+#' Simple counting of species per plot.
 #'
 #' @return
-#' Same \code{sf} object with three additional fields. The first one, named "species",
-#' includes a list with three elements, "trees", "seedlings" and "saplings". Each one of these
-#' elements contains the corresponding species names per plot. The second field, names "species_all",
+#' Same \code{sf} stand object with three additional fields. For parameter \code{country}="spain",
+#' the first field, named "species", includes a list with three elements, "trees", "seedlings" and "saplings".
+#' Each one of these
+#' elements contains the corresponding species names per plot. The second field, named "species_all",
 #' will be a character vector containing the names of all species in that particular plot, irrespective
-#' of whether they correspond to trees, seedlings or saplings. The third field, names "nspecies", will
+#' of whether they correspond to trees, seedlings or saplings. The third field, named "nspecies", will
 #' be a single number with the total number of species of trees, seedlings or saplings, present in that
-#' plot. Therefore, this last field is simply the result of applying function \code{length} to "nspecies".
+#' plot. Therefore, this last field is simply the result of applying function \code{length} to "species_all".
+#' A new parameter (aka attribute) is added to 'a' containing the names of all species present.
+#'
+#' Cases other than \code{country}="spain" have not yet been implemented.
 #'
 #' @export
 #'
 #' @examples
+#' a <- start_stands()
+#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#'
+#' # Next, we add one stand.
+#' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
+#' a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+#'
+#' # Calculate species.
+#' a <- get_species(a)
+#'
 get_species<- function(a, verbose = T) {
 
   # Must be an "sf" object.
@@ -44,16 +60,12 @@ get_species<- function(a, verbose = T) {
   # Retrieve parameters.
   p <- a |> get_parameters("country")
   country <- p$country
-  data_type <- data$data_type
-  stand_type <- data$stand_type
 
 
-  # Create a new 'sf' object to store the names of the species per plot.
-  x <- a
+  # Add new fields to 'a'.
   if (country == "spain") {
-    x$trees <- x$seedlings <- x$saplings <- NULL
-    x$species <- x$species_all <- vector("list", length(x$idplot))
-    x$nspecies <- 0
+    a$species <- a$species_all <- vector("list", length(a$idplot))
+    a$nspecies <- 0
   } else if (country == "usa") {
     stop("Calculations for country = 'usa' have not yet been implemented")
   } else if (country == "france") {
@@ -61,6 +73,8 @@ get_species<- function(a, verbose = T) {
   }
 
 
+  # Little function used below.
+  ff <- function(z) if (length(z)) unique(z$species) else character()
 
   # Go plot by plot.
   icount = 0
@@ -68,25 +82,22 @@ get_species<- function(a, verbose = T) {
   for (i in 1:nrow(a)) {
 
     # Progress bar.
-    icount <- icount +
-      1
+    icount <- icount + 1
     if (verbose) setTxtProgressBar(pb, icount)
 
 
-    x$species[[i]] <- list(seedlings = character(),
+    a$species[[i]] <- list(seedlings = character(),
                            saplings = character(),
                            trees = character())
 
     b <- a[i, ]
 
     if (country == "spain") {
+      seedlings <- ff(b$seedlings[[1]])
+      saplings <- ff(b$saplings[[1]])
 
-      seedlings <- if (length(b$trees[[1]]$seedlings) > 0) unique(b$trees[[1]]$seedlings$species) else character()
-      saplings <- if (length(b$trees[[1]]$saplings) > 0) unique(b$trees[[1]]$saplings$species) else character()
-
-      # If "individual", there should be a column named "species", even for adult trees.
+      # If "individual", there must be a column named "species", even for adult trees.
       # If "ipm", elements in the "trees" list should correspond to species.
-      # "mpm" has not been implemented yet.
 
       if (length(b$trees[[1]]) > 0) {
         if (b$stand_type == "individual") {
@@ -97,28 +108,24 @@ get_species<- function(a, verbose = T) {
       } else trees <- character()
 
 
-
-
       # Output.
-      x$species[[i]] <- mget(c("seedlings", "saplings", "trees"))
-      x$species_all[[i]] <- unique(c(seedlings, saplings, trees))
-      sp <- c(sp, x$species_all[[i]])
-      x$nspecies[i] <- length(x$species_all[[i]])
+      a$species[[i]] <- mget(c("seedlings", "saplings", "trees"))
+      a$species_all[[i]] <- unique(c(seedlings, saplings, trees))
+      sp <- c(sp, a$species_all[[i]])
+      a$nspecies[i] <- length(a$species_all[[i]])
 
     }
   }
 
 
-
-
   # Store the name of the species in 'x'.
-  attr(x, "species") <- unique(sp)
+  attr(a, "species") <- unique(sp)
 
 
   # Extra carriage return.
   if (verbose) cat("\n")
 
 
-  return(x)
+  return(a)
 
 }
