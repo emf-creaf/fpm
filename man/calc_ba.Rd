@@ -2,15 +2,15 @@
 % Please edit documentation in R/calc_ba.R
 \name{calc_ba}
 \alias{calc_ba}
-\title{Title}
+\title{Calculates basal area per plot and species.}
 \usage{
-calc_ba(a, x = NULL, h = NULL)
+calc_ba(a)
 }
 \arguments{
-\item{h}{}
+\item{a}{a \code{sf} object containing a single row.}
 }
 \description{
-Title
+It calculates the basal area, total and per species, for a plot.
 }
 \details{
 This function is used by \code{update_stands}.

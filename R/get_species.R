@@ -73,8 +73,8 @@ get_species<- function(a, verbose = T) {
   }
 
 
-  # Little function used below.
-  ff <- function(z) if (length(z)) unique(z$species) else character()
+  # Little function used below. Get unique species from column "species" if it is not empty.
+  ff <- function(z) if (length(z) > 0) unique(z$species) else character()
 
   # Go plot by plot.
   icount = 0
@@ -93,8 +93,11 @@ get_species<- function(a, verbose = T) {
     b <- a[i, ]
 
     if (country == "spain") {
+
+
       seedlings <- ff(b$seedlings[[1]])
       saplings <- ff(b$saplings[[1]])
+
 
       # If "individual", there must be a column named "species", even for adult trees.
       # If "ipm", elements in the "trees" list should correspond to species.

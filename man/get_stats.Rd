@@ -23,13 +23,13 @@ total basal area (\code{ba}), number of trees per species (\code{ntrees_species}
 and total number of trees (\code{ntrees}).
 }
 \examples{
-#' a <- start_stands()
+a <- start_stands()
 max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
 a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
 
 # Next, we add one stand.
 df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 
 # Add fields with statistics.
 a <- get_stats(a)

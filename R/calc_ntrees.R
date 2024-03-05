@@ -1,8 +1,9 @@
-#' Title
+#' Calculates number of trees per plot and species.
 #'
-#' @param a
-#' @param x
-#' @param h
+#' @description
+#' It calculates the number of trees, total and per species, for a plot.
+#'
+#' @param a a \code{sf} object containing a single row.
 #'
 #' @return
 #' @export
@@ -12,10 +13,24 @@
 #'
 #'
 #' @examples
-calc_ntrees <- function(a, x = NULL, h = NULL) {
+calc_ntrees <- function(a) {
 
 
-  stopifnot("Input 'a' must be a list" = is.list(a))
+  # Check that input 'a' is an 'sf' object.
+  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
+
+
+  # Check that there is only one row.
+  stopifnot("Input 'a' must be a single row" = (nrow(a) == 1))
+
+
+  # Retrieve parameters. We need the integration variable for the calculations
+  # only if any stand is "ipm", but we try to retrieve it nevertheless and check its
+  # existence below if stand_type == "ipm".
+  p <- a |> get_parameters(c("integvars", "h", "country"))
+  country <- p$country
+  x <- p$integvars
+  h <- p$h
 
 
   # If x is not specified, stand_type is individual.

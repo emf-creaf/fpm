@@ -4,7 +4,7 @@
 \alias{fpm}
 \title{Implementation of a forest dynamics model}
 \usage{
-fpm(a, df, data = list(), verbose = T)
+fpm(a, data = list(), verbose = T)
 }
 \arguments{
 \item{species}{}

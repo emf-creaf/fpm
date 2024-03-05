@@ -13,6 +13,7 @@ test_that("full fpm model", {
   source("./R/get_stats.r")
   source("./R/calc_ba.r")
   source("./R/calc_ntrees.r")
+  source("./R/calc_descriptive.r")
   source("./R/get_species.r")
   source("./R/dtrexp.r")
   source("./R/clear_stands.r")
@@ -82,7 +83,7 @@ test_that("full fpm model", {
   x <- list('Pinus nigra' = seq(7.5,200,length=1000),
             'Quercus ilex' = seq(7.5,250,length=1500),
             'Pinus halepensis' = seq(7.5,270,length=1500))
-  a <- a|> set_parameters(param = list(integvars = x)) |> smooth_stands(verbose = F)
+  a <- a|> set_parameters(param = list(integvars = x)) |> smooth_stands(verbose = F) |> get_stats()
 
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Seedling models V9.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Sapling models V9.Rdata")

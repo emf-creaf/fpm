@@ -54,7 +54,7 @@ fpm <- function(a, data = list(), verbose = T) {
 
 
   # Get stats and species per plot.
-  a <- a |> get_stats(verbose = verbose) |> get_species(verbose = verbose)
+  a <- a |> get_species(verbose = verbose) |> get_stats(verbose = verbose)
 
 
   # Abscissas per species.

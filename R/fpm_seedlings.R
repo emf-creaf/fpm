@@ -1,45 +1,39 @@
 #' Title
 #'
 #' @param a
-#' @param df
-#' @param models_list
-#' @param statistics
-#' @param species
-#' @param verbose
+#' @param data \code{list} whose elements are required to calculate the \code{type} component.
+#' @param verbose logical, if set to TRUE warning messages may be printed.
 #'
 #' @return
-#' @export
 #'
 #' @examples
 fpm_seedlings <- function(a, data = list(), verbose = T) {
 
 
-  # Which country is it?
+  # Retrieve country.
   country <- get_parameters(a, "country")$country
 
 
   # Retrieve data elements.
   df <- data$df
   models_list <- data$models_list
-  statistics <- data$statistics
-  species <- data$species
 
 
   # Add statistics and species to 'df', assuming (and not checking) that get_stats and get_species
   # have already been applied.
-  b <- sf::st_drop_geometry(a)
   if (country == "spain") {
+    b <- sf::st_drop_geometry(a)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings")] <- NULL
     df <- cbind(df, b)
   }
 
 
   # Fetch model.
-  seedlings_model <- models_list[["seedlings_model"]]
+  modl <- models_list[["seedlings_model"]]
 
 
   # First initialize stands.
-  seedling_sf <- clear_stands(a)
+  b <- clear_stands(a)
 
 
   # If verbose is TRUE, print a progress bar.
@@ -54,6 +48,10 @@ fpm_seedlings <- function(a, data = list(), verbose = T) {
   }
 
 
+  # Silly function.
+  ifNULLzero <- function(z) ifelse(is.null(z), 0, z)
+
+
   # Extract info from a.
   icount = 0
   for (i in 1:nrow(a)) {
@@ -65,34 +63,37 @@ fpm_seedlings <- function(a, data = list(), verbose = T) {
 
 
     if (country == "spain") {
-      b <- a[i, ]
-      sp <- b$species[[1]]$seedlings
+
+      sp <- a[i, ]$species[[1]]$seedlings
 
       if (length(sp) > 0) {
-        # Species loop for this plot.
-        dat <- df[i, ]
-        nsee <- data.frame(species = character(), n = numeric())
-browser()
-        for (k in sp) {
-          dat$nseedlings <- with(b$seedlings[[1]], n[species == k])
 
-browser()
-          nsee <- rbind(nsee, data.frame(species = k, n = predict(seedlings_model[[k]], type = "response", newdata = dat)))
+        # Initialize empty data.frame
+        nsee <- data.frame(species = character(), n = numeric())
+
+        for (k in sp) {
+
+          # Prepare the data.frame and select species.
+          dat <- df[i, ]
+          dat$ntrees_species <- ifNULLzero(dat$ntrees_species[[1]][[k]])
+          dat$ba_species <- ifNULLzero(dat$ba_species[[1]][[k]])
+          dat$nseedlings <- with(a[i, ]$seedlings[[1]], n[species == k])
+
+          # Predict the new number of seedlings.
+          nsee <- rbind(nsee, data.frame(species = k, n = predict(modl[[k]], type = "response", newdata = dat)))
+
         }
 
         # Store.
-        if (nrow(nee) > 0) seedling_sf[i, ]$seedlings[[1]] <- nsee
+        if (nrow(nsee) > 0) b[i, ]$seedlings[[1]] <- nsee
 
       }
     }
-
-
-
   }
 
 
   if (verbose) cat("\n")
 
-  return(seedling_sf)
+  return(b)
 
 }

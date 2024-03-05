@@ -8,48 +8,53 @@
 #' @param verbose
 #'
 #' @return
-#' @export
 #'
 #' @examples
-fpm_saplings <- function(a, df, models_list,  statistics = NULL, species = NULL, verbose = T) {
+fpm_saplings <- function(a, data = list(), verbose = T) {
 
 
-  # First checks.
-  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
 
 
-  # If idplot identifier in 'a' and 'df' do not match exactly, stop.
-  stopifnot("Index 'idplot' in a' and 'df' do not match exactly" = identical(a$idplot, df$idplot))
+  # Retrieve country.
+  country <- get_parameters(a, "country")$country
 
 
-  # Which country' inventory is it?
-  country <- match.arg(tolower(attr(a, "country")), c("spain", "france", "usa"))
+  # Retrieve data elements.
+  df <- data$df
+  models_list <- data$models_list
 
 
-  # Fetch models.
-  saplings_model <- models_list[["saplings_model"]]
+  # Add statistics and species to 'df', assuming (and not checking) that get_stats and get_species
+  # have already been applied.
+  if (country == "spain") {
+    b <- sf::st_drop_geometry(a)
+    b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings")] <- NULL
+    df <- cbind(df, b)
+  }
 
 
-  # Get stats and species per plot.
-  if (is.null(statistics) | !inherits(statistics, "sf")) statistics <- get_stats(a, verbose = verbose)
-  if (is.null(species) | !inherits(species, "sf")) species <- get_species(a, verbose = verbose)
+  # Fetch model.
+  modl <- models_list[["saplings_model"]]
 
 
   # First initialize stands.
-  sapling_sf <- clear_stands(a)
+  b <- clear_stands(a)
 
 
   # If verbose is TRUE, print a progress bar.
   if (verbose) {
     fname <- as.character(match.call()[[1]])
-    cat(paste0("\n -> ", fname, ": Calculating saplings per plot...\n"))
+    cat(paste0("\n -> ", fname, ": Calculating seedlings per plot...\n"))
     pb <- utils::txtProgressBar(min = 0,
                                 max = length(a$idplot),
                                 style = 3,
                                 width = 50,
                                 char = "=")
   }
+
+
+  # Silly function.
+  ifNULLzero <- function(z) ifelse(is.null(z), 0, z)
 
 
   # Extract info from a.
