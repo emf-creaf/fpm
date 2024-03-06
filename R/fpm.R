@@ -68,7 +68,6 @@ fpm <- function(a, data = list(), verbose = T) {
 
   # Compute young and ingrowth trees.
   seedlings <- fpm_elements(a, "seedlings", data = data, verbose = verbose)
-browser()
   saplings <- fpm_elements(a, "saplings", data = data, verbose = verbose)
   ingrowth <- fpm_elements(a, "ingrowth", data = data, verbose = verbose)
 

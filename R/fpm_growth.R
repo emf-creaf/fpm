@@ -1,45 +1,34 @@
-#' Title
+#' Calculation of tree growth
+#'
+#' @description
+#' It computes tree dbh growth for all species and plots.
 #'
 #' @param a
 #' @param df
 #' @param verbose
-#' @param models_list
-#' @param statistics
 #'
 #' @return
 #' @export
 #'
 #' @examples
-fpm_growth <- function(a, df, models_list,  statistics = NULL, verbose = T) {
+fpm_growth <- function(a, type = "", data = list(), verbose = T) {
 
 
-  # First checks.
-  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
+  # Only works for "ipm" plots.
+  stopifnot("Tree growth can only be calculated for 'ipm' stands" = all(a$stand_type == "ipm"))
 
-
-  # If idplot identifier in 'a' and 'df' do not match exactly, stop.
-  stopifnot("Index 'idplot' in a' and 'df' do not match exactly" = identical(a$idplot, df$idplot))
-
-
-  # Which country' inventory is it?
-  country <- match.arg(tolower(attr(a, "country")), c("spain", "france", "usa"))
-
-
-  # Abscissas per species.
-  x <- get_parameters(a, "integvar")
+  # Retrieve parameters.
+  p <- get_parameters(a, c("country", "integvars", "min_dbh", "max_dbh"))
+  country <- p$country
+  x <- p$integvars
   nx <- lapply(x, length)
-  min_dbh <- get_parameters(a, "min_dbh")
-  max_dbh <- get_parameters(a, "max_dbh")
+  min_dbh <- p$min_dbh
+  max_dbh <- p$max_dbh
 
 
   # Fetch models.
   growth_model <- models_list[["growth_model"]]
   variance_model <- models_list[["variance_model"]]
-
-
-  # Get stats and species per plot.
-  if (is.null(statistics) | !inherits(statistics, "sf")) statistics <- get_stats(a, verbose = F)
 
 
   # If verbose is TRUE, print a progress bar.
@@ -55,8 +44,7 @@ fpm_growth <- function(a, df, models_list,  statistics = NULL, verbose = T) {
 
 
   # First initialize stands.
-  growth_sf <- clear_stands(a)
-  growth_sf$growth <- vector("list", length = nrow(growth_sf))
+  b <- clear_stands(a)
 
 
   # Extract info from a.
@@ -70,24 +58,25 @@ fpm_growth <- function(a, df, models_list,  statistics = NULL, verbose = T) {
 
 
     # Species loop for this plot. Do nothing if there are no trees.
-    b <- a[i, ]
-    if (b$stand_type == "ipm") {
-      sp_trees <- names(b$trees[[1]])
-      if (length(sp_trees) > 0) {
+    if (a[i, ]$stand_type == "ipm") {
 
-        dat <- df[i, ]
-        gr <- list()
+      # Species names of adult trees already present in the plot.
+      sp <- names(b$trees[[1]])
 
-        for (j in sp_trees) {
+      if (length(sp) > 0) {
 
-          # data.frame with data for prediction.
-          dat$ba <- statistics$ba[i]
-          df <- rep_dataframe(dat, length(x[[j]]))
-          df$y1 <- x[[j]]
-          df$max_y <- max_dbh[[j]]
 
-          meanlog <- predict(growth_model[[j]], newdata = df)
-          sdlog <- sqrt(predict(variance_model[[j]], newdata = df))
+        # data.frame with data for prediction.
+        dat <- data$df[i, ]
+        z <- list()
+
+        for (j in sp) {
+
+          dat$y1 <- x[[j]]
+          dat$max_y <- max_dbh[[j]]
+
+          meanlog <- predict(growth_model[[j]], type = "response", newdata = dat)
+          sdlog <- sqrt(predict(variance_model[[j]], type = "response", newdata = dat))
 
           mat <- matrix(0, nx[[j]], nx[[j]])
           xx <- x[[j]] - min_dbh[[j]]
@@ -98,12 +87,12 @@ fpm_growth <- function(a, df, models_list,  statistics = NULL, verbose = T) {
             kseq <- kseq[-1]
           }
 
-          gr[[j]] <- mat
+          z[[j]] <- mat
 
         }
 
         # Save in sf.
-        growth_sf[i, ]$growth[[1]] <- gr
+        b[i, ]$trees[[1]] <- z
 
       }
     }
@@ -111,7 +100,6 @@ fpm_growth <- function(a, df, models_list,  statistics = NULL, verbose = T) {
 
   if (verbose) cat("\n")
 
-  return(growth_sf)
 
-
+  return(b)
 }

@@ -44,12 +44,12 @@ fpm_elements <- function(a, type = "", data = list(), verbose = T) {
     modelname <- c("seedlings_model", "saplings_model", "ingrowth_model", "ingrowth_lambda", "growth_model", "survival_model")
     stopifnot("Missing models" = all(sapply(modelname, function(x) x %in% names(data$models_list))))
 
-browser()
+
     # Do calculations.
     b <- switch(EXPR = type,
-                seedlings = fpm_minor(a, type = type, data = data, verbose = verbose),
-                saplings = fpm_minor(a, type = type, data = data, verbose = verbose),
-                ingrowth = fpm_minor(a, type = type, data = data, verbose = verbose),
+                seedlings = fpm_small(a, type = type, data = data, verbose = verbose),
+                saplings = fpm_small(a, type = type, data = data, verbose = verbose),
+                ingrowth = fpm_small(a, type = type, data = data, verbose = verbose),
                 survival = fpm_survival(a, data = data, verbose = verbose),
                 growth = fpm_growth(a, data = data, verbose = verbose)
     )
