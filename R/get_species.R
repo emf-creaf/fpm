@@ -101,7 +101,6 @@ get_species<- function(a, verbose = T) {
 
       # If "individual", there must be a column named "species", even for adult trees.
       # If "ipm", elements in the "trees" list should correspond to species.
-
       if (length(b$trees[[1]]) > 0) {
         if (b$stand_type == "individual") {
           trees <- unique(b$trees[[1]]$species)

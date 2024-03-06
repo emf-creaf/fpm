@@ -34,22 +34,24 @@ fpm_elements <- function(a, type = "", data = list(), verbose = T) {
   # Computations for spain.
   if (country == "spain") {
 
-
     # type must be seedlings, saplings or trees.
     stopifnot("Input 'type' must be a character" = is.character(type))
-    stopifnot("Wrong 'type' value for 'country' = 'spain'" = any(type %in% c("seedlings", "saplings", "trees")))
+    typename <- c("seedlings", "saplings", "ingrowth", "survival", "growth")
+    stopifnot("Wrong 'type' value for 'country' = 'spain'" = any(type %in% typename))
 
 
     # Names of models are ok.
     modelname <- c("seedlings_model", "saplings_model", "ingrowth_model", "ingrowth_lambda", "growth_model", "survival_model")
     stopifnot("Missing models" = all(sapply(modelname, function(x) x %in% names(data$models_list))))
 
-
+browser()
     # Do calculations.
-    b <- switch(type,
-                seedlings = fpm_seedlings(a, data = data, verbose = verbose),
-                saplings = fpm_saplings(a, data = data, verbose = verbose),
-                ingrowth = fpm_ingrowth(a, data = data, verbose = verbose)
+    b <- switch(EXPR = type,
+                seedlings = fpm_minor(a, type = type, data = data, verbose = verbose),
+                saplings = fpm_minor(a, type = type, data = data, verbose = verbose),
+                ingrowth = fpm_minor(a, type = type, data = data, verbose = verbose),
+                survival = fpm_survival(a, data = data, verbose = verbose),
+                growth = fpm_growth(a, data = data, verbose = verbose)
     )
 
   }  else if (country == "usa") {

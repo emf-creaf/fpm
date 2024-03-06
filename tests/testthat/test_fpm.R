@@ -19,6 +19,7 @@ test_that("full fpm model", {
   source("./R/clear_stands.r")
   source("./R/numquad_vm.r")
   #
+  source("./R/fpm_minor.r")
   source("./R/fpm_elements.r")
   source("./R/fpm_seedlings.r")
   source("./R/fpm_saplings.r")
@@ -113,13 +114,7 @@ test_that("full fpm model", {
                       variance_model = variance_model,
                       survival_model = survival_model)
 
-  b1 <- b2 <- list()
-  b1[[1]] <- a
-  b2[[1]] <- 0
-  for (i in 2:20) {
-    b1[[i]] <- fpm(b1[[i-1]], data = list(df = df, models_list = models_list), verbose = T)
-    # b2[[i]] <- fpm_copia(b1[[i-1]], df, models_list, verbose = T)
-  }
+    b <- fpm(a, data = list(df = df, models_list = models_list), verbose = T)
 
 
 
