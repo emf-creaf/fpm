@@ -4,18 +4,17 @@
 #' It computes tree dbh growth for all species and plots.
 #'
 #' @param a
-#' @param df
+#' @param type
+#' @param data
+#' @param models
 #' @param verbose
 #'
 #' @return
 #' @export
 #'
 #' @examples
-fpm_growth <- function(a, type = "", data = list(), verbose = T) {
+fpm_growth <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
 
-
-  # Only works for "ipm" plots.
-  stopifnot("Tree growth can only be calculated for 'ipm' stands" = all(a$stand_type == "ipm"))
 
   # Retrieve parameters.
   p <- get_parameters(a, c("country", "integvars", "min_dbh", "max_dbh"))
@@ -27,8 +26,8 @@ fpm_growth <- function(a, type = "", data = list(), verbose = T) {
 
 
   # Fetch models.
-  growth_model <- models_list[["growth_model"]]
-  variance_model <- models_list[["variance_model"]]
+  growth <- models[["growth"]]
+  variance <- models[["variance"]]
 
 
   # If verbose is TRUE, print a progress bar.
@@ -40,6 +39,16 @@ fpm_growth <- function(a, type = "", data = list(), verbose = T) {
                                 style = 3,
                                 width = 50,
                                 char = "=")
+  }
+
+
+  # Add statistics and species to 'data', assuming (and not checking) that get_stats and get_species
+  # have already been applied.
+  if (country == "spain") {
+    b <- sf::st_drop_geometry(a)
+    b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings",
+          "ba_species", "ntrees_species", "species", "species_all", "nspecies")] <- NULL
+    data <- cbind(data, b)
   }
 
 
@@ -57,26 +66,29 @@ fpm_growth <- function(a, type = "", data = list(), verbose = T) {
     if (verbose) setTxtProgressBar(pb, icount)
 
 
-    # Species loop for this plot. Do nothing if there are no trees.
+    # Calculate only if "ipm".
     if (a[i, ]$stand_type == "ipm") {
 
       # Species names of adult trees already present in the plot.
-      sp <- names(b$trees[[1]])
+      sp <- names(a[i, ]$trees[[1]])
 
+      # Do nothing if there are no trees.
       if (length(sp) > 0) {
 
 
-        # data.frame with data for prediction.
-        dat <- data$df[i, ]
+        # To store predictions.
         z <- list()
 
+
+        # Species loop.
         for (j in sp) {
 
+          dat <- rep_dataframe(data[i, ], nx[[j]])
           dat$y1 <- x[[j]]
           dat$max_y <- max_dbh[[j]]
 
-          meanlog <- predict(growth_model[[j]], type = "response", newdata = dat)
-          sdlog <- sqrt(predict(variance_model[[j]], type = "response", newdata = dat))
+          meanlog <- predict(growth[[j]], type = "response", newdata = dat)
+          sdlog <- sqrt(predict(variance[[j]], type = "response", newdata = dat))
 
           mat <- matrix(0, nx[[j]], nx[[j]])
           xx <- x[[j]] - min_dbh[[j]]

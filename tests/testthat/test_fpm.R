@@ -19,7 +19,7 @@ test_that("full fpm model", {
   source("./R/clear_stands.r")
   source("./R/numquad_vm.r")
   #
-  source("./R/fpm_minor.r")
+  source("./R/fpm_small.r")
   source("./R/fpm_elements.r")
   source("./R/fpm_seedlings.r")
   source("./R/fpm_saplings.r")
@@ -106,15 +106,15 @@ test_that("full fpm model", {
 
   a <- a |> set_parameters(param = list(integvars = x, max_dbh = lapply(x, max), min_dbh = lapply(x, min)))
 
-  models_list <- list(seedlings_model = seedlings_model,
-                      saplings_model = saplings_model,
-                      ingrowth_model = ingrowth_model,
-                      ingrowth_lambda = ingrowth_lambda,
-                      growth_model = growth_model,
-                      variance_model = variance_model,
-                      survival_model = survival_model)
+  models <- list(seedlings = seedlings_model,
+                      saplings = saplings_model,
+                      ingrowth = ingrowth_model,
+                      lambda = ingrowth_lambda,
+                      growth = growth_model,
+                      variance = variance_model,
+                      survival = survival_model)
 
-    b <- fpm(a, data = list(df = df, models_list = models_list), verbose = T)
+    b <- fpm(a, data = df, models = models, verbose = T)
 
 
 

@@ -37,7 +37,7 @@ collect_parts <- function(seedling, sapling, ingrowth, adult, verbose = T) {
   # If verbose is TRUE, print a progress bar.
   if (verbose) {
     fname <- as.character(match.call()[[1]])
-    cat(paste0("\n -> ", fname, ": Collecting seedling, sapling, ingrowth and tree data...\n"))
+    cat(paste0("\n -> ", fname, ": Collecting seedling, sapling, ingrowth and adult tree data...\n"))
     pb <- utils::txtProgressBar(min = 0,
                                 max = length(a$idplot),
                                 style = 3,

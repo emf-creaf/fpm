@@ -7,6 +7,7 @@
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param type \code{character} indicating the component of the ipm model to be calculated.
 #' @param data \code{list} whose elements are required to calculate the \code{type} component.
+#' @param models
 #' @param verbose logical, if set to TRUE a progress bar will be printed.
 #'
 #' @return
@@ -15,7 +16,7 @@
 #' @export
 #'
 #' @examples
-fpm_small <- function(a, type = "", data = list(), verbose = T) {
+fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
 
 
   # Retrieve parameters.
@@ -27,21 +28,16 @@ fpm_small <- function(a, type = "", data = list(), verbose = T) {
   }
 
 
-  # Retrieve data elements.
-  df <- data$df
-  models_list <- data$models_list
-
-
   # Add statistics and species to 'df', assuming (and not checking) that get_stats and get_species
   # have already been applied.
   if (country == "spain") {
     b <- sf::st_drop_geometry(a)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings")] <- NULL
-    df <- cbind(df, b)
+    data <- cbind(data, b)
   }
 
 
-  # If type = "ingrowth", a new empty 'sf' is required to store ingrowth trees.
+  # A new empty 'sf' is required to store results.
   b <- clear_stands(a)
 
 
@@ -102,24 +98,26 @@ fpm_small <- function(a, type = "", data = list(), verbose = T) {
           for (k in sp) {
 
             # Prepare the data.frame and select species.
-            dat <- df[i, ]
-            dat$ntrees_species <- ifNULLzero(dat$ntrees_species[[1]][[k]])
-            dat$ba_species <- ifNULLzero(dat$ba_species[[1]][[k]])
+            dat <- data[i, ]
+
+            dat$ba <- ifNULLzero(dat$ba)
             dat$nseedlings <- getn(a[i, ]$seedlings[[1]], k)
+            if (any(type %in% c("seedlings", "saplings"))) dat$ntrees_species <- ifNULLzero(dat$ntrees_species[[1]][[k]])
             if (any(type %in% c("saplings", "ingrowth"))) dat$nsaplings <- getn(a[i, ]$saplings[[1]], k)
+
 
             # Prediction.
             p <- 0
             if (type == "seedlings") {
-              p = predict(models_list[["seedlings_model"]][[k]], type = "response", newdata = dat)
+              p = predict(models[["seedlings"]][[k]], type = "response", newdata = dat)
             } else if (type == "saplings") {
               if (dat$ntrees_species > 0 | dat$nseedlings > 0) {
-                p = predict(models_list[["saplings_model"]][[k]], type = "response", newdata = dat)
+                p = predict(models[["saplings"]][[k]], type = "response", newdata = dat)
               }
             } else if (type == "ingrowth") {
               if (dat$nseedlings > 0 | dat$nsaplings > 0) {
-                p <- predict(models_list[["ingrowth_model"]][[k]], newdata = dat, type = "response") *
-                  dtrexp(x = x[[k]], rate = models_list[["ingrowth_lambda"]][[k]], min = min(x[[k]]))
+                p <- predict(models[["ingrowth"]][[k]], newdata = dat, type = "response") *
+                  dtrexp(x = x[[k]], rate = models[["lambda"]][[k]], min = min(x[[k]]))
               }
             }
 

@@ -1,47 +1,23 @@
 #' Title
 #'
 #' @param a
-#' @param df
-?R#' @param verbose
-#' @param models_list
-#' @param statistics
+#' @param type
+#' @param data
+#' @param models
+#' @param verbose
 #'
 #' @return
 #' @export
 #'
 #' @examples
-fpm_survival <- function(a, df, models_list,  statistics = NULL, verbose = T) {
+fpm_survival <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
 
 
-  # First checks.
-  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  stopifnot("Input 'df' must be a data.frame" = is.data.frame(df))
-
-
-  # If idplot identifier in 'a' and 'df' do not match exactly, stop.
-  stopifnot("Index 'idplot' in a' and 'df' do not match exactly" = identical(a$idplot, df$idplot))
-
-
-  # Which country' inventory is it?
-  country <- match.arg(tolower(attr(a, "country")), c("spain", "france", "usa"))
-
-
-  # Fetch models.
-  survival_model <- models_list[["survival_model"]]
-
-
-  # Get stats and species per plot.
-  if (is.null(statistics) | !inherits(statistics, "sf")) statistics <- get_stats(a, verbose = F)
-
-
-  # First initialize stands.
-  surv_sf <- clear_stands(a)
-  surv_sf$trees <- surv_sf$saplings <- surv_sf$seedlings <- NULL
-  surv_sf$psurv <- vector("list", length = nrow(surv_sf))
-
-
-  # Abscissas per species.
-  x <- get_parameters(a, "integvar")
+  # Retrieve parameters.
+  p <- get_parameters(a, c("country", "integvars", "min_dbh", "max_dbh"))
+  country <- p$country
+  x <- p$integvars
+  nx <- lapply(x, length)
 
 
   # If verbose is TRUE, print a progress bar.
@@ -56,6 +32,20 @@ fpm_survival <- function(a, df, models_list,  statistics = NULL, verbose = T) {
   }
 
 
+  # Add statistics and species to 'data', assuming (and not checking) that get_stats and get_species
+  # have already been applied.
+  if (country == "spain") {
+    b <- sf::st_drop_geometry(a)
+    b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings",
+          "ba_species", "ntrees_species", "species", "species_all", "nspecies")] <- NULL
+    df <- cbind(df, b)
+  }
+
+
+  # First initialize stands.
+  b <- clear_stands(a)
+
+
   # Extract info from a.
   icount = 0
   for (i in 1:nrow(a)) {
@@ -68,26 +58,28 @@ fpm_survival <- function(a, df, models_list,  statistics = NULL, verbose = T) {
 
     if (country == "spain") {
 
-      # Species loop for this plot. Do nothing if there are no trees.
-      b <- a[i, ]
-      if (b$stand_type == "ipm") {
-        sp_trees <- names(b$trees[[1]])
-        if (length(sp_trees) > 0) {
+      # Calculate only if "ipm".
+      if (a[i, ]$stand_type == "ipm") {
+
+        # Species names of adult trees already present in the plot.
+        sp <- names(a[i, ]$trees[[1]])
+
+        #Do nothing if there are no trees.
+        if (length(sp) > 0) {
 
           dat <- df[i, ]
-          dat$ba <- statistics$ba[i]
-          psurv <- list()
+          pr <- list()
 
-          for (k in sp_trees) {
-            df <- rep_dataframe(dat, length(x[[k]]))
+          for (k in sp) {
+            df <- rep_dataframe(dat, nx[[k]])
             df$dbh <- x[[k]]
-            psurv[[k]] <- predict(survival_model[[k]], type = "response", newdata = df)
+            pr[[k]] <- predict(models[["survival"]][[k]], type = "response", newdata = df)
           }
         }
 
 
         # Save in sf.
-        surv_sf[i, ]$psurv[[1]] <- psurv
+        b[i, ]$trees[[1]] <- pr
 
       }
     }
@@ -96,7 +88,7 @@ fpm_survival <- function(a, df, models_list,  statistics = NULL, verbose = T) {
 
   if (verbose) cat("\n")
 
-  return(surv_sf)
+  return(b)
 
 
 }

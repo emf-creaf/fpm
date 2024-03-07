@@ -220,12 +220,17 @@ make_drule <- function() {
 
 
 
-rep_dataframe <- function(df, n) {
-  # as.data.frame(lapply(df, rep, n))
-  # df[rep(seq_len(nrow(df)), n), ]
-  z <- setNames(data.frame(matrix(0, n, ncol(df))), colnames(df))
-  z[] <- df
-  return(z)
-}
+# rep_dataframe <- function(df, n) {
+#   # as.data.frame(lapply(df, rep, n))
+#   # df[rep(seq_len(nrow(df)), n), ]
+#   z <- setNames(data.frame(matrix(0, n, ncol(df))), colnames(df))
+#   z[] <- df
+#   return(z)
+# }
 
+
+
+# Little function seen in https://stackoverflow.com/questions/11121385/repeat-rows-of-a-data-frame
+# and needed below.
+rep_dataframe <- function(x, times) as.data.frame(lapply(x, rep, times))
 
