@@ -7,10 +7,13 @@
 #' @param param param a named \code{list} of parameters (see \code{Details} below).
 #'
 #' @return
+#' The input \code{sf} object with new fields added, namely \code{ba},
+#' \code{ntrees}, \code{ba_species} and \code{ntrees_species}, corresponding
+#' to the total basal area (m2) and total number of trees, plus basal area and
+#' number of trees per species, respectively.
 #'
 #' @details
-#' This function is used by \code{update_stands}.
-#'
+#' This function is used by \code{update_stands}. Inputs are not checked for correctness.
 #'
 #' @examples
 calc_descriptive <- function(a, param = list()) {

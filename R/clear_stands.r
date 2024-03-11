@@ -1,7 +1,8 @@
-#' Clear \code{sf} stand object of unneeded fields.
+#' Create a new \code{sf} stand object.
 #'
 #' @description
-#' It resets fields in the input \code{sf} stand object to an empty fields, and remove any additional field.
+#' It creates a new \code{sf} stand object that is identical to the input, but
+#' with fields empty or NULL. Attributes, on the other hand, are kept.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #'
@@ -30,7 +31,6 @@ clear_stands <- function(a) {
 
   # First checks.
   stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
-  stopifnot("Input 'a' is empty" = nrow(a) > 0)
 
 
   # Which country?
@@ -39,10 +39,9 @@ clear_stands <- function(a) {
 
   if (country == "spain") {
     # Resetting fields to an empty list.
-    a$seedlings <- a$saplings <- a$trees <- vector("list", nrow(a))
-
-    # Removing fields.
-    a$species <- a$species_all <- a$nspecies <- a$ba <- a$ba_species <- a$ntrees <- a$ntrees_species <- NULL
+    b <- start_stands()
+    attributes(b) <- attributes(a)
+    sf::st_crs(b) <- sf::st_crs(a)
 
   }  else if (country == "usa") {
     stop("Calculations for country = 'usa' have not yet been implemented")
@@ -51,6 +50,6 @@ clear_stands <- function(a) {
   }
 
 
-  return(a)
+  return(b)
 
 }

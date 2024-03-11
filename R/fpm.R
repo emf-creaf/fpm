@@ -1,14 +1,20 @@
 #' Implementation of a forest dynamics model
 #'
-#' @details
-#' \code{fpm} implements all steps of a full forest dynamics model, including
-#' seedling, sapling, ingrowth and adult-tree growth and mortality processes.
+#' @description
+#' \code{fpm} implements all steps of the Integral Projection Model (IPM) methodology
+#' to determine forest dynamics model from inventory data. Model steps include
+#' seedlings, saplings, ingrowth and adult-tree growth and mortality processes.
+#'
 #' @param a
 #' @param data
 #' @param models
-#' @param verbose
+#' @param verbose \code{logical}, if set to TRUE a progress bar will be printed.
+#'
+#' @details
+#' Additional details...
 #'
 #' @return
+#'
 #' @export
 #'
 #' @examples

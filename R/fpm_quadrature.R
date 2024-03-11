@@ -47,22 +47,24 @@ fpm_quadrature <- function(a, data = list(), verbose = T) {
     if (verbose) setTxtProgressBar(pb, icount)
 
 
-    # Continue only if "ipm".
-    if (a[i, ]$stand_type == "ipm") {
-      sp <- names(b$trees[[1]])
+    # Continue only if "spain".
+    if (country == "spain") {
 
-      # Skip if there are no trees.
-      if (length(sp) > 0) {
+      # Continue only if "ipm".
+      if (a[i, ]$stand_type == "ipm") {
 
-        # Numerical quadrature with extended Simpson' rule.
-        for (j in sp) {
-          su <- survival[i, ]$trees[[1]][[j]]
-          gr <- growth[i, ]$trees[[1]][[j]]
-          n <- a[i, ]$trees[[1]][[j]]
-          b[i, ]$trees[[1]][[j]] <- numquad_vm(n * su, gr, h[[j]], "trapez")
+        # Continue only if there are trees to project.
+        if (length(a[i, ]$trees[[1]]) > 0) {
+
+          # Numerical quadrature with extended Simpson' rule.
+          for (j in names(a$trees[[1]])) {
+            su <- survival[i, ]$trees[[1]][[j]]
+            gr <- growth[i, ]$trees[[1]][[j]]
+            n1 <- a[i, ]$trees[[1]][[j]]
+            b[i, ]$trees[[1]][[j]] <- numquad_vm(n1 * su, gr, h[[j]], "trapez")
+          }
         }
       }
-
     }
   }
 
