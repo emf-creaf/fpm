@@ -7,13 +7,10 @@
 #' @param param param a named \code{list} of parameters (see \code{Details} below).
 #'
 #' @return
-#' The input \code{sf} object with new fields added, namely \code{ba},
-#' \code{ntrees}, \code{ba_species} and \code{ntrees_species}, corresponding
-#' to the total basal area (m2) and total number of trees, plus basal area and
-#' number of trees per species, respectively.
 #'
 #' @details
-#' This function is used by \code{update_stands}. Inputs are not checked for correctness.
+#' This function is used by \code{update_stands}.
+#'
 #'
 #' @examples
 calc_descriptive <- function(a, param = list()) {
@@ -45,8 +42,8 @@ calc_descriptive <- function(a, param = list()) {
         ntrees <- split(y$ntrees, y$species)
 
       } else if (stand_type == "ipm") {
-        ba <- sapply(names(b), function(j) quad(b[[j]] * x[[j]]^2, h[[j]]) * cnst, simplify = F)
-        ntrees <- sapply(names(b), function(j) quad(b[[j]], h[[j]]), simplify = F)
+        ba <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^2, h[[j]]) * cnst, simplify = F)
+        ntrees <- sapply(names(b), function(j) quadrature(b[[j]], h[[j]]), simplify = F)
 
       }
 

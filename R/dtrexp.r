@@ -28,13 +28,21 @@
 
 dtrexp <- function(x, rate = 1, min = 0, max = NULL) {
 
-  if (rate<=0) stop("rate must be > 0")
-  if (!is.null(max)) if (max <= min) stop("max must be > min")
+  # Checks.
+  stopifnot("Input 'x' must be a vector" = is.vector(x))
+  stopifnot("Input 'rate' must be > 0" = rate >= 0)
+  if (!is.null(max)) {
+    stopifnot("'max' must be > 'min'" = max > min)
+    stopifnot("x should be 'min' <= x <= 'max'" = (min <= min(x) & max(x) <= max))
+  }
+
+
+  # Calculations.
   y <- if (is.null(max)) {
     rate*exp(-rate*x)/exp(-rate*min)
   } else {
-    if (min(x)<min | max(x)>max) stop("x should be min <= x <= max")
     rate*exp(-rate*x)/(exp(-rate*min)-exp(-rate*max))
   }
+
   return(y)
 }

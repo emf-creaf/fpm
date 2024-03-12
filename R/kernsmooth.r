@@ -1,3 +1,4 @@
+
 #' Fast kernel density estimation for a set of points
 #'
 #' @description

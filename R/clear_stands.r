@@ -2,7 +2,8 @@
 #'
 #' @description
 #' It creates a new \code{sf} stand object that is identical to the input, but
-#' with fields empty or NULL. Attributes, on the other hand, are kept.
+#' with fields empty or NULL, save for "idplot" and "geometry", which are kept.
+#' Attributes, on the other hand, are also kept.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #'
@@ -35,21 +36,30 @@ clear_stands <- function(a) {
 
   # Which country?
   country <- match.arg(get_parameters(a, "country")$country, c("spain", "france", "usa"))
-
-
-  if (country == "spain") {
-    # Resetting fields to an empty list.
-    b <- start_stands()
-    attributes(b) <- attributes(a)
-    sf::st_crs(b) <- sf::st_crs(a)
-
-  }  else if (country == "usa") {
+  if (country == "usa") {
     stop("Calculations for country = 'usa' have not yet been implemented")
   } else if (country == "france") {
     stop("Calculations for country = 'france' have not yet been implemented")
   }
 
 
-  return(b)
+  # Resetting fields.
+  names_a <- names(a)
+  start_a <- start_stands()
+  flag <- names_a %in% names(start_a)
+
+  # Eliminate fields that are not in start_stands.
+  for (i in which(!flag)) {
+    a[, names_a[i]] <- NULL
+  }
+
+
+  # Empty fields that are in start_stands(), save for "idplot" and "geometry".
+  a$stand_type <- ""
+  a$date <- ""
+  for (i in 1:nrow(a)) a[i, ]$seedlings[[1]] <- a[i, ]$saplings[[1]] <- a[i, ]$trees[[1]] <- list()
+
+
+  return(a)
 
 }

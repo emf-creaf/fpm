@@ -84,7 +84,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
 
 
   icount = 0
-  for (i in 1:nrow(adults)) {
+  for (i in 1:nrow(a)) {
 
 
     # Progress bar.
@@ -109,7 +109,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
 
 
   # Collect everything and build the new 'sf' object.
-  b <- collect_parts(seedlings, saplings, ingrowth, adults, verbose = verbose)
+  b <- collect_parts(a, seedlings, saplings, ingrowth, adults, verbose = verbose)
 
 
   # Extra carriage return.

@@ -111,6 +111,36 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
   }
 
 
+  # Internal functions to check lower or upper bounds in "assert" call.
+  is_larger <- function(bound, include.bound = F) {
+    the_call <- deparse(sys.call())
+    fun <- function(x) {
+      if (is.null(x)) stop("bounds must be checked on non-null element")
+      if (!is.numeric(x)) stop("bounds must only be checked on numerics")
+      operator <- if (!include.bound) `>` else `>=`
+      return(operator(x, bound) & !is.na(x))
+    }
+
+    attr(fun, "assertr_vectorized") <- TRUE
+    attr(fun, "call") <- the_call
+    return(fun)
+  }
+
+  is_smaller <- function(bound, include.bound = F) {
+    the_call <- deparse(sys.call())
+    fun <- function(x) {
+      if (is.null(x)) stop("bounds must be checked on non-null element")
+      if (!is.numeric(x)) stop("bounds must only be checked on numerics")
+      operator <- if (!include.bound) `<` else `<=`
+      return(operator(x, bound) & !is.na(x))
+    }
+
+    attr(fun, "assertr_vectorized") <- TRUE
+    attr(fun, "call") <- the_call
+    return(fun)
+  }
+
+
   # Calculations for spain.
   if (country == "spain") {
 

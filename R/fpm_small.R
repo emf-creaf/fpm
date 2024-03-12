@@ -90,9 +90,9 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
 
           # Initialize empty data.frame
           if (any(type %in% c("seedlings", "saplings"))) {
-            n <- data.frame(species = character(), n = numeric())
+            nn <- data.frame(species = character(), n = numeric())
           } else {
-            n <- list()
+            nn <- list()
           }
 
           for (k in sp) {
@@ -107,7 +107,7 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
 
 
             # Prediction.
-            p <- 0
+            p <- NULL
             if (type == "seedlings") {
               p = predict(models[["seedlings"]][[k]], type = "response", newdata = dat)
             } else if (type == "saplings") {
@@ -122,22 +122,24 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
             }
 
             # Save.
-            if (any(type %in% c("seedlings", "saplings"))) {
-              n <- rbind(n, data.frame(species = k, n = p))
-            } else if (type == "ingrowth") {
-              n[[k]] <- p
+            if (!is.null(p)) {
+              if (any(type %in% c("seedlings", "saplings"))) {
+                nn <- rbind(nn, data.frame(species = k, n = p))
+              } else if (type == "ingrowth") {
+                nn[[k]] <- p
+              }
             }
           }
 
+
           # Store in 'sf'.
           if (type == "seedlings") {
-            b[i, ]$seedlings[[1]] <- n
+            b[i, ]$seedlings[[1]] <- nn
           } else if (type == "saplings") {
-            b[i, ]$saplings[[1]] <- n
+            b[i, ]$saplings[[1]] <- nn
           } else if (type == "ingrowth") {
-            b[i, ]$trees[[1]] <- n
+            b[i, ]$trees[[1]] <- nn
           }
-
         }
       }
     }
