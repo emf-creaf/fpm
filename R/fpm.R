@@ -5,15 +5,23 @@
 #' to determine forest dynamics model from inventory data. Model steps include
 #' seedlings, saplings, ingrowth and adult-tree growth and mortality processes.
 #'
-#' @param a
-#' @param data
-#' @param models
+#' @param a \code{sf} object containing a number of POINT geometry types.
+#' @param data a \code{data.frame} with the same number of rows, and same \code{idplot}
+#' identifier, as 'a', containing the covariables and/or factors that are needed to calculate
+#' the components of the IPM model.
+#' @param models a \code{list} containing regression models per species for all
+#' the IPM steps.
 #' @param verbose \code{logical}, if set to TRUE a progress bar will be printed.
 #'
 #' @details
-#' Additional details...
+#' Function \code{fpm} calculates the different elements of the model and
+#' combines them together.
 #'
 #' @return
+#' An 'a' \code{sf} object with the updated forest projection.
+#'
+#' @references
+#' Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016). El Inventario Forestal Nacional español, una herramienta para el conocimiento, la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 #'
 #' @export
 #'
@@ -57,7 +65,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
 
 
   # Get stats and species per plot.
-  a <- a |> get_species(verbose = verbose) |> get_stats(verbose = verbose)
+  a <- a |> calc_species(verbose = verbose) |> calc_stats(verbose = verbose)
 
 
   # Compute young and ingrowth trees.

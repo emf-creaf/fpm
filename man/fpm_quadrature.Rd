@@ -4,10 +4,10 @@
 \alias{fpm_quadrature}
 \title{Title}
 \usage{
-fpm_quadrature(a, df, models_list, statistics = NULL, verbose = T)
+fpm_quadrature(a, data = list(), verbose = T)
 }
 \arguments{
-\item{statistics}{}
+\item{verbose}{}
 }
 \description{
 Title

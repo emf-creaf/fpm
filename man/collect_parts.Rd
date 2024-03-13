@@ -2,13 +2,28 @@
 % Please edit documentation in R/collect_parts.R
 \name{collect_parts}
 \alias{collect_parts}
-\title{Title}
+\title{Collect together the different elements that make up the IPM dynamic model}
 \usage{
-collect_parts(seedling, sapling, ingrowth, adult, verbose = T)
+collect_parts(a, data = list(), verbose = T)
 }
 \arguments{
-\item{verbose}{}
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+
+\item{seedlings}{a \code{sf} object where the field \code{seedlings} includes
+the projection of the seedlings' abundance.}
+
+\item{saplings}{same as for the \code{seedlings} input, but for saplings}
+
+\item{ingrowth}{distribution of ingrowth trees.}
+
+\item{adults}{the new distribution of adults, which is the result of applying the
+IPM methodology (only the tree survival and growth part) to the previous distribution
+of adults.}
+}
+\value{
+A new \code{sf} object which is the projection of the input 'a'.
 }
 \description{
-Title
+Function \code{collect_parts} takes inputs corresponding to the different elements
+of the IPM model
 }

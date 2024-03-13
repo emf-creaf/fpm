@@ -16,7 +16,7 @@ be retrieved.}
 }
 \value{
 A \code{list} whose elements correspond to the input parameters. Parameter
-\code{species} can only be computed via \code{\link{get_species}} function.
+\code{species} can only be computed via \code{\link{calc_species}} function.
 }
 \description{
 Extraction of global parameters from \code{stand} object

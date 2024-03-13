@@ -4,16 +4,16 @@
 \alias{fpm_elements}
 \title{Calculate the different parts of an ipm model}
 \usage{
-fpm_elements(a, type = "", data = list(), verbose = T)
+fpm_elements(a, type = "", data = data.frame(), models = list(), verbose = T)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
 
-\item{type}{\code{character} indicating the component of the ipm model to be calculated.}
+\item{type}{\code{character} indicating the component of the ipm model to be calculated. See}
 
 \item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
 
-\item{verbose}{logical, if set to TRUE warning messages may be printed.}
+\item{verbose}{logical, if set to TRUE a progress bar will be printed.}
 }
 \value{
 A \code{sf} object containing the desired "ipm" component per plot.

@@ -42,7 +42,7 @@ fpm_growth <- function(a, type = "", data = data.frame(), models = list(), verbo
   }
 
 
-  # Add statistics and species to 'data', assuming (and not checking) that get_stats and get_species
+  # Add statistics and species to 'data', assuming (and not checking) that calc_stats and calc_species
   # have already been applied.
   if (country == "spain") {
     b <- sf::st_drop_geometry(a)

@@ -2,13 +2,13 @@
 % Please edit documentation in R/fpm_growth.R
 \name{fpm_growth}
 \alias{fpm_growth}
-\title{Title}
+\title{Calculation of tree growth}
 \usage{
-fpm_growth(a, df, models_list, statistics = NULL, verbose = T)
+fpm_growth(a, type = "", data = data.frame(), models = list(), verbose = T)
 }
 \arguments{
-\item{statistics}{}
+\item{verbose}{}
 }
 \description{
-Title
+It computes tree dbh growth for all species and plots.
 }

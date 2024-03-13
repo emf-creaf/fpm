@@ -4,15 +4,32 @@
 \alias{fpm}
 \title{Implementation of a forest dynamics model}
 \usage{
-fpm(a, data = list(), verbose = T)
+fpm(a, data = data.frame(), models = data.frame(), verbose = T)
 }
 \arguments{
-\item{species}{}
+\item{a}{\code{sf} object containing a number of POINT geometry types.}
+
+\item{data}{a \code{data.frame} with the same number of rows, and same \code{idplot}
+identifier, as 'a', containing the covariables and/or factors that are needed to calculate
+the components of the IPM model.}
+
+\item{models}{a \code{list} containing regression models per species for all
+the IPM steps.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+}
+\value{
+An 'a' \code{sf} object with the updated forest projection.
 }
 \description{
-Implementation of a forest dynamics model
+\code{fpm} implements all steps of the Integral Projection Model (IPM) methodology
+to determine forest dynamics model from inventory data. Model steps include
+seedlings, saplings, ingrowth and adult-tree growth and mortality processes.
 }
 \details{
-\code{fpm} implements all steps of a full forest dynamics model, including
-seedling, sapling, ingrowth and adult-tree growth and mortality processes.
+Function \code{fpm} calculates the different elements of the model and
+combines them together.
+}
+\references{
+Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016). El Inventario Forestal Nacional español, una herramienta para el conocimiento, la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 }

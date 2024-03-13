@@ -11,9 +11,15 @@ calc_descriptive(a, param = list())
 
 \item{param}{param a named \code{list} of parameters (see \code{Details} below).}
 }
+\value{
+The input \code{sf} object with new fields added, namely \code{ba},
+\code{ntrees}, \code{ba_species} and \code{ntrees_species}, corresponding
+to the total basal area (m2) and total number of trees, plus basal area and
+number of trees per species, respectively.
+}
 \description{
 It calculates the basal area and number of trees, total and per species, for a plot.
 }
 \details{
-This function is used by \code{update_stands}.
+This function is used by \code{update_stands}. Inputs are not checked for correctness.
 }

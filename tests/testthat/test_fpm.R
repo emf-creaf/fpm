@@ -9,9 +9,9 @@ test_that("full fpm model", {
   source("./R/factor_diam_IFN.r")
   source("./R/get_parameters.r")
   source("./R/kernsmooth.r")
-  source("./R/get_stats.r")
+  source("./R/calc_stats.r")
   source("./R/calc_descriptive.r")
-  source("./R/get_species.r")
+  source("./R/calc_species.r")
   source("./R/dtrexp.r")
   source("./R/clear_stands.r")
   source("./R/numquad_vm.r")
@@ -89,7 +89,7 @@ test_that("full fpm model", {
             'Pinus halepensis' = seq(7.5,270,length=1500))
   a <- a|> set_parameters(param = list(integvars = x)) |>
     smooth_stands(verbose = F) |>
-    get_stats()
+    calc_stats()
 
 
   library(dplyr)
