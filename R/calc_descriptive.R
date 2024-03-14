@@ -15,7 +15,6 @@
 #' @details
 #' This function is used by \code{update_stands}. Inputs are not checked for correctness.
 #'
-#' @examples
 calc_descriptive <- function(a, param = list()) {
 
 

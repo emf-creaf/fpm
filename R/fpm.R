@@ -25,7 +25,6 @@
 #'
 #' @export
 #'
-#' @examples
 fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
 
 
@@ -68,11 +67,16 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
   a <- a |> calc_species(verbose = verbose) |> calc_stats(verbose = verbose)
 
 
-  # Compute young and ingrowth trees.
-  seedlings <- fpm_elements(a, "seedlings", data = data, models = models, verbose = verbose)
-  saplings <- fpm_elements(a, "saplings", data = data, models = models, verbose = verbose)
-  ingrowth <- fpm_elements(a, "ingrowth", data = data, models = models, verbose = verbose)
-  survival <- fpm_elements(a, "survival", data = data, models = models, verbose = verbose)
+  if (country == "spain") {
+    # Compute young and ingrowth trees.
+    seedlings <- fpm_elements(a, "seedlings", data = data, models = models, verbose = verbose)
+    saplings <- fpm_elements(a, "saplings", data = data, models = models, verbose = verbose)
+    ingrowth <- fpm_elements(a, "ingrowth", data = data, models = models, verbose = verbose)
+    survival <- fpm_elements(a, "survival", data = data, models = models, verbose = verbose)
+
+    # Save trees in 'sf' object.
+    adults <- clear_stands(a)
+  }
 
 
   # If verbose is TRUE, print a progress bar.
@@ -87,10 +91,6 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
   }
 
 
-  # Save trees in 'sf' object.
-  adults <- clear_stands(a)
-
-
   icount = 0
   for (i in 1:nrow(a)) {
 
@@ -101,6 +101,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T) {
 
 
     # Numerical quadrature with extended Simpson' rule. Run only if there are trees.
+    # Growth is called once per loop step because of the size of its output.
     if (country == "spain") {
       if (length(a$trees[[i]]) > 0) {
         growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = F)
