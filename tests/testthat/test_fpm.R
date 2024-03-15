@@ -37,6 +37,10 @@ test_that("full fpm model", {
   load(".\\data\\trees.Rdata")
   load(".\\data\\seedlings.Rdata")
   load(".\\data\\saplings.Rdata")
+  load(".\\data\\maxdbh.Rdata")
+  load(".\\data\\climateSpain.Rdata")
+
+
 
   # Initialize stands.
   idplot <- unique(trees$idplot)
@@ -58,6 +62,7 @@ test_that("full fpm model", {
     }
 
     dfseed[[i]] <- seedlings[seedlings$idplot == i, c("species", "n")]
+    dfseed[[i]] <- dfseed[[i]] |> dplyr::summarise(n = mean(n, na.rm = T), .by = species)
     if (nrow(dfseed[[i]]) > 0) {
       dfseed[[i]]$n <- dfseed[[i]]$n/3
       a <- build_stands(a, i, data = list(df = dfseed[[i]],
@@ -67,6 +72,7 @@ test_that("full fpm model", {
     }
 
     dfsapl[[i]] <- saplings[saplings$idplot == i, c("species", "n")]
+    dfsapl[[i]] <- dfsapl[[i]] |> dplyr::summarise(n = mean(n, na.rm = T), .by = species)
     if (nrow(dfsapl[[i]]) > 0) {
       a <- build_stands(a, i, data = list(df = dfsapl[[i]],
                        data_type = "saplings",
@@ -79,29 +85,25 @@ test_that("full fpm model", {
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Sapling models V9.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Ingrowth models V6.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Survival models V1.Rdata")
-  load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Growth models V1.Rdata")
-
+  load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Growth models V3.Rdata")
 
 
   # Setting parameters and converting to continuous.
-  x <- list('Pinus nigra' = seq(7.5,200,length=1000),
-            'Quercus ilex' = seq(7.5,250,length=1500),
-            'Pinus halepensis' = seq(7.5,270,length=1500))
+  x <- list()
+  for (i in names(maxdbh)) {
+    x[[i]] <- seq(7.5, maxdbh[i], by = 0.5)
+  }
   a <- a|> set_parameters(param = list(integvars = x)) |>
-    smooth_stands(verbose = F) |>
-    calc_stats()
+    smooth_stands(verbose = T) |>
+    calc_stats(verbose = T)
 
 
-  library(dplyr)
-  library(broom)
 
-  df <- growth_model[["Quercus ilex"]] |> augment()
-  df$.fitted <- df$.resid <- NULL
-
-
-  # # Trick.
-  df <- df[1:100, ]
-  df$idplot <- a$idplot
+  # Add idplot.
+  i <- match(a$idplot, climateSpain$idplot)
+  a <- a[!is.na(i), ]
+  climateSpain <- climateSpain[i[!is.na(i)], ]
+  climateSpain$idplot <- as.character(climateSpain$idplot)
 
 
   a <- a |> set_parameters(param = list(integvars = x, max_dbh = lapply(x, max), min_dbh = lapply(x, min)))
@@ -114,8 +116,7 @@ test_that("full fpm model", {
                       variance = variance_model,
                       survival = survival_model)
 
-    b <- fpm(a, data = df, models = models, verbose = T)
-
+    b <- fpm(a, data = climateSpain, models = models, verbose = T, update = T)
 
 
 })

@@ -21,14 +21,6 @@
 #'
 collect_parts <- function(a, data = list(), verbose = T) {
 
-  # First checks.
-  stopifnot("Input 'a' must be an 'sf' object" = inherits(a, "sf"))
-  stopifnot("Input 'seedlings' must be an 'sf' object" = inherits(seedlings, "sf"))
-  stopifnot("Input 'saplings' must be an 'sf' object" = inherits(saplings, "sf"))
-  stopifnot("Input 'ingrowth' must be an 'sf' object" = inherits(ingrowth, "sf"))
-  stopifnot("Input 'adults' must be an 'sf' object" = inherits(adults, "sf"))
-  stopifnot("Input 'data' list cannot be empty" = length(data) > 0)
-
 
   # country parameter.
   country <- match.arg(get_parameters(a, "country")[[1]], c("spain", "france", "usa"))
@@ -46,6 +38,14 @@ collect_parts <- function(a, data = list(), verbose = T) {
                 (identical(a$idplot, saplings$idplot)) &
                 (identical(a$idplot, ingrowth$idplot)) &
                 (identical(a$idplot, adults$idplot)))
+
+    # First checks.
+    stopifnot("Input 'a' must be an 'sf' object" = inherits(a, "sf"))
+    stopifnot("Input 'seedlings' must be an 'sf' object" = inherits(seedlings, "sf"))
+    stopifnot("Input 'saplings' must be an 'sf' object" = inherits(saplings, "sf"))
+    stopifnot("Input 'ingrowth' must be an 'sf' object" = inherits(ingrowth, "sf"))
+    stopifnot("Input 'adults' must be an 'sf' object" = inherits(adults, "sf"))
+    stopifnot("Input 'data' list cannot be empty" = length(data) > 0)
   }
 
 

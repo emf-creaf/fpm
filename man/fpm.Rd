@@ -4,7 +4,7 @@
 \alias{fpm}
 \title{Implementation of a forest dynamics model}
 \usage{
-fpm(a, data = data.frame(), models = data.frame(), verbose = T)
+fpm(a, data = data.frame(), models = data.frame(), verbose = T, update = T)
 }
 \arguments{
 \item{a}{\code{sf} object containing a number of POINT geometry types.}
@@ -17,6 +17,9 @@ the components of the IPM model.}
 the IPM steps.}
 
 \item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+
+\item{update}{\code{logical}, if set to TRUE descriptive statistics per plot are calculated
+at the end of the modelization.}
 }
 \value{
 An 'a' \code{sf} object with the updated forest projection.

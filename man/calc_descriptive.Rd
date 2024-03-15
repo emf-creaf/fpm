@@ -10,6 +10,8 @@ calc_descriptive(a, param = list())
 \item{a}{a \code{sf} object containing a single row.}
 
 \item{param}{param a named \code{list} of parameters (see \code{Details} below).}
+
+\item{verbose}{}
 }
 \value{
 The input \code{sf} object with new fields added, namely \code{ba},

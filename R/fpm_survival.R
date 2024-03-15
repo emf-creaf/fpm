@@ -38,7 +38,7 @@ fpm_survival <- function(a, type = "", data = data.frame(), models = list(), ver
     b <- sf::st_drop_geometry(a)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings",
           "ba_species", "ntrees_species", "species", "species_all", "nspecies")] <- NULL
-    df <- cbind(df, b)
+    data <- cbind(data, b)
   }
 
 
@@ -67,11 +67,10 @@ fpm_survival <- function(a, type = "", data = data.frame(), models = list(), ver
         #Do nothing if there are no trees.
         if (length(sp) > 0) {
 
-          dat <- df[i, ]
           pr <- list()
 
           for (k in sp) {
-            df <- rep_dataframe(dat, nx[[k]])
+            df <- rep_dataframe(data[i, ], nx[[k]])
             df$dbh <- x[[k]]
             pr[[k]] <- predict(models[["survival"]][[k]], type = "response", newdata = df)
           }

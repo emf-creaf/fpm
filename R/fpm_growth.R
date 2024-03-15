@@ -87,12 +87,13 @@ fpm_growth <- function(a, type = "", data = data.frame(), models = list(), verbo
           dat$y1 <- x[[j]]
           dat$max_y <- max_dbh[[j]]
 
-          meanlog <- predict(growth[[j]], type = "response", newdata = dat)
+          meanlog <- predict(growth[[j]], newdata = dat)
           sdlog <- sqrt(predict(variance[[j]], type = "response", newdata = dat))
 
           mat <- matrix(0, nx[[j]], nx[[j]])
           xx <- x[[j]] - min_dbh[[j]]
           kseq <- 1:nx[[j]]
+
           for (k in 1:nx[[j]]) {
             mat[k, kseq] <- dlnorm(xx, meanlog = meanlog[k], sdlog = sdlog[k])
             xx <- xx[-length(xx)]

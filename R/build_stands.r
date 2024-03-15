@@ -172,7 +172,7 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
           df <- df |>
             assertr::verify(assertr::has_only_names("species", "dbh")) |>
             assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, dbh) |>
-            assertr::verify(dbh > min_dbh)
+            assertr::verify(dbh >= min_dbh)
 
         } else {
           stopifnot("Input 'df' must be a list when 'stand_type' = 'ipm'" = inherits(df, "list"))
