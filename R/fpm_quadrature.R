@@ -1,14 +1,21 @@
-#' Title
+#' Numerical quadrature of the IPM integral.
 #'
-#' @param a
-#' @param data
-#' @param verbose
+#' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param data \code{list} containing the survival (vector) and growth (matrix) components
+#' for the IPM quadrature.
+#' @param verbose logical, if set to TRUE a progress bar will be printed.
 #'
 #' @return
+#' A \code{sf} object with the projected tree population.
 #' @export
 #'
 #' @examples
-fpm_quadrature <- function(a, data = list(), verbose = T) {
+#' See Vignettes.
+fpm_quadrature <- function(a, data = list(), verbose = T, method = "trapez") {
+
+
+  # Check quadrature method.
+  method <- match.arg(tolower(method), c("trapez", "simpson"))
 
 
   # Retrieve parameters.
@@ -61,7 +68,7 @@ fpm_quadrature <- function(a, data = list(), verbose = T) {
             su <- survival[i, ]$trees[[1]][[j]]
             gr <- growth[i, ]$trees[[1]][[j]]
             n1 <- a[i, ]$trees[[1]][[j]]
-            b[i, ]$trees[[1]][[j]] <- numquad_vm(n1 * su, gr, h[[j]], "trapez")
+            b[i, ]$trees[[1]][[j]] <- numquad_vm(n1 * su, gr, h[[j]], method)
           }
         }
       }

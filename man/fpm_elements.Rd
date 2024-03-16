@@ -13,11 +13,18 @@ fpm_elements(a, type = "", data = data.frame(), models = list(), verbose = T)
 
 \item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
 
+\item{models}{a \code{list} containing regression models per species for all
+the IPM steps.}
+
 \item{verbose}{logical, if set to TRUE a progress bar will be printed.}
 }
 \value{
 A \code{sf} object containing the desired "ipm" component per plot.
 }
 \description{
-Most checks are done by other functions.
+It checks inputs and calls other functionsn to calculate "IPM" elements.
+}
+\details{
+This function calls, from within "fpm", the selected IPM element, i.e. "fpm_small", "fpm_survival" or
+"fpm_growth". It should usually not be used directly.
 }

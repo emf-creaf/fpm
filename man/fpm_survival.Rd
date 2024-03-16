@@ -7,8 +7,24 @@
 fpm_survival(a, type = "", data = data.frame(), models = list(), verbose = T)
 }
 \arguments{
-\item{verbose}{}
+\item{a}{a \code{sf} object containing a number of POINT geometry types.}
+
+\item{type}{\code{character} indicating the component of the ipm model to be calculated.}
+
+\item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
+
+\item{models}{names \code{list} with the regressions models to calculate the dynamics
+of small individuals.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+}
+\value{
+A new \code{sf} stand object with the corresponding calculations.
 }
 \description{
-Title
+This function calculates the survival term in the "IPM" methodology
+as a function of dbh.
+}
+\examples{
+See Vignettes.
 }

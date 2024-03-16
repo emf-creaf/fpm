@@ -13,7 +13,10 @@ fpm_small(a, type = "", data = data.frame(), models = list(), verbose = T)
 
 \item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
 
-\item{verbose}{logical, if set to TRUE a progress bar will be printed.}
+\item{models}{names \code{list} with the regressions models to calculate the dynamics
+of small individuals.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
 }
 \value{
 A new \code{sf} stand object with the corresponding calculations.
@@ -21,4 +24,12 @@ A new \code{sf} stand object with the corresponding calculations.
 \description{
 It calculates the number of small trees for each class, as well as the number and
 distribution of ingrowth trees.
+}
+\details{
+This function is executed by function "fpm" and should usually not be used directly.
+}
+\examples{
+See Vignettes.
+
+
 }

@@ -2,13 +2,24 @@
 % Please edit documentation in R/fpm_quadrature.R
 \name{fpm_quadrature}
 \alias{fpm_quadrature}
-\title{Title}
+\title{Numerical quadrature of the IPM integral.}
 \usage{
-fpm_quadrature(a, data = list(), verbose = T)
+fpm_quadrature(a, data = list(), verbose = T, method = "trapez")
 }
 \arguments{
-\item{verbose}{}
+\item{a}{a \code{sf} object containing a number of POINT geometry types.}
+
+\item{data}{\code{list} containing the survival (vector) and growth (matrix) components
+for the IPM quadrature.}
+
+\item{verbose}{logical, if set to TRUE a progress bar will be printed.}
+}
+\value{
+A \code{sf} object with the projected tree population.
 }
 \description{
-Title
+Numerical quadrature of the IPM integral.
+}
+\examples{
+See Vignettes.
 }

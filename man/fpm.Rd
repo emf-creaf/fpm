@@ -33,6 +33,10 @@ seedlings, saplings, ingrowth and adult-tree growth and mortality processes.
 Function \code{fpm} calculates the different elements of the model and
 combines them together.
 }
+\examples{
+See Vignettes.
+
+}
 \references{
 Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016). El Inventario Forestal Nacional español, una herramienta para el conocimiento, la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 }

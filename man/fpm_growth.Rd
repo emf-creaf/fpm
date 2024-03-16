@@ -4,11 +4,24 @@
 \alias{fpm_growth}
 \title{Calculation of tree growth}
 \usage{
-fpm_growth(a, type = "", data = data.frame(), models = list(), verbose = T)
+fpm_growth(a, data = data.frame(), models = list(), verbose = T)
 }
 \arguments{
-\item{verbose}{}
+\item{a}{a \code{sf} object containing a number of POINT geometry types.}
+
+\item{data}{\code{list} whose elements are required to calculate growth.}
+
+\item{models}{a \code{list} containing regression models per species for all
+the IPM steps.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+}
+\value{
+A \code{sf} object with the projected tree population.
 }
 \description{
 It computes tree dbh growth for all species and plots.
+}
+\examples{
+See Vignettes.
 }

@@ -9,6 +9,9 @@ A data.frame with five columns containing a plot identifier "idplot",
 a pair of UTM coordinates for the plot, "utm_x" and "utm_y", the "dbh" of the tree (in cm)
 and its corresponding "species". EPSG is 4326.
 }
+\source{
+https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
+}
 \usage{
 data(trees)
 }
@@ -19,5 +22,10 @@ Only three species have been selected: Pinus nigra, Pinus halepensis and Quercus
 }
 \examples{
 load("trees")
+}
+\references{
+Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016).
+El Inventario Forestal Nacional español, una herramienta para el conocimiento,
+la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 }
 \keyword{datasets}

@@ -7,15 +7,22 @@
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param type \code{character} indicating the component of the ipm model to be calculated.
 #' @param data \code{list} whose elements are required to calculate the \code{type} component.
-#' @param models
-#' @param verbose logical, if set to TRUE a progress bar will be printed.
+#' @param models names \code{list} with the regressions models to calculate the dynamics
+#' of small individuals.
+#' @param verbose \code{logical}, if set to TRUE a progress bar will be printed.
 #'
 #' @return
 #' A new \code{sf} stand object with the corresponding calculations.
 #'
+#' @details
+#' This function is executed by function "fpm" and should usually not be used directly.
+#'
 #' @export
 #'
 #' @examples
+#' See Vignettes.
+#'
+#'
 fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
 
 

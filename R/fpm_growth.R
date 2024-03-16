@@ -3,17 +3,19 @@
 #' @description
 #' It computes tree dbh growth for all species and plots.
 #'
-#' @param a
-#' @param type
-#' @param data
-#' @param models
-#' @param verbose
+#' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param data \code{list} whose elements are required to calculate growth.
+#' @param models a \code{list} containing regression models per species for all
+#' the IPM steps.
+#' @param verbose \code{logical}, if set to TRUE a progress bar will be printed.
 #'
 #' @return
+#' A \code{sf} object with the projected tree population.
 #' @export
 #'
 #' @examples
-fpm_growth <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
+#' See Vignettes.
+fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T) {
 
 
   # Retrieve parameters.

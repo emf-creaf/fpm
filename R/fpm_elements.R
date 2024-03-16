@@ -1,21 +1,24 @@
 #' Calculate the different parts of an ipm model
 #'
-#' @details
+#' @description
+#' It checks inputs and calls other functionsn to calculate "IPM" elements.
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param type \code{character} indicating the component of the ipm model to be calculated. See
 #' @param data \code{list} whose elements are required to calculate the \code{type} component.
-#' @param models
+#' @param models a \code{list} containing regression models per species for all
+#' the IPM steps.
 #' @param verbose logical, if set to TRUE a progress bar will be printed.
 #'
-#' @description
-#' Most checks are done by other functions.
+#' @details
+#' This function calls, from within "fpm", the selected IPM element, i.e. "fpm_small", "fpm_survival" or
+#' "fpm_growth". It should usually not be used directly.
 #'
 #' @return
 #' A \code{sf} object containing the desired "ipm" component per plot.
+#'
 #' @export
 #'
-#' @examples
 fpm_elements <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
 
 

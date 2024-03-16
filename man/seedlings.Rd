@@ -9,6 +9,9 @@ A data.frame with three columns containing a plot identifier "idplot",
 a "n" column with an indicator of the number of seedlings present (from 0 to 3)
 and a "species" column.
 }
+\source{
+https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
+}
 \usage{
 data(seedlings)
 }
@@ -20,5 +23,10 @@ Only three species have been included: Pinus nigra, Pinus halepensis and Quercus
 \examples{
 load("seedlings")
 
+}
+\references{
+Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016).
+El Inventario Forestal Nacional español, una herramienta para el conocimiento,
+la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 }
 \keyword{datasets}

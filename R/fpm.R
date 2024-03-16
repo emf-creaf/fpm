@@ -25,6 +25,9 @@
 #' @references
 #' Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016). El Inventario Forestal Nacional español, una herramienta para el conocimiento, la gestión y la conservación de los ecosistemas forestales arbolados. Ecosistemas, 25(3), 88-97.
 #'
+#' @examples
+#' See Vignettes.
+#'
 #' @export
 #'
 fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, update = T) {

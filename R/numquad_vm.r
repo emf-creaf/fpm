@@ -7,9 +7,9 @@
 #' @param v numeric vector.
 #' @param m numeric matrix.
 #' @param h single number specifying sub-interval size.
-#' @param quadrature character specifying whether to use the trapezoidal rule
-#' (\code{quadrature} = "trapezoidal") or the extended Simpson rule
-#' (\code{quadrature} = "simpson") all in lower case letters.
+#' @param method character specifying whether to use the trapezoidal rule
+#' (\code{method} = "trapezoidal") or the extended Simpson rule
+#' (\code{method} = "simpson") all in lower case letters.
 #'
 #' @return
 #' numeric vector with the numerical estimation of the quadrature.
@@ -20,6 +20,9 @@
 #' for the two extremes of the integration interval is performed depending on
 #' the type of numerical quadrature that has been selected.
 #'
+#' @references
+#' See Eq.(36) in https://mathworld.wolfram.com/Newton-CotesFormulas.html
+#'
 #' @export
 #'
 #' @examples
@@ -29,35 +32,30 @@
 #' v <- seq(1, 10, length = nv)
 #' m <- matrix(runif(nv*nc), nv, nc)
 #' h <- .1
-#' x <- numquad_vm(v, m, nv, h)
-#' y <- sapply(1:nc, function(i) MiscMath::quad_trapez(v*m[,i], h))
-#' print(mad(x-y))
+#' x <- numquad_vm(v, m, h)
 #'
-#' # Just how much faster than quad_trapez is it?
-#' niter <- 1000
-#' t1 <- system.time(replicate(niter, x <- numquad_vm(v, m, nv, h)))
-#' t2 <- system.time(replicate(niter, y <- sapply(1:nc, function(i) MiscMath::quad_trapez(v*m[,i], h))))
-#'
-#' print(t2/t1)
-#' print(sum(t2,na.rm=T)/sum(t1,na.rm=T))
-#'
-numquad_vm <- function(v, m, h, quadrature = c("trapez", "simpson")) {
+numquad_vm <- function(v, m, h, method = "trapez") {
 
-  # Checks.
-  stopifnot(is.vector(v))
-  stopifnot(is.matrix(m))
-  stopifnot(length(h) == 1)
+  # Check inputs.
+  stopifnot("Input 'v' should be a vector" = is.vector(v))
+  stopifnot("Input 'm' should be a matrix" = is.matrix(m))
+  stopifnot("Input 'h' should be a single numeric numb" = h > 0)
   nv <- length(v)
-  if (nv != nrow(m)) stop("Length of 'v' must be equal to number of rows of 'm'")
-  quadrature <- match.arg(quadrature)
+  stopifnot("Length of 'v' must be equal to number of rows of 'm'" = nv == nrow(m))
+
+
+  # Check quadrature.
+  quadrature <- match.arg(tolower(method), c("trapez", "simpson"))
+
 
   # Matrix product.
   y <- v %*% m
 
-  # Modification.
-  if (quadrature == "trapez") {
+
+  # Taking care of left and right extremes.
+  if (method == "trapez") {
     y <- y - .5*(v[1]*m[1, ] + v[nv]*m[nv, ])
-  } else if (quadrature == "simpson") {
+  } else {
     y <- y - 7/12*(v[1]*m[1, ] + v[nv]*m[nv, ]) + 1/12*(v[2]*m[2, ] + v[nv-1]*m[nv-1, ])
   }
 
