@@ -91,9 +91,9 @@ test_that("full fpm model", {
   # Setting parameters and converting to continuous.
   x <- list()
   for (i in names(maxdbh)) {
-    x[[i]] <- seq(7.5, maxdbh[i], by = 0.5)
+    x[[i]] <- seq(7.5, maxdbh[i], by = 0.1)
   }
-  a <- a|> set_parameters(param = list(integvars = x)) |>
+  a <- a |> set_parameters(param = list(integvars = x)) |>
     smooth_stands(verbose = T) |>
     calc_stats(verbose = T)
 
@@ -116,7 +116,11 @@ test_that("full fpm model", {
                       variance = variance_model,
                       survival = survival_model)
 
-    b <- fpm(a, data = climateSpain, models = models, verbose = T, update = T)
+  # Need to add time interval.
+  data <- climateSpain
+  data$tdiff <- 10
+
+  b <- fpm(a, data = data, models = models, verbose = T, update = T)
 
 
 })

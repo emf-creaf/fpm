@@ -83,14 +83,38 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T) {
 
 
         # Species loop.
+
         for (j in sp) {
+          newdata <- as.list(data[i, ])
+          newdata$max_y <- max_dbh[[j]]
+          newdata$y1 <- x[[j]]
+          newdata <- as.data.frame(newdata)
+          newdata$idplot <- NULL
+          newdata$ntrees <-NULL
+          dd <- as.data.frame(broom::augment(growth[[j]]))
+          dd$y2 <- NULL
+          dd$.fitted <- NULL
+          dd$.resid <- NULL
+          dd$tdiff <- NULL
 
-          dat <- rep_dataframe(data[i, ], nx[[j]])
-          dat$y1 <- x[[j]]
-          dat$max_y <- max_dbh[[j]]
+          # newdata <- newdata[, colnames(dd)]
+          # bbaa <- newdata$ba
+          # newdata$ba <- dd$ba[1]
 
-          meanlog <- predict(growth[[j]], newdata = dat)
-          sdlog <- sqrt(predict(variance[[j]], type = "response", newdata = dat))
+
+          meanlog <- predict(growth[[j]], newdata = newdata)
+          kk <- predict(growth[[j]], newdata = dd)
+          dd<-dd[order(dd$y1),]
+          plot(dd$y1, exp(kk))
+          points(newdata$y1, exp(meanlog),type="l")
+
+          datilla <- dd
+          datilla$y1 <- newdata$y1[1:nrow(dd)]
+          ss <- predict(growth[[j]], newdata = datilla)
+
+
+
+          sdlog <- sqrt(predict(variance[[j]], type = "response", newdata = newdata))
 
           mat <- matrix(0, nx[[j]], nx[[j]])
           xx <- x[[j]] - min_dbh[[j]]
