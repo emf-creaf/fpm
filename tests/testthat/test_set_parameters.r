@@ -30,18 +30,18 @@ test_that("Set attributes of sf tree stand object", {
   expect_no_error(set_parameters(a, param = list(integvars = list(x=1:3, y=(4:6)/2))))
 
   # Both approaches are equivalent.
-  min_dbh <- list('Pinus halepensis' = 7.5, 'Quercus ilex' = 7.5)
-  max_dbh <- list('Pinus halepensis' = 200, 'Quercus ilex' = 170)
+  mindbh <- list('Pinus halepensis' = 7.5, 'Quercus ilex' = 7.5)
+  maxdbh <- list('Pinus halepensis' = 200, 'Quercus ilex' = 170)
   crs = "EPSG:4326"
   a <- start_stands()
   a <- set_parameters(a, param = list(integvars = x,
-                      min_dbh = min_dbh,
-                      max_dbh = max_dbh,
+                      mindbh = mindbh,
+                      maxdbh = maxdbh,
                       crs = crs))
   b <- start_stands(param = list(country = "spain",
                                    integvars = x,
-                                   min_dbh = min_dbh,
-                                   max_dbh = max_dbh,
+                                   mindbh = mindbh,
+                                   maxdbh = maxdbh,
                                    crs = crs))
   expect_identical(a, b)
 

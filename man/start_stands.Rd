@@ -12,7 +12,7 @@ Default is "spain".}
 }
 \value{
 A \code{sf} object with the following attributes (if provided in \code{param}):
-\code{country}, \code{integvars}, \code{min_dbh}, \code{max_dbh}, \code{crs} and
+\code{country}, \code{integvars}, \code{mindbh}, \code{maxdbh}, \code{crs} and
 \code{species}. New fields in the \code{sf} object are also created, depending
 on which country has been selected.
 }
@@ -31,9 +31,9 @@ only calculations for the Spanish Inventario Forestal Nacional have been
 implemented. Lower or upper case letters can be used.
 \item \code{integvars} optional \code{list} where each named element contains the abscissas for
 the species to be modeled.
-\item \code{min_dbh} named vector containing the minimum dbh after which a tree will
+\item \code{mindbh} named vector containing the minimum dbh after which a tree will
 be considered as an adult individual.
-\item \code{max_dbh} named vector containing the maximum possible dbh for each trees species.
+\item \code{maxdbh} named vector containing the maximum possible dbh for each trees species.
 \item \code{crs} coordinate reference system of stand. If missing, NA will be assumed.
 }
 }

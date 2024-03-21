@@ -15,16 +15,16 @@
 #'
 #' @examples
 #' See Vignettes.
-fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T) {
+fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, flag = flag) {
 
 
   # Retrieve parameters.
-  p <- get_parameters(a, c("country", "integvars", "min_dbh", "max_dbh"))
+  p <- get_parameters(a, c("country", "integvars", "mindbh", "maxdbh"))
   country <- p$country
   x <- p$integvars
   nx <- lapply(x, length)
-  min_dbh <- p$min_dbh
-  max_dbh <- p$max_dbh
+  mindbh <- p$mindbh
+  maxdbh <- p$maxdbh
 
 
   # Fetch models.
@@ -86,42 +86,24 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T) {
 
         for (j in sp) {
           newdata <- as.list(data[i, ])
-          newdata$max_y <- max_dbh[[j]]
+          newdata$max_y <- maxdbh[[j]]
           newdata$y1 <- x[[j]]
-          newdata <- as.data.frame(newdata)
-          newdata$idplot <- NULL
-          newdata$ntrees <-NULL
-          dd <- as.data.frame(broom::augment(growth[[j]]))
-          dd$y2 <- NULL
-          dd$.fitted <- NULL
-          dd$.resid <- NULL
-          dd$tdiff <- NULL
-
-          # newdata <- newdata[, colnames(dd)]
-          # bbaa <- newdata$ba
-          # newdata$ba <- dd$ba[1]
-
 
           meanlog <- predict(growth[[j]], newdata = newdata)
-          kk <- predict(growth[[j]], newdata = dd)
-          dd<-dd[order(dd$y1),]
-          plot(dd$y1, exp(kk))
-          points(newdata$y1, exp(meanlog),type="l")
-
-          datilla <- dd
-          datilla$y1 <- newdata$y1[1:nrow(dd)]
-          ss <- predict(growth[[j]], newdata = datilla)
-
-
-
-          sdlog <- sqrt(predict(variance[[j]], type = "response", newdata = newdata))
+          # if (sum(is.na(meanlog)) > 0) browser()
+          sdlog <- predict(variance[[j]], type = "response", newdata = newdata)
+          sdlog[sdlog < 0] <- 0
+          sdlog <- sqrt(sdlog)
 
           mat <- matrix(0, nx[[j]], nx[[j]])
-          xx <- x[[j]] - min_dbh[[j]]
+          xx <- x[[j]] - mindbh[[j]]
           kseq <- 1:nx[[j]]
 
           for (k in 1:nx[[j]]) {
-            mat[k, kseq] <- dlnorm(xx, meanlog = meanlog[k], sdlog = sdlog[k])
+            # if (k == nx[[j]]) {
+            #   if (flag == 1) if (j == "Pinus pinea") browser()
+            # }
+            mat[k, kseq] <- dln(xx, meanlog = meanlog[k], sdlog = sdlog[k])
             xx <- xx[-length(xx)]
             kseq <- kseq[-1]
           }

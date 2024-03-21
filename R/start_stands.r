@@ -15,14 +15,14 @@
 #' implemented. Lower or upper case letters can be used.
 #' * \code{integvars} optional \code{list} where each named element contains the abscissas for
 #' the species to be modeled.
-#' * \code{min_dbh} named vector containing the minimum dbh after which a tree will
+#' * \code{mindbh} named vector containing the minimum dbh after which a tree will
 #' be considered as an adult individual.
-#' * \code{max_dbh} named vector containing the maximum possible dbh for each trees species.
+#' * \code{maxdbh} named vector containing the maximum possible dbh for each trees species.
 #' * \code{crs} coordinate reference system of stand. If missing, NA will be assumed.
 #'
 #' @return
 #' A \code{sf} object with the following attributes (if provided in \code{param}):
-#' \code{country}, \code{integvars}, \code{min_dbh}, \code{max_dbh}, \code{crs} and
+#' \code{country}, \code{integvars}, \code{mindbh}, \code{maxdbh}, \code{crs} and
 #' \code{species}. New fields in the \code{sf} object are also created, depending
 #' on which country has been selected.
 #'

@@ -23,8 +23,8 @@
 #'
 #' @examples
 #' a <- start_stands()
-#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #'
 set_parameters <- function(a, param = list(), verbose = T) {
 
@@ -50,8 +50,8 @@ set_parameters <- function(a, param = list(), verbose = T) {
 
   # Other parameters.
   integvars <- param[["integvars"]]
-  min_dbh <- param[["min_dbh"]]
-  max_dbh <- param[["max_dbh"]]
+  mindbh <- param[["mindbh"]]
+  maxdbh <- param[["maxdbh"]]
   crs <- param[["crs"]]
 
   if (!is.null(integvars)) {
@@ -62,17 +62,17 @@ set_parameters <- function(a, param = list(), verbose = T) {
   }
 
 
-  if (!is.null(min_dbh)) {
-    stopifnot("Input 'min_dbh' must be a named list" = is.list(min_dbh))
-    stopifnot("Names of list elements (i.e. species) in 'min_dbh' are missing" = !is.null(names(min_dbh)))
-    attr(a, "min_dbh") <- min_dbh
+  if (!is.null(mindbh)) {
+    stopifnot("Input 'mindbh' must be a named list" = is.list(mindbh))
+    stopifnot("Names of list elements (i.e. species) in 'mindbh' are missing" = !is.null(names(mindbh)))
+    attr(a, "mindbh") <- mindbh
   }
 
 
-  if (!is.null(max_dbh)) {
-    stopifnot("Input 'max_dbh' must be a named list" = is.list(max_dbh))
-    stopifnot("Names of list elements (i.e. species) in 'max_dbh' are missing" = !is.null(names(max_dbh)))
-    attr(a, "max_dbh") <- max_dbh
+  if (!is.null(maxdbh)) {
+    stopifnot("Input 'maxdbh' must be a named list" = is.list(maxdbh))
+    stopifnot("Names of list elements (i.e. species) in 'maxdbh' are missing" = !is.null(names(maxdbh)))
+    attr(a, "maxdbh") <- maxdbh
   }
 
 

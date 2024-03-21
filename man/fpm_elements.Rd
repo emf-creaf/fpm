@@ -4,7 +4,14 @@
 \alias{fpm_elements}
 \title{Calculate the different parts of an ipm model}
 \usage{
-fpm_elements(a, type = "", data = data.frame(), models = list(), verbose = T)
+fpm_elements(
+  a,
+  type = "",
+  data = data.frame(),
+  models = list(),
+  verbose = T,
+  flag = flag
+)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}

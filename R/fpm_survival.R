@@ -22,7 +22,7 @@ fpm_survival <- function(a, type = "", data = data.frame(), models = list(), ver
 
 
   # Retrieve parameters.
-  p <- get_parameters(a, c("country", "integvars", "min_dbh", "max_dbh"))
+  p <- get_parameters(a, c("country", "integvars", "mindbh", "maxdbh"))
   country <- p$country
   x <- p$integvars
   nx <- lapply(x, length)

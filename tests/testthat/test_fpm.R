@@ -2,10 +2,10 @@ test_that("full fpm model", {
 
 
 
-  source("./R/start_stands.r")
-  source("./R/set_parameters.r")
-  source("./R/build_stands.r")
-  source("./R/smooth_stands.r")
+  source("./R/start_stands.R")
+  source("./R/set_parameters.R")
+  source("./R/build_stands.R")
+  source("./R/smooth_stands.R")
   source("./R/factor_diam_IFN.r")
   source("./R/get_parameters.r")
   source("./R/kernsmooth.r")
@@ -24,6 +24,7 @@ test_that("full fpm model", {
   source("./R/fpm_quadrature.r")
   source("./R/quadrature.r")
   source("./R/fpm.r")
+  source("./R/dln.R")
   #
   source("./R/collect_parts.R")
 
@@ -93,20 +94,17 @@ test_that("full fpm model", {
   for (i in names(maxdbh)) {
     x[[i]] <- seq(7.5, maxdbh[i], by = 0.1)
   }
-  a <- a |> set_parameters(param = list(integvars = x)) |>
-    smooth_stands(verbose = T) |>
-    calc_stats(verbose = T)
+  a <- a |> set_parameters(param = list(integvars = x)) |> smooth_stands()
 
 
-
-  # Add idplot.
+  # Add idplot to dataset.
   i <- match(a$idplot, climateSpain$idplot)
   a <- a[!is.na(i), ]
   climateSpain <- climateSpain[i[!is.na(i)], ]
   climateSpain$idplot <- as.character(climateSpain$idplot)
 
 
-  a <- a |> set_parameters(param = list(integvars = x, max_dbh = lapply(x, max), min_dbh = lapply(x, min)))
+  a <- a |> set_parameters(param = list(integvars = x, maxdbh = lapply(x, max), mindbh = lapply(x, min)))
 
   models <- list(seedlings = seedlings_model,
                       saplings = saplings_model,
@@ -116,11 +114,9 @@ test_that("full fpm model", {
                       variance = variance_model,
                       survival = survival_model)
 
-  # Need to add time interval.
-  data <- climateSpain
-  data$tdiff <- 10
 
-  b <- fpm(a, data = data, models = models, verbose = T, update = T)
+  b1 <- fpm(a, data = climateSpain, models = models, verbose = T, update = T)
+  b2 <- fpm(b1, data = climateSpain, models = models, verbose = T, update = T)
 
 
 })

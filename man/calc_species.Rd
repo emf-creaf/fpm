@@ -34,8 +34,8 @@ Simple counting of species per plot.
 }
 \examples{
 a <- start_stands()
-max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
 # Next, we add one stand.
 df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))

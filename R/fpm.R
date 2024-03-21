@@ -17,7 +17,12 @@
 #'
 #' @details
 #' Function \code{fpm} calculates the different elements of the model and
-#' combines them together.
+#' combines them together. The names of covariables or factors in \code{data}
+#' must match those used by the regression objects in \code{models}. In addition,
+#' \code{data} must include a new variable named \code{tdiff} that indicates,
+#' per every plot, the time interval in years for which \code{fpm} will calculate the
+#' dynamics. If not provided, default for "country" = "spain" will be
+#' \code{tdiff=10} for all plots.
 #'
 #' @return
 #' An 'a' \code{sf} object with the updated forest projection.
@@ -42,13 +47,13 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
 
 
   # Retrieve parameters.
-  p <- get_parameters(a, param = c("country", "integvars", "h", "min_dbh", "max_dbh"))
+  p <- get_parameters(a, param = c("country", "integvars", "h", "mindbh", "maxdbh"))
   country <- match.arg(p$country, c("spain", "france", "usa"))
   x <- p$integvars
   h <- p$h
   nx <- lapply(x, length)
-  min_dbh <- p$min_dbh
-  max_dbh <- p$max_dbh
+  mindbh <- p$mindbh
+  maxdbh <- p$maxdbh
 
 
   # data is provided.
@@ -63,6 +68,23 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
   stopifnot("Some 'idplot' indices in 'a' cannot be found" = sum(is.na(i)) == 0)
 
 
+  # 'tdiff'  should be present in 'data'. If not and 'country' = "spain", we assume 'tdiff' = 10.
+  if (country == "spain") {
+    if (!("tdiff" %in% colnames(data))) {
+      mf <- match.call()
+      fname <- as.character(match.call()[[1]])
+      cat(paste0("\n -> ", fname, ": 'tdiff' is not present in 'data' input data.frame. Assuming 'tdiff' = 10 years for all plots\n"))
+      data$tdiff <- 10
+    } else {
+      stopifnot("'tdiff' must be a positive number" = data$tdiff > 0)
+    }
+  } else if (country == "usa") {
+    stop("Calculations for country = 'usa' have not yet been implemented")
+  } else if (country == "france") {
+    stop("Calculations for country = 'france' have not yet been implemented")
+  }
+
+
   # Check models is not NULL or empty.
   stopifnot("Input 'models' must be provided" = !is.null(models))
   stopifnot("Input 'models' must be a list" = inherits(models, "list"))
@@ -74,7 +96,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
 
 
   # Get stats and species per plot.
-  a <- a |> calc_species(verbose = verbose) |> calc_stats(verbose = verbose)
+  if (update) a <- a |> calc_species(verbose = verbose) |> calc_stats(verbose = verbose)
 
 
   if (country == "spain") {
@@ -114,17 +136,18 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
     # Growth is called once per loop step because of the size of its output.
     if (country == "spain") {
 
-      # IPM dynamics only if there are trees.
-      if (length(a$trees[[i]]) > 0) {
-        growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = F)
-        adults[i, ] <- fpm_quadrature(a[i, ], verbose =  F,
-                                     data = list(survival = survival[i, ], growth = growth))
-      }
+      # IPM dynamics only if stand_type = "ipm" and there are trees.
+      if (a$stand_type[i] == "ipm") {
+        if (length(a$trees[[i]]) > 0) {
+#           flag = 0
+# if (i == 9) flag = 1
 
-    }  else if (country == "usa") {
-      stop("Calculations for country = 'usa' have not yet been implemented")
-    } else if (country == "france") {
-      stop("Calculations for country = 'france' have not yet been implemented")
+          growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = F, flag = flag)
+          adults[i, ] <- fpm_quadrature(a[i, ], verbose =  F,
+                                       data = list(survival = survival[i, ], growth = growth))
+
+        }
+      }
     }
   }
   if (verbose) cat("\n")
@@ -142,9 +165,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
 
 
   # Update species and statistics if set.
-  if (update) {
-    b <- b |> calc_stats(verbose = verbose) |> calc_species()
-  }# Extra carriage return.
+  if (update) b <- b |> calc_stats(verbose = verbose) |> calc_species(verbose = verbose)
 
 
   if (verbose) {

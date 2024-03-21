@@ -28,6 +28,7 @@ fpm_quadrature <- function(a, data = list(), verbose = T, method = "trapez") {
   survival <- data$survival
   growth <- data$growth
 
+
   # First initialize stands.
   b <- clear_stands(a)
 
@@ -64,7 +65,7 @@ fpm_quadrature <- function(a, data = list(), verbose = T, method = "trapez") {
         if (length(a[i, ]$trees[[1]]) > 0) {
 
           # Numerical quadrature with extended Simpson' rule.
-          for (j in names(a$trees[[1]])) {
+          for (j in names(a[i, ]$trees[[1]])) {
             su <- survival[i, ]$trees[[1]][[j]]
             gr <- growth[i, ]$trees[[1]][[j]]
             n1 <- a[i, ]$trees[[1]][[j]]

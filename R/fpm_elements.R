@@ -19,7 +19,7 @@
 #'
 #' @export
 #'
-fpm_elements <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
+fpm_elements <- function(a, type = "", data = data.frame(), models = list(), verbose = T, flag = flag) {
 
 
   # Retrieve country.
@@ -55,7 +55,7 @@ fpm_elements <- function(a, type = "", data = data.frame(), models = list(), ver
                 saplings = fpm_small(a, type = type, data = data, models = models, verbose = verbose),
                 ingrowth = fpm_small(a, type = type, data = data, models = models, verbose = verbose),
                 survival = fpm_survival(a, data = data, models = models, verbose = verbose),
-                growth = fpm_growth(a, data = data, models = models, verbose = verbose)
+                growth = fpm_growth(a, data = data, models = models, verbose = verbose, flag = flag)
 
     )
 

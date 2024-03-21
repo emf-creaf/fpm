@@ -47,7 +47,7 @@ calc_descriptive <- function(a, param = list()) {
       } else if (stand_type == "ipm") {
         ba <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^2, h[[j]]) * cnst, simplify = F)
         ntrees <- sapply(names(b), function(j) quadrature(b[[j]], h[[j]]), simplify = F)
-
+if (sum(is.na(unlist(ntrees)))>0) browser()
       }
 
       a$ba_species[[1]] <- ba

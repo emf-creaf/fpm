@@ -10,7 +10,7 @@ get_parameters(a, param = NULL)
 \item{a}{\code{sf} object containing a number of POINT geometry types}
 
 \item{param}{character vector with names of parameters to be extracted:
-\code{country}, \code{integvars}, \code{h}, \code{min_dbh}, \code{max_dbh},
+\code{country}, \code{integvars}, \code{h}, \code{mindbh}, \code{maxdbh},
 \code{species} or \code{crs}. If not provided, all those parameters will
 be retrieved.}
 }
@@ -26,8 +26,8 @@ See \code{\link{start_stand}} and \code{\link{set_parameters}} for details.
 }
 \examples{
 a <- start_stands()
-max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 p <- get_parameters(a)
 
 }

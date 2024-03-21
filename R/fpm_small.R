@@ -101,7 +101,7 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
           } else {
             nn <- list()
           }
-
+# if (type == "saplings" & i == 54) browser()
           for (k in sp) {
 
             # Prepare the data.frame and select species.

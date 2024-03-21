@@ -32,8 +32,8 @@ most purposes.
 \examples{
 
 a <- start_stands()
-max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
 x <- list('Pinus nigra' = seq(7.5,220,length=1000),
   'Pinus halepensis' = seq(7.5,250,length=1500),

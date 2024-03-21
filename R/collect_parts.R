@@ -73,29 +73,39 @@ collect_parts <- function(a, data = list(), verbose = T) {
 
     if (country == "spain") {
 
-      # Retrieve young trees.
-      a[i, ]$seedlings[[1]] <- if (length(seedlings[i, ]$seedlings[[1]]) > 0) seedlings[i, ]$seedlings[[1]] else list()
-      a[i, ]$saplings[[1]] <- if (length(saplings[i, ]$saplings[[1]]) > 0) saplings[i, ]$saplings[[1]] else list()
+      # Only applicable if stand_type == "ipm".
+      if (a[i, ]$stand_type == "ipm") {
 
-      # Read ingrowth and adult data.
-      x <- y <- species_ingrowth <- species_trees <- NULL
-      if (length(ingrowth[i, ]$trees[[1]]) > 0) {
-        x <- ingrowth[i, ]$trees[[1]]
-        species_ingrowth <- names(x)
-      }
-      if (length(adults[i, ]$trees[[1]]) > 0) {
-        y <- adults[i, ]$trees[[1]]
-        species_trees <- names(y)
-      }
 
-      # Species present in the plot.
-      species_unique <- unique(c(species_ingrowth, species_trees))
+        # Retrieve young trees.
+        a[i, ]$seedlings[[1]] <- if (length(seedlings[i, ]$seedlings[[1]]) > 0) seedlings[i, ]$seedlings[[1]] else list()
+        a[i, ]$saplings[[1]] <- if (length(saplings[i, ]$saplings[[1]]) > 0) saplings[i, ]$saplings[[1]] else list()
 
-      # Adding adults.
-      if (length(species_unique) > 0) {
-        for (j in species_unique) {
-          if (length(x[[j]]) > 0 | length(y[[j]]) > 0) {
-            a[i, ]$trees[[1]][[j]] <- f(x[[j]]) + f(y[[j]])
+
+        # Read ingrowth and adult data.
+        x <- y <- species_ingrowth <- species_trees <- NULL
+        if (length(ingrowth[i, ]$trees[[1]]) > 0) {
+          x <- ingrowth[i, ]$trees[[1]]
+          species_ingrowth <- names(x)
+        }
+
+
+        if (length(adults[i, ]$trees[[1]]) > 0) {
+          y <- adults[i, ]$trees[[1]]
+          species_trees <- names(y)
+        }
+
+
+        # Species present in the plot.
+        species_unique <- unique(c(species_ingrowth, species_trees))
+
+
+        # Adding adults.
+        if (length(species_unique) > 0) {
+          for (j in species_unique) {
+            if (length(x[[j]]) > 0 | length(y[[j]]) > 0) {
+              a[i, ]$trees[[1]][[j]] <- f(x[[j]]) + f(y[[j]])
+            }
           }
         }
       }

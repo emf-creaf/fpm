@@ -31,7 +31,12 @@ seedlings, saplings, ingrowth and adult-tree growth and mortality processes.
 }
 \details{
 Function \code{fpm} calculates the different elements of the model and
-combines them together.
+combines them together. The names of covariables or factors in \code{data}
+must match those used by the regression objects in \code{models}. In addition,
+\code{data} must include a new variable named \code{tdiff} that indicates,
+per every plot, the time interval in years for which \code{fpm} will calculate the
+dynamics. If not provided, default for "country" = "spain" will be
+\code{tdiff=10} for all plots.
 }
 \examples{
 See Vignettes.

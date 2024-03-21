@@ -4,7 +4,7 @@
 \alias{fpm_growth}
 \title{Calculation of tree growth}
 \usage{
-fpm_growth(a, data = data.frame(), models = list(), verbose = T)
+fpm_growth(a, data = data.frame(), models = list(), verbose = T, flag = flag)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}

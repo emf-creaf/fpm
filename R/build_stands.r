@@ -29,8 +29,8 @@
 #'
 #' # First initialize stands.
 #' a <- start_stands()
-#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #'
 #' # Next, we add one stand.
 #' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
@@ -145,7 +145,7 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
   if (country == "spain") {
 
     # For spain minimum dbh is 7.5cm.
-    min_dbh <- 7.5
+    mindbh <- 7.5
 
     # There is data to add to 'a'.
     if (!is.null(df)) {
@@ -172,11 +172,11 @@ build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
           df <- df |>
             assertr::verify(assertr::has_only_names("species", "dbh")) |>
             assertr::assert_rows(assertr::num_row_NAs, function(x) x == 0, dbh) |>
-            assertr::verify(dbh >= min_dbh)
+            assertr::verify(dbh >= mindbh)
 
         } else {
           stopifnot("Input 'df' must be a list when 'stand_type' = 'ipm'" = inherits(df, "list"))
-          df <- df |> assertr::assert(is_larger(min_dbh), dplyr::everything()) |>
+          df <- df |> assertr::assert(is_larger(mindbh), dplyr::everything()) |>
             assertr::assert(assertr::not_na, dplyr::everything())
         }
         a$stand_type[[id]] <- stand_type

@@ -6,7 +6,7 @@
 #'
 #' @param a \code{sf} object containing a number of POINT geometry types
 #' @param param character vector with names of parameters to be extracted:
-#' \code{country}, \code{integvars}, \code{h}, \code{min_dbh}, \code{max_dbh},
+#' \code{country}, \code{integvars}, \code{h}, \code{mindbh}, \code{maxdbh},
 #' \code{species} or \code{crs}. If not provided, all those parameters will
 #' be retrieved.
 #'
@@ -21,8 +21,8 @@
 #'
 #' @examples
 #' a <- start_stands()
-#' max_dbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, param = list(max_dbh = max_dbh, crs =  "EPSG:4326"))
+#' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
+#' a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #' p <- get_parameters(a)
 #'
 get_parameters <- function(a, param = NULL) {
@@ -32,7 +32,7 @@ get_parameters <- function(a, param = NULL) {
 
 
   # Check that parameters are correct. If NULL, all parameters.
-  par <- c("country", "integvars", "h", "min_dbh", "max_dbh", "crs", "species")
+  par <- c("country", "integvars", "h", "mindbh", "maxdbh", "crs", "species")
 
   if (is.null(param)) {
     param <- par
