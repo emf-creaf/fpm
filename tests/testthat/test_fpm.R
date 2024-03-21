@@ -25,6 +25,7 @@ test_that("full fpm model", {
   source("./R/quadrature.r")
   source("./R/fpm.r")
   source("./R/dln.R")
+  source("./R/integvars.R")
   #
   source("./R/collect_parts.R")
 
@@ -90,10 +91,9 @@ test_that("full fpm model", {
 
 
   # Setting parameters and converting to continuous.
-  x <- list()
-  for (i in names(maxdbh)) {
-    x[[i]] <- seq(7.5, maxdbh[i], by = 0.1)
-  }
+  mindbh <- maxdbh
+  mindbh[] <- 7.5
+  x <- integvars(mindbh, maxdbh, by = .1)
   a <- a |> set_parameters(param = list(integvars = x)) |> smooth_stands()
 
 
@@ -118,5 +118,8 @@ test_that("full fpm model", {
   b1 <- fpm(a, data = climateSpain, models = models, verbose = T, update = T)
   b2 <- fpm(b1, data = climateSpain, models = models, verbose = T, update = T)
 
+  plot(a[34, ]$trees[[1]]$Sclerophyll, type = "l", lty = 1, lwd = 2)
+  points(b1[34, ]$trees[[1]]$Sclerophyll, type = "l", lty = 2, lwd = 2)
+  points(b2[34, ]$trees[[1]]$Sclerophyll, type = "l", lty = 3, lwd = 2)
 
 })

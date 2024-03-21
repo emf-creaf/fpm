@@ -75,7 +75,6 @@ calc_stats <- function(a, verbose = T) {
 
 
     # Calculations.
-    print(i)
     a[i, ] <- calc_descriptive(a[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country))
 
   }
