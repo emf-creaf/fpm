@@ -41,5 +41,4 @@
 #' @examples
 #' load("maxdbh")
 #'
-
 "maxdbh"

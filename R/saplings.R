@@ -27,5 +27,4 @@
 #' @examples
 #' load("saplings")
 #'
-
 "saplings"
