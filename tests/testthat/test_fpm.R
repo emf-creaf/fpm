@@ -94,7 +94,7 @@ test_that("full fpm model", {
   mindbh <- maxdbh
   mindbh[] <- 7.5
   x <- integvars(mindbh, maxdbh, by = .1)
-  a <- a |> set_parameters(param = list(integvars = x)) |> smooth_stands()
+  a <- a |> set_parameters(param = list(integvars = x, mindbh = mindbh, maxdbh = maxdbh)) |> smooth_stands()
 
 
   # Add idplot to dataset.
@@ -104,7 +104,6 @@ test_that("full fpm model", {
   climateSpain$idplot <- as.character(climateSpain$idplot)
 
 
-  a <- a |> set_parameters(param = list(integvars = x, maxdbh = lapply(x, max), mindbh = lapply(x, min)))
 
   models <- list(seedlings = seedlings_model,
                       saplings = saplings_model,

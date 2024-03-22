@@ -23,5 +23,5 @@
 #' https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
 #'
 #' @examples
-#' load("trees")
+#' data(trees)
 "trees"

@@ -63,14 +63,14 @@ set_parameters <- function(a, param = list(), verbose = T) {
 
 
   if (!is.null(mindbh)) {
-    stopifnot("Input 'mindbh' must be a named list" = is.list(mindbh))
-    stopifnot("Names of list elements (i.e. species) in 'mindbh' are missing" = !is.null(names(mindbh)))
+    stopifnot("Input 'mindbh' must be a named vector" = is.vector(mindbh))
+    stopifnot("Names of elements (i.e. species) in 'mindbh' are missing" = !is.null(names(mindbh)))
     attr(a, "mindbh") <- mindbh
   }
 
 
   if (!is.null(maxdbh)) {
-    stopifnot("Input 'maxdbh' must be a named list" = is.list(maxdbh))
+    stopifnot("Input 'maxdbh' must be a named vector" = is.vector(maxdbh))
     stopifnot("Names of list elements (i.e. species) in 'maxdbh' are missing" = !is.null(names(maxdbh)))
     attr(a, "maxdbh") <- maxdbh
   }
