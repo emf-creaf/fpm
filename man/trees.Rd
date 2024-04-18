@@ -21,7 +21,7 @@ Plot coordinates have been modified not to point to the actual plots.
 Only three species have been selected: Pinus nigra, Pinus halepensis and Quercus ilex.
 }
 \examples{
-load("trees")
+data(trees)
 }
 \references{
 Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016).

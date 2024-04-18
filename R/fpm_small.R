@@ -125,6 +125,7 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
               if (dat$nseedlings > 0 | dat$nsaplings > 0) {
                 p <- predict(models[["ingrowth"]][[k]], newdata = dat, type = "response") *
                   dtrexp(x = x[[k]], rate = models[["lambda"]][[k]], min = min(x[[k]]))
+                p <- p * (10000/(pi*25))
               }
             }
 
