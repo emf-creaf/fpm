@@ -1,20 +1,14 @@
 Package: fpm
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Forest population modelling
+Version: 0.1.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Roberto", "Molowny-Horas", , "roberto@creaf.uab.es", role = c("aut", "cre"),
+           comment = c(ORCID = "https://orcid.org/0000-0003-2626-6379"))
+Description: Modelling of population dynamics of forest data from national
+    inventories
+License: GPL v3
 Encoding: UTF-8
+Language: en
+Lazydata: TRUE
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
-Imports: 
-    assertr,
-    assertthat,
-    dplyr,
-    magrittr
-Depends: 
-    R (>= 2.10)
-LazyData: true
+RoxygenNote: 7.3.1

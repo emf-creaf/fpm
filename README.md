@@ -1,2 +1,1 @@
-# fpm
-Population modeling of forest inventory data
+Modelling of population dynamics of forest data from national inventories
