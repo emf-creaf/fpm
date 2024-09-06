@@ -1,0 +1,83 @@
+---
+title: "Non-linear fit of growth data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fit_growth_data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+### Introduction
+
+
+### Retrieving climatic data
+
+
+
+```{r}
+# install.packages("geodata")
+library(geodata)
+library(terra)
+worldclim_path <- tempdir()
+tavg <- terra::app(worldclim_country("spain", "tavg", worldclim_path), mean)
+prec <- terra::app(worldclim_country("spain", "prec", worldclim_path), sum)
+```
+
+### IFN data with forestables R package
+
+
+```{r}
+# install.packages("devtools")
+devtools::install_github("emf-creaf/forestables")
+library(forestables)
+library(sf)
+library(terra)
+ifn_path <- tempdir()
+download_inventory("IFN", destination = ifn_path)
+# provinces <- as.character(seq(1, 52))
+# provinces <- ifelse(nchar(provinces)==1, paste0("0", provinces), provinces)
+# ifn2 <- ifn_to_tibble(versions = "ifn2", provinces = provinces, folder = ifn_path)
+ifn2 <- ifn_to_tibble(versions = "ifn2", provinces = "08", folder = ifn_path)
+ifn2 <- ifn2 |> clean_empty(c("tree")) |> inventory_as_sf()
+# Plot IFN2 locations on average temperature in January in the Barcelona province.
+plot(tavg[[1]], xlim = c(1,3), ylim = c(41,42.5))
+plot(ifn2[,1], add = T, pch = 16, cex = .2, col = "red")
+```
+
+
+### Preparing data
+
+
+```{r}
+# Harmonizing coordinate reference systems,
+if (st_crs(tavg) != st_crs(ifn2)) st_transform(ifn2, st_crs(tavg))
+
+# Extracting raster data at tree plot locations.
+ifn2$tavg <- terra::extract(tavg, ifn2, method = "bilinear")
+ifn2$prec <- terra::extract(prec, ifn2, method = "bilinear")
+```
+
+
+
+### Fitting tree growth data with the Rtigre R package
+
+
+```{r}
+# devtools::install_github("https://github.com/emf-creaf/Rtigre.git")
+library(Rtigre)
+
+```
+
+
+
+```{r setup}
+library(fpm)
+```

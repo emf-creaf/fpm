@@ -1,0 +1,27 @@
+---
+title: "modifications_ipm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{modifications_ipm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+### The IPM methodology
+
+The Integral Projection Model (IPM) methodology was presented in Easterling, M. R., Ellner, S. P., & Dixon, P. M. (2000). *Size‐specific sensitivity: applying a new structured population model. Ecology, 81(3), 694-708*. The main characteristic of the IPM, and one that distinguishes it from the better known Matrix Projection Model (MPM) methodology, is that individuals are not classified into discrete stages (e.g. age or size classes). On the contrary, they are described by a continuous variable (e.g. continuous age or size), and the IPM use kernels, rather than transition matrices as for the MPM, to calculate population projections.
+
+
+
+
+```{r}
+library(fpm)
+```
