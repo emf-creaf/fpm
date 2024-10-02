@@ -17,67 +17,201 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
+In its seminal work, Easterling et al. (2000) used as $\texttt{g}$ a simple linear regression of the log-transformed stem diameter of $Aconitum\text{ }noveboracense$ plants at $t_{1}$ and $t_{2}$, with $t_{1}<t_{2}$.
+This approach described well the observed growth of that plant, but a linear dependence is hard to justify for trees, since many trees show a varying growth rate whereby they may grow faster at a very young age and then slower at an older age (Tomé et al. 2006). Thus, to fit tree diameter data we will look for a monotonically increasing curve with a growth phase and a decay phase. Further, we will assume that tree size cannot increase indefinitely due to e.g. the difficulty of transporting water from the roots up to very distant leaves, or the inability of the root system or the tree trunk to support the increasing weight of branches and leaves of the upper part. Thus, that function should be bounded, i.e. it should have lower and upper asymptotes. Sigmoid-like function fulfill all those requirements and are relatively easy to deal with analitically.
+
+The Integral Projection Model (IPM) methodology, as implemented in this package, requires a function $\texttt{g}$ that describes the **increment** in future size of an individual tree as a function of its previous size. As a proxy for size we use the diameter at breast height, or $dbh$, which is recorded in all the Spanish inventories for each individual tree in every stand. Thus, the increment function $\texttt{g}$ does not depend on time directly but on the *temporal interval* between the two time points. Function $\texttt{g}$ can also be made to depend on other variables like e.g. stand basal area (to account for tree competition) or climate.
+
+
+### Software packages
+
+The R package $\texttt{Rtigre}$ (https://github.com/emf-creaf/Rtigre.git) has been implemented to fit time-independent, sigmoid functions to $dbh$ increment data from tree inventories. There are different sigmoid functions to choose from, although the default one (logistic) will probably be good enough for most purposes.
+
+Regarding inventory data, the R package $\texttt{forestables}$ (https://github.com/emf-creaf/forestables) can be used to download individual tree data from the Spanish Inventario Forestal Nacional (IFN). This package allows us to access the forest inventory data in a fast and compact way. Although there are several inventories available for retrieval by this package, in this example we will focus on the data from the IFN 2 and 3. For a detailed explanation of the characteristics of the IFN, see https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
+
+Other R packages that will be used below are loaded in the chunks, as indicated.
+
+<br>
+
+### Download tree inventory data to local directory
+
+First, we install and load all the necessary packages.
+
+```{r install-things}
+# Download package 'devtools' to fetch packages from github.
+# install.packages("devtools")
+
+# Install and load 'forestables', 'Rtigre' and 'fpm' from github.
+# devtools::install_github("emf-creaf/forestables")
+# devtools::install_github("emf-creaf/Rtigre")
+# devtools::install_github("emf-creaf/fpm")
+library(forestables)
+library(Rtigre)
+library(fpm)
+
+# Install package 'gtsummary' for beautiful printing of regression summary.
+# install.packages("gtsummary")
+library(gtsummary)
+
+# Load the 'future' R package for parallel processing (recommended).
+# install.packages("future")
+library(future)
+
+# Load tidy libraries from CRAN as well as other packages needed later on.
+# install.packages(c("dplyr", "tidyr", "geodata", "terra"))
+library(dplyr)
+library(tidyr)
+
+# Set the local path and create the subfolder, if it does not exist.
+ifn_path <- "..\\..\\Tree inventory data\\IFN"
+dir.create(ifn_path)
+```
+
+<br>
+
+We proceed to download the whole inventory database to a local directory as a big set of files, since having a local copy of the inventories will allow a much faster access to the data afterwards. Notice that this is all very slow and may take a little while.
+
+```{r download-IFN, eval = FALSE}
+# Download all inventory data from the server.
+download_inventory("IFN", destination = ifn_path)
+```
+
+<br>
+
+Those files, now in a local folder, contain all the inventory data for all provinces,
+but for our analysis to be able to proceed we need to choose only the IFN2 and IFN3 inventories.
+Package $forestables$ provides tools to select those datasets.
+
+
+```{r get-ifn-data, eval = FALSE}
+# Create provincial codes.
+provinces <- as.character(seq(1, 52))
+provinces <- ifelse(nchar(provinces) == 1, paste0("0", provinces), provinces)
+
+# Retrieve IFN2 and IFN3 and save it on disk as .Rdata files. Pick the
+# number of 'workers' that fits your own CPU resources.
+plan("multisession", workers = 6)
+ifn2 <- ifn_to_tibble(provinces = provinces,
+                      versions = c("ifn2"),
+                      folder = ifn_path)
+
+plan("multisession", workers = 6)
+ifn3 <- ifn_to_tibble(provinces = provinces,
+                      versions = c("ifn3"),
+                      folder = ifn_path)
+
+# We need trees that are alive in both inventories.
+ifn2 <- ifn2 |> clean_empty("tree")
+ifn3 <- ifn3 |> clean_empty("tree")
+```
+
+
+```{r include = FALSE}
+# Uncomment if run first time.
+# save(ifn2, ifn3, file = ".\\data-raw\\ifn_2_3.RData")
+load("..\\data-raw\\ifn_2_3.RData")
+```
+
+<br>
 
 ### Retrieving climatic data
 
+Climate variables (mean anual temperature and total anual precipitation, in this exercise) will be selected from the WorldClim site (https://www.worldclim.org/) with the help of the $\texttt{geodata}$ package. Values at pixel locations are extracted with tools from the $\texttt{terra}$ package.
 
+```{r get-climate, warnings = FALSE}
+# Set the local path and create the subfolder, if it does not exist.
+climate_path <- tempdir()
 
-```{r}
-# install.packages("geodata")
-library(geodata)
-library(terra)
-worldclim_path <- tempdir()
-tavg <- terra::app(worldclim_country("spain", "tavg", worldclim_path), mean)
-prec <- terra::app(worldclim_country("spain", "prec", worldclim_path), sum)
+# Download worldclim data.
+tavg <- terra::app(geodata::worldclim_country("spain", "tavg", climate_path), mean)
+prec <- terra::app(geodata::worldclim_country("spain", "prec", climate_path), sum)
+
+# Extract climate data at IFN tree plot locations.
+ifn2 <- ifn2 |> sf::st_as_sf(crs = ifn2$crs[1], coords = c("coordx", "coordy"))
+ifn3 <- ifn3 |> sf::st_as_sf(crs = ifn3$crs[1], coords = c("coordx", "coordy"))
+
+# Transform to match climate data.
+ifn2 <- ifn2 |> sf::st_transform(as.numeric(terra::crs(tavg, describe=T)$code))
+ifn3 <- ifn3 |> sf::st_transform(as.numeric(terra::crs(tavg, describe=T)$code))
+
+# Extract values at tree plot locations.
+ifn2$tavg <- terra::extract(tavg, ifn2, method = "bilinear", ID = F)[, 1]
+ifn2$prec <- terra::extract(prec, ifn2, method = "bilinear", ID = F)[, 1]
 ```
 
-### IFN data with forestables R package
+<br>
+
+### Match trees in both inventories.
+
+We unnest those two *sf* objects and select only the required variables. Then, we remove those trees with indices $tree\_ifn2=0$ or $tree\_ifn3=0$, which imply that they are either new trees (absent in IFN2 and present in IFN3) or dead (present in IFN2 and absent in IFN3). Next, the tree stand basal area per hectare (in $m^2$) is computed and added to the IFN2 tibble as a new column. Finally, the $dbh$ columns in IFN2 and IFN3 are renamed to follow $\texttt{Rtigre}$ rules.
 
 
-```{r}
-# install.packages("devtools")
-devtools::install_github("emf-creaf/forestables")
-library(forestables)
-library(sf)
-library(terra)
-ifn_path <- tempdir()
-download_inventory("IFN", destination = ifn_path)
-# provinces <- as.character(seq(1, 52))
-# provinces <- ifelse(nchar(provinces)==1, paste0("0", provinces), provinces)
-# ifn2 <- ifn_to_tibble(versions = "ifn2", provinces = provinces, folder = ifn_path)
-ifn2 <- ifn_to_tibble(versions = "ifn2", provinces = "08", folder = ifn_path)
-ifn2 <- ifn2 |> clean_empty(c("tree")) |> inventory_as_sf()
-# Plot IFN2 locations on average temperature in January in the Barcelona province.
-plot(tavg[[1]], xlim = c(1,3), ylim = c(41,42.5))
-plot(ifn2[,1], add = T, pch = 16, cex = .2, col = "red")
+```{r preprocess-ifn, error = TRUE}
+# Unnest and keep only necessary columns.
+ifn2 <- ifn2 |>
+  unnest("tree") |>
+  select(c("id_unique_code", "tree_id", "sp_name", "dbh", "tavg", "prec"))
+ifn3 <- ifn3 |>
+  unnest("tree") |>
+  select(c("id_unique_code", "tree_id", "sp_name", "dbh", "tree_ifn2", "tree_ifn3"))
+
+# Don't need 'sf' anymore.
+ifn2 <- ifn2 |> as_tibble()
+ifn3 <- ifn3 |> as_tibble()
+
+# Remove new trees or trees that have died. Remove also NA values in dbh.
+ifn2 <- ifn2 |> filter(tree_id != 0, !is.na(dbh))
+ifn3 <- ifn3 |> filter(tree_ifn3 != 0, !is.na(dbh))
+
+# Add basal area to IFN2 tree plots.
+ifn2 <- ifn2 |>
+  group_by(id_unique_code) |>
+  summarize(ba = sum(pi * fpm::factor_diam_IFN(dbh) * (dbh/200)^2)) |>
+  left_join(ifn2, by = "id_unique_code")
+  
+# Change dbh names to match requirements in R package 'Rtigre'.
+ifn2 <- ifn2 |> rename(y1 = dbh)
+ifn3 <- ifn3 |> rename(y2 = dbh)
 ```
 
+<br>
 
-### Preparing data
+To match the two inventories tree by tree we must use the indices $tree\_ifn2$ and $tree\_ifn3$
+in the IFN3 inventory. They identify trees across data bases.
 
+```{r error = TRUE}
+# Change column name and make identifier numeric.
+ifn2 <- ifn2 |> mutate(tree_id = as.numeric(tree_id))
+ifn3 <- ifn3 |> mutate(tree_id = as.numeric(tree_id))
 
-```{r}
-# Harmonizing coordinate reference systems,
-if (st_crs(tavg) != st_crs(ifn2)) st_transform(ifn2, st_crs(tavg))
-
-# Extracting raster data at tree plot locations.
-ifn2$tavg <- terra::extract(tavg, ifn2, method = "bilinear")
-ifn2$prec <- terra::extract(prec, ifn2, method = "bilinear")
+# left join the two tibbles.
+ifn23 <- ifn2 |> left_join(ifn3, by = join_by("id_unique_code", "tree_id"), keep = F)
+ifn23 <- ifn23 |> select("id_unique_code", "tree_id", "sp_name.x", "sp_name.y", "y1", "y2", "tavg", "prec", "ba")
 ```
 
+<br>
 
+There are warning messages indicating that $left\_join$ has found many-to-many relationships. Those are errors in the inventories due to misidentification of trees in the IFN2 and IFN3 and will be dealt with in future version of this vignette. There are also species identification errors, as well as trees with negative growth, which will all be removed.
 
-### Fitting tree growth data with the Rtigre R package
-
-
-```{r}
-# devtools::install_github("https://github.com/emf-creaf/Rtigre.git")
-library(Rtigre)
-
+```{r last-clean}
+ifn23 <- ifn23 |> filter(sp_name.x == sp_name.y, (y2 - y1) > 0)
 ```
 
+<br>
 
+Finally, we fit a time-independent, logistic non-linear function to $Pinus nigra$ $dbh$ data.
 
-```{r setup}
-library(fpm)
+```{r do-fit}
+ifn23 <- ifn23 |> filter(sp_name.x == "Pinus nigra")
+ifn23 <- ifn23 |> mutate(max_y = 200, tdiff = 10)
+r <- ifn23 |> fit_growth(~ y1 + tavg + prec + ba)
+tbl_regression(r)
 ```
+
+<br>
+
+### References
+
+Easterling, M. R., Ellner, S. P., & Dixon, P. M. (2000). Size‐specific sensitivity: applying a new structured population model. Ecology, 81(3), 694-708.
+
+Tomé, J., Tomé, M., Barreiro, S., & Paulo, J. A. (2006). Age-independent difference equations for modelling tree and stand growth. Canadian Journal of Forest Research, 36(7), 1621-1630.

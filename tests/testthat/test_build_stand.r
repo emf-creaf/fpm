@@ -1,5 +1,36 @@
 test_that("Building tree stands", {
 
+
+  # source("./R/start_stands.R")
+  # source("./R/build_stand.R")
+  # source("./R/set_parameters.R")
+  # source("./R/build_stands.R")
+  # source("./R/smooth_stands.R")
+  # source("./R/factor_diam_IFN.r")
+  # source("./R/get_parameters.r")
+  # source("./R/kernsmooth.r")
+  # source("./R/calc_stats.r")
+  # source("./R/calc_descriptive.r")
+  # source("./R/calc_species.r")
+  # source("./R/dtrexp.r")
+  # source("./R/clear_stands.r")
+  # source("./R/numquad_vm.r")
+  # source("./R/rep_dataframe.r")
+  # #
+  # source("./R/fpm_small.r")
+  # source("./R/fpm_elements.r")
+  # source("./R/fpm_survival.r")
+  # source("./R/fpm_growth.r")
+  # source("./R/fpm_quadrature.r")
+  # source("./R/quadrature.r")
+  # source("./R/fpm.r")
+  # source("./R/dln.R")
+  # source("./R/integvars.R")
+  # #
+  # source("./R/collect_parts.R")
+
+
+
   # Load simulated IFN data.
   load("..\\..\\data\\IFNtrees.Rdata")
   load("..\\..\\data\\IFNseedlings.Rdata")
