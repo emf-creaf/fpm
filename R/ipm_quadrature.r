@@ -108,7 +108,7 @@ ipm_quadrature <- function(a, idplot, expected_growth, variance_growth, survival
           }
 
           # Numerical quadrature with trapezoidal rule.
-          b[, i] <- numquad_vm(Nsu[, i], gmat, nx, h[i], "simpson")
+          b[, i] <- numquad_vm(Nsu[, i], gmat, h[i], "simpson")
 
         }
 

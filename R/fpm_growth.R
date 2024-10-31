@@ -85,7 +85,9 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, fla
         # Species loop.
 
         for (j in sp) {
-          newdata <- as.list(data[i, ])
+          # newdata <- as.list(data[i, ])
+
+          newdata <- as.data.frame(lapply(data[i, ], rep, nx[[j]]))
           newdata$max_y <- maxdbh[[j]]
           newdata$y1 <- x[[j]]
 

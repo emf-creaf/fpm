@@ -78,9 +78,7 @@ download_inventory("IFN", destination = ifn_path)
 
 <br>
 
-Those files, now in a local folder, contain all the inventory data for all provinces,
-but for our analysis to be able to proceed we need to choose only the IFN2 and IFN3 inventories.
-Package $forestables$ provides tools to select those datasets.
+Those files, now in a local folder, contain all the inventory data for all provinces. We preprocess all available inventory data, but for our analysis to be able to proceed we need to choose only the IFN2 and IFN3 inventories. Package $\texttt{forestables}$ provides tools to select those datasets.
 
 
 ```{r get-ifn-data, eval = FALSE}
@@ -100,16 +98,22 @@ ifn3 <- ifn_to_tibble(provinces = provinces,
                       versions = c("ifn3"),
                       folder = ifn_path)
 
+plan("multisession", workers = 6)
+ifn4 <- ifn_to_tibble(provinces = provinces,
+                      versions = c("ifn4"),
+                      folder = ifn_path)
+
 # We need trees that are alive in both inventories.
 ifn2 <- ifn2 |> clean_empty("tree")
 ifn3 <- ifn3 |> clean_empty("tree")
+ifn4 <- ifn4 |> clean_empty("tree")
 ```
 
 
 ```{r include = FALSE}
 # Uncomment if run first time.
-# save(ifn2, ifn3, file = ".\\data-raw\\ifn_2_3.RData")
-load("..\\data-raw\\ifn_2_3.RData")
+# save(ifn2, ifn3, ifn4, file = ".\\data-raw\\ifn_2_3_4.RData")
+load("..\\data-raw\\ifn_2_3_4.RData")
 ```
 
 <br>
@@ -117,6 +121,7 @@ load("..\\data-raw\\ifn_2_3.RData")
 ### Retrieving climatic data
 
 Climate variables (mean anual temperature and total anual precipitation, in this exercise) will be selected from the WorldClim site (https://www.worldclim.org/) with the help of the $\texttt{geodata}$ package. Values at pixel locations are extracted with tools from the $\texttt{terra}$ package.
+
 
 ```{r get-climate, warnings = FALSE}
 # Set the local path and create the subfolder, if it does not exist.
