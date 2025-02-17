@@ -61,8 +61,8 @@ calc_stats <- function(a, verbose = T) {
 
 
   # Add new fields to 'a'.
-  a$ba_species <- a$ntrees_species <- vector("list", length(a$idplot))
-  a$ba <- a$ntrees <- 0
+  a$ba_species <- a$ntrees_species <- a$R3_species <- vector("list", length(a$idplot))
+  a$ba <- a$ntrees <- a$R3 <- 0
 
 
   # Go plot by plot.
