@@ -10,8 +10,8 @@
 #'
 #' @return
 #' The input \code{sf} object with new fields added, namely \code{ba},
-#' \code{ntrees} and \code{dbh3} (total values), and \code{ba_species}, \code{ntrees_species}
-#' and \code{dbh3_species} (per species).
+#' \code{ntrees} and \code{R3} (total values), and \code{ba_species}, \code{ntrees_species}
+#' and \code{R3_species} (per species).
 #'
 #' @details
 #' This function is used by \code{update_stands}. Inputs are not checked for correctness.
@@ -28,7 +28,6 @@ calc_descriptive <- function(a, param = list()) {
   # Other parameters.
   ba <- ntrees <- R3 <- data.frame()
   stand_type <- a$stand_type
-  cnst <- pi/40000
 
 
   # Calculations.
@@ -40,7 +39,7 @@ calc_descriptive <- function(a, param = list()) {
         b <- b |> dplyr::mutate(factor_diam = factor_diam_IFN(b$dbh)) |> dplyr::group_by(species)
 
         # Basal area.
-        y <- b |> dplyr::summarise(ba = sum(factor_diam * dbh^2) * cnst)
+        y <- b |> dplyr::summarise(ba = sum(factor_diam * dbh^2))
         ba <- split(y$ba, y$species)
 
         # Number of trees.
@@ -48,29 +47,35 @@ calc_descriptive <- function(a, param = list()) {
         ntrees <- split(y$ntrees, y$species)
 
         # Cube radius, as a proxy for trunk volume.
-        y <- b |> dplyr::summarise(dbh3 = sum(factor_diam * dbh^3)) / 10^6
-        dbh3 <- split(y$dbh3, y$species)
-
+        y <- b |> dplyr::summarise(R3 = sum(factor_diam * dbh^3))
+        R3 <- split(y$R3, y$species)
 
       } else if (stand_type == "ipm") {
 
         # Basal area.
-        ba <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^2, h[[j]]), simplify = F) * cnst
+        ba <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^2, h[[j]]), simplify = F)
 
         # Number of trees.
         ntrees <- sapply(names(b), function(j) quadrature(b[[j]], h[[j]]), simplify = F)
 
         # Cube dbh, as a proxy for trunk volume.
-        dbh3 <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^3, h[[j]]), simplify = F) / 10^6
+        R3 <- sapply(names(b), function(j) quadrature(b[[j]] * x[[j]]^3, h[[j]]), simplify = F)
 
       }
 
+
+      # Multiply by appropriate constants to work in cm.
+      ba <- lapply(ba, "*", pi/200^2)
+      R3 <- lapply(R3, "*", 1/200^3)
+
+
+      # Save values.
       a$ba_species[[1]] <- ba
       a$ba <- sum(unlist(ba))
       a$ntrees_species[[1]] <- ntrees
       a$ntrees <- sum(unlist(ntrees))
-      a$R3_species[[1]] <- dbh3
-      a$R3 <- sum(unlist(dbh3))
+      a$R3_species[[1]] <- R3
+      a$R3 <- sum(unlist(R3))
 
     }
   } else if (country == "usa") {
