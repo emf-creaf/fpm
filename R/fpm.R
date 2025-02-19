@@ -101,6 +101,9 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
 
   if (country == "spain") {
     # Compute young and ingrowth trees.
+
+
+browser()
     seedlings <- fpm_elements(a, "seedlings", data = data, models = models, verbose = verbose)
     saplings <- fpm_elements(a, "saplings", data = data, models = models, verbose = verbose)
     ingrowth <- fpm_elements(a, "ingrowth", data = data, models = models, verbose = verbose)
