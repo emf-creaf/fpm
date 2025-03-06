@@ -26,7 +26,7 @@ calc_descriptive <- function(a, param = list()) {
 
 
   # Other parameters.
-  ba <- ntrees <- R3 <- data.frame()
+  ba <- ba2 <- ntrees <- R3 <- data.frame()
   stand_type <- a$stand_type
 
 
