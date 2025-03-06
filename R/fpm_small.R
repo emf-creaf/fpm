@@ -112,7 +112,6 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
             if (any(type %in% c("seedlings", "saplings"))) dat$ntrees_species <- ifNULLzero(dat$ntrees_species[[1]][[k]])
             if (any(type %in% c("saplings", "ingrowth"))) dat$nsaplings <- getn(a[i, ]$saplings[[1]], k)
 
-
             # Prediction.
             p <- NULL
             if (type == "seedlings") {

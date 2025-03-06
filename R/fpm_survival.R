@@ -45,7 +45,7 @@ fpm_survival <- function(a, type = "", data = data.frame(), models = list(), ver
   if (country == "spain") {
     b <- sf::st_drop_geometry(a)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings",
-          "ba_species", "ntrees_species", "species", "species_all", "nspecies")] <- NULL
+          "ba_species", "ntrees_species", "species", "species_all", "nspecies", "R3_species")] <- NULL
     data <- cbind(data, b)
   }
 

@@ -72,6 +72,7 @@ calc_descriptive <- function(a, param = list()) {
       # Save values.
       a$ba_species[[1]] <- ba
       a$ba <- sum(unlist(ba))
+      a$ba2 <- a$ba^2
       a$ntrees_species[[1]] <- ntrees
       a$ntrees <- sum(unlist(ntrees))
       a$R3_species[[1]] <- R3
