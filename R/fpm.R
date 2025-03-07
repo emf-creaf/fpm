@@ -102,7 +102,6 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
   if (country == "spain") {
     # Compute young and ingrowth trees.
 
-browser()
     seedlings <- fpm_elements(a, "seedlings", data = data, models = models, verbose = verbose)
     saplings <- fpm_elements(a, "saplings", data = data, models = models, verbose = verbose)
     ingrowth <- fpm_elements(a, "ingrowth", data = data, models = models, verbose = verbose)
@@ -141,15 +140,15 @@ browser()
       # IPM dynamics only if stand_type = "ipm" and there are trees.
       if (a$stand_type[i] == "ipm") {
         if (length(a$trees[[i]]) > 0) {
-#           flag = 0
-# if (i == 9) flag = 1
 
-          growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = F, flag = flag)
+          growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = FALSE, flag = flag)
           adults[i, ] <- fpm_quadrature(a[i, ], verbose =  F, data = list(survival = survival[i, ], growth = growth))
 
         }
       }
     }
+
+    browser()
   }
   if (verbose) cat("\n")
 
