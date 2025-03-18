@@ -103,7 +103,7 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, fla
 
           for (k in 1:nx[[j]]) {
             if (log_transf[j]) {
-              mat[k, kseq] <- dln(xx, meanlog = meanlog[k], sdlog = sdlog[k])
+              mat[k, kseq] <- dln(xx, meanlog = meany[k], sdlog = sdy[k])
             } else {
               mat[k, kseq] <- dnorm(xx, mean = meany[k], sd = sdy[k])
             }
