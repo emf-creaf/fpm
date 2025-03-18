@@ -54,6 +54,10 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, fla
   }
 
 
+  # A log-transformation may have been set during the calibration phase.
+  log_transf <- sapply(growth, function(x) attr(x, "log_transf"))
+
+
   # First initialize stands.
   b <- clear_stands(a)
 
@@ -85,27 +89,24 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, fla
         # Species loop.
 
         for (j in sp) {
-          # newdata <- as.list(data[i, ])
-
           newdata <- as.data.frame(lapply(data[i, ], rep, nx[[j]]))
           newdata$max_y <- maxdbh[[j]]
           newdata$y1 <- x[[j]]
-
-          meanlog <- predict(growth[[j]], newdata = newdata)
-          # if (sum(is.na(meanlog)) > 0) browser()
-          sdlog <- predict(variance[[j]], type = "response", newdata = newdata)
-          sdlog[sdlog < 0] <- 0
-          sdlog <- sqrt(sdlog)
+          meany <- predict(growth[[j]], newdata = newdata)
+          sdy <- predict(variance[[j]], type = "response", newdata = newdata)
+          sdy[sdy < 0] <- 0
+          sdy <- sqrt(sdy)
 
           mat <- matrix(0, nx[[j]], nx[[j]])
           xx <- x[[j]] - mindbh[[j]]
           kseq <- 1:nx[[j]]
 
           for (k in 1:nx[[j]]) {
-            # if (k == nx[[j]]) {
-            #   if (flag == 1) if (j == "Pinus pinea") browser()
-            # }
-            mat[k, kseq] <- dln(xx, meanlog = meanlog[k], sdlog = sdlog[k])
+            if (log_transf[j]) {
+              mat[k, kseq] <- dln(xx, meanlog = meanlog[k], sdlog = sdlog[k])
+            } else {
+              mat[k, kseq] <- dnorm(xx, mean = meany[k], sd = sdy[k])
+            }
             xx <- xx[-length(xx)]
             kseq <- kseq[-1]
           }
