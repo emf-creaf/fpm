@@ -148,7 +148,6 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
       }
     }
 
-    browser()
   }
   if (verbose) cat("\n")
 
