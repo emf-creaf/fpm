@@ -5,9 +5,11 @@
 #'
 #' @param a a \code{sf} object containing a number of POINT geometry types.
 #' @param smooth_type string indicating which smoothing window to use. Presently,
-#' only \code{smooth_type = "gaussian"} option is available.
-#' @param verbose logical, if set to TRUE a progress bar will be printed on screen.
+#' \code{smooth_type = "gaussian"} and \code{smooth_type = "uniform"} options are available.
 #' @param width width of smoothing window. Default is 2.
+#' @param factor_diam_IFN \code{logical}, if set to TRUE (default) a correction for the varying
+#' radius of the Spanish IFN tree stands is applied.
+#' @param verbose logical, if set to TRUE a progress bar will be printed on screen.
 #'
 #' @return
 #' A \code{sf} object with a continuous distributions of trees per species as a
@@ -39,7 +41,7 @@
 #' # Convolve every tree in every plot with a Gaussian window.
 #' b <- smooth_stands(a)
 #'
-smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
+smooth_stands <- function(a, smooth_type = "gaussian", width = 2, factor_diam_IFN = TRUE, verbose = T) {
 
   # Check that input 'a' is an 'sf' object.
   stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
@@ -94,7 +96,7 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, verbose = T) {
             # Loop through species and individual trees.
             for (j in unique(b$trees[[1]]$species)) {
               y <- b$trees[[1]] |> dplyr::filter(species == j)
-              factor_diam <- factor_diam_IFN(y$dbh)
+              factor_diam <- if (factor_diam_IFN) factor_diam_IFN(y$dbh) else rep(1, length(y$dbh))
               z <- sapply(1:nrow(y), function(k) kernsmooth(x[[j]], y$dbh[k], width = width) * factor_diam[k])
               df[[j]] <- apply(z, 1, sum)
             }
