@@ -10,17 +10,17 @@ test_that("Set attributes of sf tree stand object", {
   expect_error(set_attributes(a, "italy"))
 
   # country is not set here..
-  expect_warning(a <- set_parameters(a, param = list(country = "spain", crs = "ASDF")))
+  expect_warning(set_parameters(a, param = list(country = "spain", crs = "ASDF")))
 
   # Species integvars and h.
   x <- list('Pinus halepensis' = seq(7.5, 200, length = 1000),
             'Quercus ilex' = seq(7.5, 170, length = 1500))
   a <- set_parameters(a, param = list(integvars = x))
 
-  # Nothing is done.
+  # # Nothing is done.
   expect_warning(set_parameters(a))
 
-  # "country" is not evaluated.
+  # "country" is not evaluated and a warning is issued.
   expect_warning(set_parameters(a, param = list(country = "australia")))
 
   # Wrong integvars.

@@ -29,44 +29,40 @@
 #' @export
 #'
 #' @examples
-#' a <- start_stands()
+#' sf <- start_stands()
 #'
 start_stands <- function(param = list(country = "spain")) {
 
 
   # Start sf object with dummy coordinates.
-  a <- sf::st_as_sf(data.frame(X = 0, Y = 0), coords = c("X", "Y"))
+  sf <- sf::st_as_sf(data.frame(X = 0, Y = 0), coords = c("X", "Y"))
 
 
   # At least parameter country must be set at the start.
   stopifnot("Input list 'param' cannot be empty" = length(param) > 0)
   stopifnot("Parameter 'country' in input list 'param' is mandatory" = !is.null(param[["country"]]))
   country <- param[["country"]]
-  attr(a, "country") <- match.arg(country, choices = c("spain", "usa", "france"))
+  attr(sf, "country") <- match.arg(country, choices = c("spain", "usa", "france"))
 
 
   # Set remaining parameters, but only if there is any (apart from "country").
-  if (length(param) > 0) {
-    ctrl <- within(param, rm(country))
-    if (length(ctrl) > 0) a <- set_parameters(a, param = ctrl)
-  }
+  ctrl <- within(param, rm(country))
+  if (length(ctrl) > 0) sf <- set_parameters(sf, param = ctrl)
 
 
   if (country == "spain") {
 
     # Empty identifier column.
-    a$idplot <- ""
+    sf$idplot <- ""
 
     # Stand type is character.
-    a$stand_type <- ""
-
+    sf$stand_type <- ""
 
     # Empty date column.
-    a$date <- ""
-
+    sf$date <- ""
 
     # Empty lists that will contain seedlings, saplings and trees.
-    a$seedlings <- a$saplings <- a$trees <- vector("list", 1)
+    sf$seedlings <- sf$saplings <- sf$trees <- vector("list", 1)
 
   } else if (country == "usa") {
     stop("Calculations for country = 'usa' have not yet been implemented")
@@ -77,5 +73,5 @@ start_stands <- function(param = list(country = "spain")) {
   }
 
 
-  return(a[-1, ])
+  return(sf[-1, ])
 }
