@@ -2,7 +2,7 @@
 #'
 #' @description
 #' \code{integvars} calculates the dbh abscissas per species that are used
-#' during the numerical quadrature of the "ipm" part of the model.
+#' during the numerical quadrature of the model.
 #'
 #' @param mindbh named numeric vector containing the minimum dbh for adults trees
 #' per species.
@@ -27,19 +27,21 @@
 #' x <- integvars(mindbh, maxdbh, by = 10)
 #'
 #' # In case a given length of exactly 100 is required.
-#' leng <- 100
-#' by <- (maxdbh-mindbh)/(leng-1)
+#' length <- 100
+#' by <- (maxdbh-mindbh)/(length-1)
 #' x <- c(drop(integvars(mindbh[1], maxdbh[1], by[1])), drop(integvars(mindbh[2], maxdbh[2], by[2])))
 #'
 integvars <- function(mindbh, maxdbh, by = 1) {
 
 
-  # Check names match.
-  stopifnot("Names in 'mindbh' and 'maxdbh' vectors do not match" =
-              sort(names(mindbh)) %in% sort(names(maxdbh)))
+  # Checks.
+  if (!is.vector(mindbh) | !is.vector(maxdbh)) stop("Input 'mindbh' and 'maxdbh' must be vectors")
+  if (is.null(names(mindbh)) | is.null(names(maxdbh))) stop("Inputs 'mindbh' and 'maxdbh' must be named vectors")
+  if (any(is.na(names(mindbh))) | any(is.na(names(maxdbh)))) stop("There are NA in names of vector elements")
+  if (!identical(sort(names(mindbh)), sort(names(maxdbh)))) stop("Names in 'mindbh' and 'maxdbh' vectors do not match")
 
 
-  # Compute ascissas.
+  # Compute abscissas.
   x <- sapply(names(maxdbh), function(y) seq(mindbh[y], maxdbh[y], by),
               USE.NAMES = T, simplify = F)
 
