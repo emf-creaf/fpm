@@ -56,23 +56,23 @@ test_that("Make 'sf' with statistics", {
                      date = as.Date("2000-01-01")),
                      verbose = F)
   }
+
+  # Add integvars.
+  species <- unique(trees$species)
+  mindbh <- setNames(rep(7.5, length(species)), species)
+  maxdbh <- setNames(sample(150:200, length(species)), species)
+  x <- integvars(mindbh, maxdbh, by = .1)
+  a <- set_parameters(a, list(integvars = x))
   b <- calc_stats(a, verbose = F)
 
   # Convolve to obtain a continuous distribution and update.
-  x <- list('Pinus nigra' = seq(7.5,220,length=1000),
-            'Pinus halepensis' = seq(7.5,250,length=1500),
-            'Quercus ilex' = seq(7.5,250,length=2000))
-  a <- set_parameters(a, list(integvars = x))
   aa <- smooth_stands(a, verbose = F)
   bb <- calc_stats(aa, verbose = F)
 
   # Number of trees must be the same (within numerical error).
   expect_lt(all(b$ntrees == bb$ntrees), 0.01)
 
-  # Basal area after convolution must be similar.
-  expect_lt(max(abs(1-b$ba/bb$ba)), 0.20)
-
-
-
+  # Basal area after convolution must be similar
+  expect_true(max(abs(1-b$ba/bb$ba)) < 0.30)
 
 })

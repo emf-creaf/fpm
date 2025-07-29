@@ -43,17 +43,18 @@
 #'
 smooth_stands <- function(a, smooth_type = "gaussian", width = 2, factor_diam_IFN = TRUE, verbose = T) {
 
-  # Check that input 'a' is an 'sf' object.
-  stopifnot("Input 'a' must be an sf object" = inherits(a, "sf"))
 
-
+  # Checks.
   mf <- match.call()
   m <- match(c("a", "smooth_type", "width", "verbose"), tolower(names(mf)[-1]))
+
+  if (!inherits(a, "sf")) stop("Input 'a' must be an sf object")
+  smooth_type <- match.arg(smooth_type, c("gaussian", "uniform"))
 
 
   # We need the integration variable for the calculations if any stand is "ipm".
   x <- get_parameters(a, "integvars")$integvars
-  stopifnot("Attribute 'integvars' is missing" = !is.null(x))
+  if (is.null(x)) stop("Attribute 'integvars' is missing")
   h <- get_parameters(a, "h")$h
 
 
@@ -97,7 +98,9 @@ smooth_stands <- function(a, smooth_type = "gaussian", width = 2, factor_diam_IF
             for (j in unique(b$trees[[1]]$species)) {
               y <- b$trees[[1]] |> dplyr::filter(species == j)
               factor_diam <- if (factor_diam_IFN) factor_diam_IFN(y$dbh) else rep(1, length(y$dbh))
-              z <- sapply(1:nrow(y), function(k) kernsmooth(x[[j]], y$dbh[k], width = width) * factor_diam[k])
+              z <- sapply(1:nrow(y), function(k) {
+                kernsmooth(x[[j]], y$dbh[k], type = smooth_type, width = width) * factor_diam[k]
+              })
               df[[j]] <- apply(z, 1, sum)
             }
 

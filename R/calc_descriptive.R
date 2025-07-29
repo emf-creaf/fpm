@@ -4,8 +4,8 @@
 #' It calculates (a) basal area (m2/ha), (b) number of trees and (c) sum of cube of tree dbh (m3/ha),
 #' total and per species, for a plot.
 #'
-#' @param a a \code{sf} object containing a single row.
-#' @param param param a named \code{list} of parameters (see \code{Details} below).
+#' @param sf a \code{sf} object containing a single row.
+#' @param param a named \code{list} of parameters (see \code{Details} below).
 #' @param verbose
 #'
 #' @return
@@ -14,9 +14,9 @@
 #' and \code{R3_species} (per species).
 #'
 #' @details
-#' This function is used by \code{update_stands}. Inputs are not checked for correctness.
+#' This function is used by several functions in the package. Inputs are not checked for correctness.
 #'
-calc_descriptive <- function(a, param = list()) {
+calc_descriptive <- function(sf, param = list()) {
 
 
   # Retrieve parameters.
@@ -26,12 +26,12 @@ calc_descriptive <- function(a, param = list()) {
 
 
   # Other parameters.
-  ba <- ba2 <- ntrees <- R3 <- data.frame()
-  stand_type <- a$stand_type
+  ba <- ba2 <- R3 <- ntrees <- data.frame()
+  stand_type <- sf$stand_type
 
 
   # Calculations.
-  b <- a$trees[[1]]   # Shorter name.
+  b <- sf$trees[[1]]   # Shorter name.
   if (country == "spain") {
     if (length(b) > 0) {
       if (stand_type == "individual") {
@@ -64,19 +64,18 @@ calc_descriptive <- function(a, param = list()) {
       }
 
 
-      # Multiply by appropriate constants to work in cm.
+      # Multiply by appropriate constants to work in m2 per ha.
       ba <- lapply(ba, "*", pi/200^2)
       R3 <- lapply(R3, "*", 1/200^3)
 
 
       # Save values.
-      a$ba_species[[1]] <- ba
-      a$ba <- sum(unlist(ba))
-      a$ba2 <- a$ba^2
-      a$ntrees_species[[1]] <- ntrees
-      a$ntrees <- sum(unlist(ntrees))
-      a$R3_species[[1]] <- R3
-      a$R3 <- sum(unlist(R3))
+      sf$ba <- sum(unlist(ba))
+      sf$ba2 <- sf$ba^2
+      sf$R3 <- sum(unlist(R3))
+      sf$ntrees <- sum(unlist(ntrees))
+      sf$ba_species[[1]] <- ba
+      sf$ntrees_species[[1]] <- ntrees
 
     }
   } else if (country == "usa") {
@@ -86,5 +85,5 @@ calc_descriptive <- function(a, param = list()) {
   }
 
 
-  return(a)
+  return(sf)
 }

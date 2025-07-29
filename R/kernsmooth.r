@@ -55,6 +55,7 @@ kernsmooth <- function(x, y, type = "gaussian", width = NULL, normalization = TR
 
     # Checks.
   if (!is.vector(x) | !is.vector(y)) stop("Inputs 'x' and 'y' must be vectors")
+  type <- match.arg(type, c("gaussian", "uniform"))
   if (is.null(width)) stop("Please supply width")
   if (length(width) > 1) stop("Width must be a single number")
   if (width <= 0) stop("width must be >0")

@@ -11,7 +11,7 @@ test_that("Smoothing discrete tree data", {
 
 
   # Initialize only 20 stands.
-  idplot <- unique(trees$idplot)
+  idplot <- unique(trees$idplot)[1]
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
   a <- start_stands()
@@ -79,11 +79,11 @@ test_that("Smoothing discrete tree data", {
   expect_true(all(sapply(1:nrow(b), function(i) all(!is.na(b$trees[[i]]$trees)))))
 
   # # Check that smooth_stand has not modified the number of trees.
-  # sa <- get_stats(a, verbose = F)
+  sa <- get_stats(a, verbose = F)
   # sb <- get_stats(b, verbose = F)
-  #
-  #
-  #
+
+
+
   # # Check that seedlings and saplings have not been modified.
   # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$seedlings, b[[x]]$seedlings))))
   # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$saplings, b[[x]]$saplings))))

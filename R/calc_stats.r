@@ -3,40 +3,40 @@
 #' @description
 #' New fields are added to the \code{stands} \code{sf} object containing plot statistics.
 #'
-#' @param a a \code{sf} object containing a number of POINT geometry types.
+#' @param sf a \code{sf} object containing a number of POINT geometry types.
 #' @param verbose
 #'
 #' @return
 #' The same \code{sf} input object with new fields containing plot statistics.
 #'
 #' @details
-#' Fields are added to the \code{a} object containing the basal area per species (\code{ba_species}),
+#' Fields are added to the \code{sf} object containing the basal area per species (\code{ba_species}),
 #' total basal area (\code{ba}), number of trees per species (\code{ntrees_species})
 #' and total number of trees (\code{ntrees}).
 #'
 #' @export
 #'
 #' @examples
-#' a <- start_stands()
+#' sf <- start_stands()
 #' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-#' a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
+#' sf <- set_parameters(sf, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #'
 #' # Next, we add one stand.
 #' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-#' a <- build_stands(a, "id1", data = list(df = df), verbose = T)
+#' sf <- build_stands(sf, "id1", data = list(df = df), verbose = T)
 #'
 #' # Add fields with statistics.
-#' a <- calc_stats(a)
+#' sf <- calc_stats(sf)
 #'
-calc_stats <- function(a, verbose = T) {
+calc_stats <- function(sf, verbose = T) {
 
 
   # Must be an "sf" object.
-  stopifnot("Input 'a' must be an 'sf' object" = inherits(a, "sf"))
+  stopifnot("Input 'sf' must be an 'sf' object" = inherits(sf, "sf"))
 
 
   # Retrieve parameters.
-  p <- a |> get_parameters(c("country", "integvars", "h"))
+  p <- sf |> get_parameters(c("country", "integvars", "h"))
   country <- p$country
 
 
@@ -53,21 +53,21 @@ calc_stats <- function(a, verbose = T) {
     fname <- as.character(match.call()[[1]])
     cat(paste0("\n -> ", fname, ": Creating new 'sf' with stats per plot...\n"))
     pb <- utils::txtProgressBar(min = 0,
-                                max = nrow(a),
+                                max = nrow(sf),
                                 style = 3,
                                 width = 50,
                                 char = "=")
   }
 
 
-  # Add new fields to 'a'.
-  a$ba_species <- a$ntrees_species <- a$R3_species <- vector("list", length(a$idplot))
-  a$ba <- a$ba2 <- a$ntrees <- a$R3 <- 0
+  # Add new fields to 'sf'.
+  sf$ba_species <- sf$ntrees_species <- sf$R3_species <- vector("list", length(sf$idplot))
+  sf$ba <- sf$ba2 <- sf$ntrees <- sf$R3 <- 0
 
 
   # Go plot by plot.
   icount = 0
-  for (i in 1:nrow(a)) {
+  for (i in 1:nrow(sf)) {
 
     # Progress bar.
     icount <- icount + 1
@@ -75,7 +75,7 @@ calc_stats <- function(a, verbose = T) {
 
 
     # Calculations.
-    a[i, ] <- calc_descriptive(a[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country))
+    sf[i, ] <- calc_descriptive(sf[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country))
 
   }
 
@@ -83,6 +83,6 @@ calc_stats <- function(a, verbose = T) {
   # Extra carriage return.
   if (verbose) cat("\n")
 
-  return(a)
+  return(sf)
 
 }

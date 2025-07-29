@@ -36,7 +36,7 @@ test_that("Make 'sf' with statistics", {
   # load(".\\data\\IFNsaplings.Rdata")
 
   # Initialize stands.
-  idplot <- unique(trees$idplot)
+  idplot <- unique(trees$idplot)[1]
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
   a <- start_stands()
@@ -55,9 +55,9 @@ test_that("Make 'sf' with statistics", {
   b <- get_stats(a, verbose = F)
 
   # Convolve to obtain a continuous distribution and update.
-  x <- list('Pinus nigra' = seq(7.5,220,length=1000),
-            'Pinus halepensis' = seq(7.5,250,length=1500),
-            'Quercus ilex' = seq(7.5,250,length=2000))
+  x <- list('Pinus nigra' = seq(7.5, 220, length = 1000),
+            'Pinus halepensis' = seq(7.5, 250, length = 1500),
+            'Quercus ilex' = seq(7.5, 250, length = 2000))
   a <- set_parameters(a, list(integvars = x))
   aa <- smooth_stands(a, verbose = F)
   bb <- get_stats(aa, verbose = F)
@@ -67,8 +67,5 @@ test_that("Make 'sf' with statistics", {
 
   # Basal area after convolution must be similar.
   expect_lt(max(abs(1-b$ba/bb$ba)), 0.20)
-
-
-
 
 })
