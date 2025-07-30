@@ -1,22 +1,32 @@
 test_that("Smoothing discrete tree data", {
 
   # Load simulated IFN data.
-  load("..\\..\\data\\IFNtrees.Rdata")
-  load("..\\..\\data\\IFNseedlings.Rdata")
-  load("..\\..\\data\\IFNsaplings.Rdata")
+  load("..\\..\\data\\trees.Rdata")
+  load("..\\..\\data\\seedlings.Rdata")
+  load("..\\..\\data\\saplings.Rdata")
 
-  # load(".\\data\\IFNtrees.Rdata")
-  # load(".\\data\\IFNseedlings.Rdata")
-  # load(".\\data\\IFNsaplings.Rdata")
+  # load(".\\data\\trees.Rdata")
+  # load(".\\data\\seedlings.Rdata")
+  # load(".\\data\\saplings.Rdata")
 
+  # Seedlings. First we average duplicated rows.
+  seedlings$n <- seedlings$n/3
+  seedlings <- seedlings |>
+    dplyr::group_by(idplot, species) |>
+    dplyr::summarise(n = mean(n), .groups = "drop")
 
-  # Initialize only 20 stands.
+  # Saplings. We also average duplicated rows.
+  saplings$n <- saplings$n/3
+  saplings <- saplings |>
+    dplyr::group_by(idplot, species) |>
+    dplyr::summarise(n = mean(n), .groups = "drop")
+
+  # Initialize.
   idplot <- unique(trees$idplot)[1]
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
   a <- start_stands()
   a <- set_parameters(a, param = list(crs = "EPSG:32630"))
-
 
   # Now we add tree information for those plots.
   df <- list()
@@ -53,12 +63,13 @@ test_that("Smoothing discrete tree data", {
 
 
   # Convolve to obtain a continuous distribution and pdate.
-  x <- list('Pinus nigra' = seq(7.5,220,length=1000),
-            'Pinus halepensis' = seq(7.5,250,length=1500),
-            'Quercus ilex' = seq(7.5,250,length=2000))
+  species <- unique(trees$species)
+  mindbh <- setNames(rep(7.5, length(species)), species)
+  maxdbh <- setNames(sample(150:200, length(species)), species)
+  x <- integvars(mindbh, maxdbh, by = .1)
+
   a <- set_parameters(a, param = list(integvars = x))
   b <- smooth_stands(a, verbose = F)
-
 
   # Check classes.
   expect_identical(class(b), c("sf", "data.frame"))
@@ -80,12 +91,11 @@ test_that("Smoothing discrete tree data", {
 
   # # Check that smooth_stand has not modified the number of trees.
   sa <- get_stats(a, verbose = F)
-  # sb <- get_stats(b, verbose = F)
-
-
+  sb <- get_stats(b, verbose = F)
+  expect_true(all(abs((sa$ntrees-sb$ntrees)/((sa$ntrees+sb$ntrees)/2)) < 1e-4))
 
   # # Check that seedlings and saplings have not been modified.
-  # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$seedlings, b[[x]]$seedlings))))
-  # expect_true(all(sapply(idplot, function(x) identical(a[[x]]$saplings, b[[x]]$saplings))))
+  expect_true(all.equal(a$seedlings, b$seedlings))
+  expect_true(all.equal(a$saplings, b$saplings))
 
 })

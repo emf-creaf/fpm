@@ -5,13 +5,16 @@
 #' Spanish "Inventario Forestal Nacional" (IFN). Optionally, the radius of those plots
 #' or the criteria for choosing them is given as output.
 #'
-#' @param x numeric, diameter at breast height in cm.
+#' @param x numeric, diameter at breast height in cm. Diameter values \code{0<x<7.5} yield an NA.
+#' On the other hand, \code{x<=0}
 #'
 #' @details
 #' The diameter of tree plots of the Spanish Inventario Forestal Nacional are
 #' sampled differently depending on their diameter at breast height (DBH).
-#' For a description, call this function with \code{type = "interval"} and
-#' \code{x} equal to any value.
+#' With \code{factor_diam_IFN} we can determine the factor by which a given
+#' DBH must be multiplied to calculate the number of trees per ha.
+#' For a description, call this function without any argument,
+#' i.e. \code{factor_diam_IFN()}.
 #'
 #' @return
 #' A vector with the same length as \code{x} containing the conversion factor to hectare
@@ -45,7 +48,8 @@ factor_diam_IFN <- function(x) {
     colnames(y) <- c("DBH interval", "Plot radius (m)", "Conversion factor")
 
   } else {
-    stopifnot("Input 'x' must be a numeric vector" = (is.vector(x) & is.numeric(x) ))
+    if (!all(is.vector(x), is.numeric(x))) stop("Input 'x' must be a numeric vector")
+    if (any(x <= 0)) stop("Radius with zero or negative values are invalid")
     y <- ifelse(x < 7.5, NA,
                 ifelse(x >= 7.5 & x < 12.5, 5,
                        ifelse(x >= 12.5 & x < 22.5, 10,
