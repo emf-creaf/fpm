@@ -16,7 +16,7 @@
 #' @details
 #' This function is used by several functions in the package. Inputs are not checked for correctness.
 #'
-calc_descriptive <- function(sf, param = list()) {
+calc_descriptive <- function(sf, param = list(), factor_diam_IFN = factor_diam_IFN) {
 
 
   # Retrieve parameters.

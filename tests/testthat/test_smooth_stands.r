@@ -5,9 +5,9 @@ test_that("Smoothing discrete tree data", {
   load("..\\..\\data\\seedlings.Rdata")
   load("..\\..\\data\\saplings.Rdata")
 
-  # load(".\\data\\trees.Rdata")
-  # load(".\\data\\seedlings.Rdata")
-  # load(".\\data\\saplings.Rdata")
+  load(".\\data\\trees.Rdata")
+  load(".\\data\\seedlings.Rdata")
+  load(".\\data\\saplings.Rdata")
 
   # Seedlings. First we average duplicated rows.
   seedlings$n <- seedlings$n/3
@@ -97,5 +97,31 @@ test_that("Smoothing discrete tree data", {
   # # Check that seedlings and saplings have not been modified.
   expect_true(all.equal(a$seedlings, b$seedlings))
   expect_true(all.equal(a$saplings, b$saplings))
+
+  ###########################3
+  # The same, but without the varying radius correction.
+
+  # Initialize.
+  idplot <- unique(trees$idplot)[1]
+  i <- match(idplot, trees$idplot)
+  n <- length(idplot)
+  a <- start_stands()
+  a <- set_parameters(a, param = list(crs = "EPSG:32630"))
+
+  # Now we add tree information for those plots.
+  df <- list()
+  for (i in idplot) {
+    df[[i]] <- trees[trees$idplot == i, c("dbh", "species")]
+    a <- build_stands(a, i, data = list(df = df[[i]],
+                                        data_type = "trees",
+                                        stand_type = "individual",
+                                        date = as.Date("2000-01-01")), verbose = F)
+  }
+  a <- set_parameters(a, param = list(integvars = x))
+  b <- smooth_stands(a, verbose = F, factor_diam_IFN = FALSE)
+
+  sa <- get_stats(a, verbose = F)
+  sb <- get_stats(b, verbose = F)
+  print(data.frame(sa$ntrees, sb$ntrees))
 
 })

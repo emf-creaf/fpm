@@ -7,6 +7,7 @@
 #'
 #' @param x numeric, diameter at breast height in cm. Diameter values \code{0<x<7.5} yield an NA.
 #' On the other hand, \code{x<=0}
+#' @param no_weights \code{logical} if set to TRUE a vector of 1's and same length as 'x' is returned.
 #'
 #' @details
 #' The diameter of tree plots of the Spanish Inventario Forestal Nacional are
@@ -25,7 +26,8 @@
 #' @examples
 #' factor_diam_IFN(seq(6, 50))
 #'
-factor_diam_IFN <- function(x) {
+factor_diam_IFN <- function(x, no_weights = FALSE) {
+
 
   # Check arguments.
   mf <- match.call()
@@ -50,13 +52,19 @@ factor_diam_IFN <- function(x) {
   } else {
     if (!all(is.vector(x), is.numeric(x))) stop("Input 'x' must be a numeric vector")
     if (any(x <= 0)) stop("Radius with zero or negative values are invalid")
-    y <- ifelse(x < 7.5, NA,
-                ifelse(x >= 7.5 & x < 12.5, 5,
-                       ifelse(x >= 12.5 & x < 22.5, 10,
-                              ifelse(x >= 22.5 & x < 42.5, 15, 25))))
-    y <- 10000/(pi*y^2)
+
+    if (no_weights) {
+      y <- rep(1, length(x))
+    } else {
+      y <- ifelse(x < 7.5, NA,
+                  ifelse(x >= 7.5 & x < 12.5, 5,
+                         ifelse(x >= 12.5 & x < 22.5, 10,
+                                ifelse(x >= 22.5 & x < 42.5, 15, 25))))
+      y <- 10000/(pi*y^2)
+    }
   }
 
 
   return(y)
+
 }

@@ -28,7 +28,7 @@
 #' # Add fields with statistics.
 #' sf <- get_stats(sf)
 #'
-get_stats <- function(sf, verbose = T) {
+get_stats <- function(sf, factor_diam_IFN = TRUE, verbose = T) {
 
 
   # Must be an "sf" object.
@@ -75,7 +75,8 @@ get_stats <- function(sf, verbose = T) {
 
 
     # Calculations.
-    sf[i, ] <- calc_descriptive(sf[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country))
+    sf[i, ] <- calc_descriptive(sf[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country),
+                                factor_diam_IFN = factor_diam_IFN)
 
   }
 
