@@ -5,8 +5,12 @@
 #' total and per species, for a plot.
 #'
 #' @param sf a \code{sf} object containing a single row.
+#' @param param \code{list} containing parameters for the \code{sf} 'stand' object.
+#' @param radius_correction \code{logical}, if set to TRUE (default) a correction factor for the varying stand radius
+#' in the Spanish IFN is calculated for every 'x' value.
+#' If set to FALSE, a set of 1's (i.e. no correction factor) is returned.
+#'
 #' @param param a named \code{list} of parameters (see \code{Details} below).
-#' @param verbose
 #'
 #' @return
 #' The input \code{sf} object with new fields added, namely \code{ba},
@@ -16,7 +20,7 @@
 #' @details
 #' This function is used by several functions in the package. Inputs are not checked for correctness.
 #'
-calc_descriptive <- function(sf, param = list(), factor_diam_IFN = factor_diam_IFN) {
+calc_descriptive <- function(sf, param = list(), radius_correction = TRUE) {
 
 
   # Retrieve parameters.
@@ -36,7 +40,9 @@ calc_descriptive <- function(sf, param = list(), factor_diam_IFN = factor_diam_I
     if (length(b) > 0) {
       if (stand_type == "individual") {
 
-        b <- b |> dplyr::mutate(factor_diam = factor_diam_IFN(b$dbh)) |> dplyr::group_by(species)
+        b <- b |>
+          dplyr::mutate(factor_diam = factor_diam_IFN(b$dbh, radius_correction = radius_correction)) |>
+          dplyr::group_by(species)
 
         # Basal area.
         y <- b |> dplyr::summarise(ba = sum(factor_diam * dbh^2))

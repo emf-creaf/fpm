@@ -75,4 +75,15 @@ test_that("Make 'sf' with statistics", {
   # Basal area after convolution must be similar
   expect_true(max(abs(1-b$ba/bb$ba)) < 0.30)
 
+  # No correction.
+  b <- calc_stats(a, verbose = F, radius_correction = FALSE)
+  aa <- smooth_stands(a, verbose = F, radius_correction = FALSE)
+  bb <- calc_stats(aa, verbose = F, radius_correction = FALSE)
+
+  # Number of trees must be the same (within numerical error).
+  expect_lt(all(b$ntrees == bb$ntrees), 0.01)
+
+  # Basal area after convolution must be similar
+  expect_true(max(abs(1-b$ba/bb$ba)) < 0.30)
+
 })

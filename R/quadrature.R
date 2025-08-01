@@ -49,15 +49,15 @@ quadrature <- function(y, h = 1, type = "trapezoidal") {
   type <- match.arg(type, c("trapezoidal", "simpson"))
   if (is.vector(y)) {
     if (type == "trapezoidal") {
-      stopifnot("Length of vector 'y' must be 3 or more for trapezoidal quadrature" = length(y) > 2)
+      stopifnot("Length of vector 'y' must be 2 or more for trapezoidal quadrature" = ny > 1)
     } else {
-      stopifnot("Number of rows in matrix 'y' must be 3 or more for Simpson's quadrature" = nrow(y) > 2)
+      stopifnot("Length of vector 'y' must be 9 or more for Simpson's quadrature" = ny > 8)
     }
   } else {
     if (type == "trapezoidal") {
-      stopifnot("Length of vector 'y' must be 9 or more for alternative extended Simpson' quadrature" = length(y) > 2)
+      stopifnot("Number of rows in matrix 'y' must be 2 or more for for trapezoidal quadrature" = ny > 1)
     } else {
-      stopifnot("Number of rows in matrix 'y' must be 9 or more for alternative extended Simpson' quadrature" = nrow(y) > 2)
+      stopifnot("Number of rows in matrix 'y' must be 9 or more for alternative extended Simpson' quadrature" = ny > 8)
     }
   }
 

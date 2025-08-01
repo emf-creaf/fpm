@@ -4,7 +4,10 @@
 #' New fields are added to the \code{stands} \code{sf} object containing plot statistics.
 #'
 #' @param sf a \code{sf} object containing a number of POINT geometry types.
-#' @param verbose
+#' @param radius_correction \code{logical}, if set to TRUE (default) a correction factor for the varying stand radius
+#' in the Spanish IFN is calculated for every 'x' value.
+#' If set to FALSE, a set of 1's (i.e. no correction factor) is returned.
+#' @param verbose \code{logical}, if set to TRUE a progress bar will be printed on screen.
 #'
 #' @return
 #' The same \code{sf} input object with new fields containing plot statistics.
@@ -28,7 +31,7 @@
 #' # Add fields with statistics.
 #' sf <- calc_stats(sf)
 #'
-calc_stats <- function(sf, verbose = T) {
+calc_stats <- function(sf, radius_correction = TRUE, verbose = T) {
 
 
   # Must be an "sf" object.
@@ -75,7 +78,8 @@ calc_stats <- function(sf, verbose = T) {
 
 
     # Calculations.
-    sf[i, ] <- calc_descriptive(sf[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country))
+    sf[i, ] <- calc_descriptive(sf[i, ], param = list(integvars = p$integvars, h = p$h, country = p$country),
+                                radius_correction = radius_correction)
 
   }
 

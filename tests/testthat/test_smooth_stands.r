@@ -5,9 +5,9 @@ test_that("Smoothing discrete tree data", {
   load("..\\..\\data\\seedlings.Rdata")
   load("..\\..\\data\\saplings.Rdata")
 
-  load(".\\data\\trees.Rdata")
-  load(".\\data\\seedlings.Rdata")
-  load(".\\data\\saplings.Rdata")
+  # load(".\\data\\trees.Rdata")
+  # load(".\\data\\seedlings.Rdata")
+  # load(".\\data\\saplings.Rdata")
 
   # Seedlings. First we average duplicated rows.
   seedlings$n <- seedlings$n/3
@@ -118,10 +118,10 @@ test_that("Smoothing discrete tree data", {
                                         date = as.Date("2000-01-01")), verbose = F)
   }
   a <- set_parameters(a, param = list(integvars = x))
-  b <- smooth_stands(a, verbose = F, factor_diam_IFN = FALSE)
+  b <- smooth_stands(a, verbose = F, radius_correction = FALSE)
 
-  sa <- get_stats(a, verbose = F)
-  sb <- get_stats(b, verbose = F)
+  sa <- get_stats(a, verbose = F, radius_correction = FALSE)
+  sb <- get_stats(b, verbose = F, radius_correction = FALSE)
   print(data.frame(sa$ntrees, sb$ntrees))
 
 })

@@ -7,7 +7,7 @@
 #'
 #' @param x numeric, diameter at breast height in cm. Diameter values \code{0<x<7.5} yield an NA.
 #' On the other hand, \code{x<=0}
-#' @param no_weights \code{logical} if set to TRUE a vector of 1's and same length as 'x' is returned.
+#' @param radius_correction \code{logical} if set to TRUE, a vector of 1's and same length as 'x' is returned.
 #'
 #' @details
 #' The diameter of tree plots of the Spanish Inventario Forestal Nacional are
@@ -16,6 +16,7 @@
 #' DBH must be multiplied to calculate the number of trees per ha.
 #' For a description, call this function without any argument,
 #' i.e. \code{factor_diam_IFN()}.
+#' If this correction is not needed, parameter 'radius_correction' must be set to FALSE.
 #'
 #' @return
 #' A vector with the same length as \code{x} containing the conversion factor to hectare
@@ -26,7 +27,7 @@
 #' @examples
 #' factor_diam_IFN(seq(6, 50))
 #'
-factor_diam_IFN <- function(x, no_weights = FALSE) {
+factor_diam_IFN <- function(x, radius_correction = TRUE) {
 
 
   # Check arguments.
@@ -53,7 +54,7 @@ factor_diam_IFN <- function(x, no_weights = FALSE) {
     if (!all(is.vector(x), is.numeric(x))) stop("Input 'x' must be a numeric vector")
     if (any(x <= 0)) stop("Radius with zero or negative values are invalid")
 
-    if (no_weights) {
+    if (!radius_correction) {
       y <- rep(1, length(x))
     } else {
       y <- ifelse(x < 7.5, NA,

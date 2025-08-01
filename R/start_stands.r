@@ -1,7 +1,7 @@
 #' Start \code{sf} object to represent a tree stand
 #'
 #'#' @description
-#' Create a zero-row \code{sf} object to contain stand data.
+#' Create a zero-row \code{sf} object to contain tree stand data.
 #'
 #' @param param a named \code{list} of parameters (see \code{Details} below).
 #' Default is "spain".
