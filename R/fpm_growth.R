@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' See Vignettes.
-fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, flag = flag) {
+fpm_growth <- function(a, data = data.frame(), models = list(), verbose = TRUE) {
 
 
   # Retrieve parameters.
@@ -56,7 +56,7 @@ fpm_growth <- function(a, data = data.frame(), models = list(), verbose = T, fla
 
   # A log-transformation may have been set during the calibration phase.
   log_transf <- sapply(growth, function(x) attr(x, "log_transf"))
-
+print(log_transf)
 
   # First initialize stands.
   b <- clear_stands(a)

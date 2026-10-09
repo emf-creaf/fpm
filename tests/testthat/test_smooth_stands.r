@@ -1,13 +1,19 @@
 test_that("Smoothing discrete tree data", {
 
   # Load simulated IFN data.
-  load("..\\..\\data\\trees.Rdata")
-  load("..\\..\\data\\seedlings.Rdata")
-  load("..\\..\\data\\saplings.Rdata")
+  # load("..\\..\\data\\trees.Rdata")
+  # load("..\\..\\data\\seedlings.Rdata")
+  # load("..\\..\\data\\saplings.Rdata")
 
   # load(".\\data\\trees.Rdata")
   # load(".\\data\\seedlings.Rdata")
   # load(".\\data\\saplings.Rdata")
+
+  data(maxdbh)
+  data(seedlings)
+  data(saplings)
+  data(treesIFN)
+  trees <- treesIFN         # Rename it.
 
   # Seedlings. First we average duplicated rows.
   seedlings$n <- seedlings$n/3
@@ -64,8 +70,8 @@ test_that("Smoothing discrete tree data", {
 
   # Convolve to obtain a continuous distribution and pdate.
   species <- unique(trees$species)
+  maxdbh <- maxdbh[names(maxdbh) %in% species]
   mindbh <- setNames(rep(7.5, length(species)), species)
-  maxdbh <- setNames(sample(150:200, length(species)), species)
   x <- integvars(mindbh, maxdbh, by = .1)
 
   a <- set_parameters(a, param = list(integvars = x))
@@ -102,7 +108,7 @@ test_that("Smoothing discrete tree data", {
   # The same, but without the varying radius correction.
 
   # Initialize.
-  idplot <- unique(trees$idplot)[1]
+  idplot <- unique(trees$idplot)
   i <- match(idplot, trees$idplot)
   n <- length(idplot)
   a <- start_stands()
@@ -118,10 +124,10 @@ test_that("Smoothing discrete tree data", {
                                         date = as.Date("2000-01-01")), verbose = F)
   }
   a <- set_parameters(a, param = list(integvars = x))
-  b <- smooth_stands(a, verbose = F, radius_correction = FALSE)
+  b <- smooth_stands(a, verbose = F, smooth_type = "uniform", radius_correction = FALSE)
 
   sa <- get_stats(a, verbose = F, radius_correction = FALSE)
   sb <- get_stats(b, verbose = F, radius_correction = FALSE)
-  print(data.frame(sa$ntrees, sb$ntrees))
+  expect_lt(max(abs(1-sb$ntrees/sa$ntrees)), 0.06)
 
 })

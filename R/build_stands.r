@@ -34,7 +34,7 @@
 #'
 #' # Next, we add one stand.
 #' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-#' a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+#' a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 #'
 build_stands <- function(a, idplot = NULL, data = list(), verbose = T) {
 

@@ -141,7 +141,7 @@ fpm <- function(a, data = data.frame(), models = data.frame(), verbose = T, upda
       if (a$stand_type[i] == "ipm") {
         if (length(a$trees[[i]]) > 0) {
 
-          growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = FALSE, flag = flag)
+          growth <- fpm_elements(a[i, ], "growth", data = data[i, ], models = models, verbose = FALSE)
           adults[i, ] <- fpm_quadrature(a[i, ], verbose =  F, data = list(survival = survival[i, ], growth = growth))
 
         }

@@ -30,14 +30,14 @@
 #' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
 #' a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #'
+#' # Next, we add one stand.
+#' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
+#' a <- build_stands(a, "id1", data = list(df = df), verbose = T)
+#'
 #' x <- list('Pinus nigra' = seq(7.5,220,length=1000),
 #'   'Pinus halepensis' = seq(7.5,250,length=1500),
 #'   'Quercus ilex' = seq(7.5,250,length=2000))
 #' a <- set_parameters(a, param = list(integvars = x))
-#'
-#' # Next, we add one stand.
-#' df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-#' a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 #'
 #' # Convolve every tree in every plot with a Gaussian window.
 #' b <- smooth_stands(a)

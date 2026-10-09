@@ -7,7 +7,7 @@
 #' @param x \code{numeric} vector with abscissa values.
 #' @param y \code{numeric} vector containing the points at which to center the Gaussian distributions.
 #' @param width \code{numeric} with the standard deviation of the Gaussian distribution.
-#' If it has more than one element, one the first one is used.
+#' If it has more than one element, one the first one is used. Defult is width = 2.
 #' @param normalization \code{logical}, if set to TRUE the total area of the resulting vector
 #' is equal to the number of elements in \code{y}.
 #'
@@ -41,7 +41,7 @@
 #'
 #' # Total number of points for normalized and not normalized.
 #' print(c(With = trap(znorm, h), Without = trap(z, h), Expected = 8))
-convolve_gaussian <- function(x, y, width = width, normalization = TRUE) {
+convolve_gaussian <- function(x, y, width = 2, normalization = TRUE) {
 
 
   # Checks.

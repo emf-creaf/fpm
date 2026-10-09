@@ -52,16 +52,19 @@
 
 kernsmooth <- function(x, y, type = "gaussian", width = NULL, normalization = TRUE) {
 
-
     # Checks.
-  if (!is.vector(x) | !is.vector(y)) stop("Inputs 'x' and 'y' must be vectors")
+  if (!is.vector(x) | !is.vector(y)) {
+    cli::cli_abort("Inputs 'x' and 'y' must be vectors")
+  }
+
   type <- match.arg(type, c("gaussian", "uniform"))
-  if (is.null(width)) stop("Please supply width")
-  if (length(width) > 1) stop("Width must be a single number")
-  if (width <= 0) stop("width must be >0")
+
+  if (!(is.numeric(width) && length(width) == 1 && is.finite(width) && width > 0)) {
+    cli::cli_abort("Please provide a single strictly positive number for parameter 'width'")
+  }
 
 
-  # Calculating.
+  # Calculating convolution.
   z <- switch(type,
               gaussian = convolve_gaussian(x, y, width = width, normalization = normalization),
               uniform = convolve_uniform(x, y, width = width, normalization = normalization))

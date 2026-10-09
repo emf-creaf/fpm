@@ -19,7 +19,10 @@
 #'
 #' @export
 #'
-fpm_elements <- function(a, type = "", data = data.frame(), models = list(), verbose = T, flag = flag) {
+fpm_elements <- function(a, type = NULL, data = data.frame(), models = list(), verbose = TRUE) {
+
+
+  # Checks.
 
 
   # Retrieve country.
@@ -49,20 +52,32 @@ fpm_elements <- function(a, type = "", data = data.frame(), models = list(), ver
     stopifnot("Missing models" = all(sapply(modelname, function(x) x %in% names(models))))
 
 
+    if (verbose) {
+      fn_name <- as.character(sys.call()[[1]])
+      cat("\n")
+    }
+
+
     # Do calculations.
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Calculating ", type)
+    }
     b <- switch(type,
                 seedlings = fpm_small(a, type = type, data = data, models = models, verbose = verbose),
                 saplings = fpm_small(a, type = type, data = data, models = models, verbose = verbose),
                 ingrowth = fpm_small(a, type = type, data = data, models = models, verbose = verbose),
                 survival = fpm_survival(a, data = data, models = models, verbose = verbose),
-                growth = fpm_growth(a, data = data, models = models, verbose = verbose, flag = flag)
-
+                growth = fpm_growth(a, data = data, models = models, verbose = verbose)
     )
 
   }  else if (country == "usa") {
     stop("Calculations for country = 'usa' have not yet been implemented")
   } else if (country == "france") {
     stop("Calculations for country = 'france' have not yet been implemented")
+  }
+
+  if (verbose) {
+    cat("\n")
   }
 
 

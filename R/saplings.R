@@ -25,6 +25,6 @@
 #' https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
 #'
 #' @examples
-#' load("saplings")
+#' data(saplings)
 #'
 "saplings"

@@ -24,7 +24,6 @@
 #' https://www.miteco.gob.es/es/biodiversidad/temas/inventarios-nacionales/inventario-forestal-nacional.html
 #'
 #' @examples
-#' load("seedlings")
+#' data(seedlings"
 #'
-
 "seedlings"

@@ -9,6 +9,7 @@ test_that("full fpm model", {
   source("./R/factor_diam_IFN.r")
   source("./R/get_parameters.r")
   source("./R/kernsmooth.r")
+  source("./R/convolve_uniform.r")
   source("./R/calc_stats.r")
   source("./R/calc_descriptive.r")
   source("./R/calc_species.r")
@@ -32,16 +33,12 @@ test_that("full fpm model", {
 
 
   # Load simulated IFN data.
-  # load("..\\..\\data\\trees.Rdata")
-  # load("..\\..\\data\\seedlings.Rdata")
-  # load("..\\..\\data\\saplings.Rdata")
-
-  load(".\\data\\trees.Rdata")
-  load(".\\data\\seedlings.Rdata")
-  load(".\\data\\saplings.Rdata")
-  load(".\\data\\maxdbh.Rdata")
-  load(".\\data\\climateSpain.Rdata")
-
+  data(climateSpain)
+  data("maxdbh")
+  data(seedlings)
+  data(saplings)
+  data(treesIFN)
+  trees <- treesIFN
 
 
   # Initialize stands.
@@ -88,13 +85,16 @@ test_that("full fpm model", {
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Ingrowth models V6.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Survival models V1.Rdata")
   load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Nuevos ajustes funciones fpm\\Growth models V3.Rdata")
+  load("C:\\Roberto\\Ecosystem Modelling Facility\\IPM\\Ajustes funciones fpm proyecto CARBOGEST\\Growth models V3.Rdata")
 
 
   # Setting parameters and converting to continuous.
   mindbh <- maxdbh
   mindbh[] <- 7.5
   x <- integvars(mindbh, maxdbh, by = .1)
-  a <- a |> set_parameters(param = list(integvars = x, mindbh = mindbh, maxdbh = maxdbh)) |> smooth_stands()
+  a <- a |>
+    set_parameters(param = list(integvars = x, mindbh = mindbh, maxdbh = maxdbh)) |>
+    smooth_stands(smooth_type = "uniform", radius_correction = FALSE)
 
 
   # Add idplot to dataset.

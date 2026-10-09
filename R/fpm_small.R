@@ -23,11 +23,39 @@
 #' See Vignettes.
 #'
 #'
-fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbose = T) {
+#'
+#'
+#'
+
+fpm_small <- function(sf_plots = sf_plots, type = NULL, df = NULL, lst_models = lst_models, verbose = TRUE) {
+
+  # Checks.
+  if (!inherits(sf_plots, "sf")) {
+    cli::cli_abort("Parameter 'sf_plots' must be a 'sf' object")
+  }
+
+  if (!is.character(type) || length(type) != 1 || is.null(type)) {
+    cli::cli_abort("Wrong 'type' character parameter. It must be 'seedlings', 'saplings' or 'ingrowth'")
+  }
+
+  if (!is.null(df)) {
+    cli::cli_abort("Wrong 'df' parameter")
+  }
+
+  .fpm_small(sf_plots = sf_plots,
+             type = type,
+             data = df,
+             lst_models = check_list_of_models(lst_models),
+             verbose = verbose)
+
+}
+
+
+.fpm_small <- function(sf_plots, type = "", data = data.frame(), lst_models = lst_models, verbose = T) {
 
 
   # Retrieve parameters.
-  p <- get_parameters(a, c("country", "integvars", "h"))
+  p <- get_parameters(sf_plots, c("country", "integvars", "h"))
   country <- p$country
   if (type == "ingrowth") {
     x <- p$integvars
@@ -38,14 +66,14 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
   # Add statistics and species to 'df', assuming (and not checking) that calc_stats and calc_species
   # have already been applied.
   if (country == "spain") {
-    b <- sf::st_drop_geometry(a)
+    b <- sf::st_drop_geometry(sf_plots)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings")] <- NULL
     data <- cbind(data, b)
   }
 
 
   # A new empty 'sf' is required to store results.
-  b <- clear_stands(a)
+  b <- clear_stands(sf_plots)
 
 
   # If verbose is TRUE, print a progress bar.
@@ -53,7 +81,7 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
     fname <- as.character(match.call()[[1]])
     cat(paste0("\n -> ", fname, ": Calculating ", type, " per plot...\n"))
     pb <- utils::txtProgressBar(min = 0,
-                                max = length(a$idplot),
+                                max = length(sf_plots$idplot),
                                 style = 3,
                                 width = 50,
                                 char = "=")
@@ -73,8 +101,8 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
 
 
   # Extract info from a.
-  icount = 0
-  for (i in 1:nrow(a)) {
+  icount <- 0
+  for (i in 1:nrow(sf_plots)) {
 
 
     # Progress bar.
@@ -87,9 +115,9 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
       if (any(type %in% c("seedlings", "saplings", "ingrowth"))) {
 
         sp <- switch(type,
-                     seedlings = a[i, ]$species[[1]]$seedlings,
-                     saplings = a[i, ]$species[[1]]$saplings,
-                     ingrowth = a[i, ]$species_all[[1]]
+                     seedlings = sf_plots[i, ]$species[[1]]$seedlings,
+                     saplings = sf_plots[i, ]$species[[1]]$saplings,
+                     ingrowth = sf_plots[i, ]$species_all[[1]]
         )
 
         # Only if there are species.
@@ -115,15 +143,15 @@ fpm_small <- function(a, type = "", data = data.frame(), models = list(), verbos
             # Prediction.
             p <- NULL
             if (type == "seedlings") {
-              p = predict(models[["seedlings"]][[k]], type = "response", newdata = dat)
+              p = predict(lst_models[["seedlings"]][[k]], type = "response", newdata = dat)
             } else if (type == "saplings") {
               if (dat$ntrees_species > 0 | dat$nseedlings > 0) {
-                p = predict(models[["saplings"]][[k]], type = "response", newdata = dat)
+                p = predict(lst_models[["saplings"]][[k]], type = "response", newdata = dat)
               }
             } else if (type == "ingrowth") {
               if (dat$nseedlings > 0 | dat$nsaplings > 0) {
-                p <- predict(models[["ingrowth"]][[k]], newdata = dat, type = "response") *
-                  dtrexp(x = x[[k]], rate = models[["lambda"]][[k]], min = min(x[[k]]))
+                p <- predict(lst_models[["ingrowth"]][[k]], newdata = dat, type = "response") *
+                  dtrexp(x = x[[k]], rate = lst_models[["lambda"]][[k]], min = min(x[[k]]))
                 p <- p * (10000/(pi*25))
               }
             }

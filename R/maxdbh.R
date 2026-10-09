@@ -39,6 +39,6 @@
 #' * http://www.creaf.uab.es/boscossingulars/
 #'
 #' @examples
-#' load("maxdbh")
+#' data(maxdbh)
 #'
 "maxdbh"
