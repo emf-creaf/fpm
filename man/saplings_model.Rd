@@ -6,9 +6,6 @@
 \usage{
 saplings_model(obj, newdata)
 }
-\arguments{
-\item{newdata}{}
-}
 \description{
 Title
 }

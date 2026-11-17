@@ -20,10 +20,6 @@ Simulated seedling data from 100 random plots of the Spanish Inventario Forestal
 Tree seedlings are defined as any plant with a maximum height of 30cm.
 Only three species have been included: Pinus nigra, Pinus halepensis and Quercus ilex.
 }
-\examples{
-load("seedlings")
-
-}
 \references{
 Alberdi, I., Sandoval, V., Condes, S., Cañellas, I., & Vallejo, R. (2016).
 El Inventario Forestal Nacional español, una herramienta para el conocimiento,

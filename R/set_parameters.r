@@ -4,7 +4,7 @@
 #' Set parameters in a \code{sf} object that will be required during
 #' calculations of stand properties
 #'
-#' @param sf \code{sf} stand object created with \code{\link{start_stand}}.
+#' @param sf_plots \code{sf} object..
 #' @param param named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).
 #' @param verbose logical, if set to TRUE warning messages will be shown, if required.
 #'
@@ -13,8 +13,6 @@
 #'
 #' @details
 #' The elements in \code{param} input list are described in \code{\link{start_stand}}.
-#' Notice that parameter \code{country} must be set previously in \code{\link{start_stand}}
-#' and is ignored by \code{set_parameters} with a warning.
 #'
 #' Setting parameter \code{integvars} automatically creates a new parameter called \code{h}
 #' (also a list) which is the integration step per species.
@@ -26,66 +24,118 @@
 #' maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
 #' sf <- set_parameters(sf, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 #'
-set_parameters <- function(sf, param = list(), verbose = T) {
-
-  # Must be an "sf" object.
-  stopifnot("Input 'sf' must be an 'sf' object" = inherits(sf, "sf"))
+set_parameters <- function(sf_plots = NULL, param = NULL, verbose = TRUE) {
 
 
-  # First checks.
   if (verbose) {
-
-    # Any parameter at all?
-    if (length(param) == 0) {
-      warning("Input list 'param' is empty. Returning 'sf'")
-      return(sf)
-    }
-
-    # Parameter "country" is ignored with a warning.
-    if (!is.null(param[["country"]])) {
-      warning("Parameter 'country' in input list is ignored")
-      return(sf)
-    }
-
+    fn_name <- as.character(sys.call()[[1]])
+    cat("\n")
   }
 
 
-  # Check that 'country' is correct.
-  attr(sf, "country") <- match.arg(param[["country"]], choices = c("spain", "usa", "france"))
+  # Checks.
+  if (is.null(sf_plots) || !inherits(sf_plots, "sf")) {
+    cli::cli_abort("Parameter 'sf_plots' must be an 'sf' object")
+  }
 
+  if (is.null(param) || !is.list(param)) {
+    cli::cli_abort("Wrong input list 'param'")
+  }
+
+  param_names <- names(param)
+  if (!any(param_names %in% c("integvars", "h", "mindbh", "maxdbh", "crs"))) {
+    cli::cli_abort("Wrong element names in 'param' list")
+  }
 
   # Other parameters.
   integvars <- param[["integvars"]]
   mindbh <- param[["mindbh"]]
   maxdbh <- param[["maxdbh"]]
+  h <- param[["h"]]
   crs <- param[["crs"]]
 
   if (!is.null(integvars)) {
-    stopifnot("Parameter 'integvars' must be a named list" = is.list(integvars))
-    stopifnot("Names of list elements (i.e. species) in 'integvars' are missing" = !is.null(names(integvars)))
-    attr(sf, "integvars") <- integvars
-    attr(sf, "h") <- sapply(integvars, function(x) x[2]-x[1], simplify = F)
+    if (!is.list(integvars)) {
+      cli::cli_abort("Parameter 'integvars' must be a named list")
+    }
+    if (is.null(names(integvars))) {
+      cli::cli_abort("Names of list elements (i.e. species) in 'integvars' are missing")
+    }
+
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Setting attribute 'integvars'")
+    }
+
+    attr(sf_plots, "integvars") <- integvars
+
+  }
+
+
+  if (!is.null(h)) {
+    if (!is.list(h) || is.null(names(h))) {
+      cli::cli_abort("Parameter 'h' must be a named list object")
+    }
+
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Setting attribute 'h'")
+    }
+
+    attr(sf_plots, "h") <- h
+  } else {
+
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Calculating and setting attribute 'h' from 'integvars'")
+    }
+
+    attr(sf_plots, "h") <- sapply(integvars, function(x) x[2]-x[1], simplify = F)
   }
 
 
   if (!is.null(mindbh)) {
-    stopifnot("Input 'mindbh' must be a named vector" = is.vector(mindbh))
-    stopifnot("Names of elements (i.e. species) in 'mindbh' are missing" = !is.null(names(mindbh)))
-    attr(sf, "mindbh") <- mindbh
+    if (!is.list(mindbh)) {
+      cli::cli_abort("Input 'mindbh' must be a 'list' object")
+    }
+    if (is.null(names(mindbh))) {
+      cli::cli_abort("Elements in list 'mindbh' are missing")
+    }
+
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Setting attribute 'mindbh'")
+    }
+
+    attr(sf_plots, "mindbh") <- mindbh
   }
 
 
   if (!is.null(maxdbh)) {
-    stopifnot("Input 'maxdbh' must be a named vector" = is.vector(maxdbh))
-    stopifnot("Names of list elements (i.e. species) in 'maxdbh' are missing" = !is.null(names(maxdbh)))
-    attr(sf, "maxdbh") <- maxdbh
+    if (!is.list(mindbh)) {
+      cli::cli_abort("Input 'maxdbh' must be a 'list' object")
+    }
+    if (is.null(names(maxdbh))) {
+      cli::cli_abort("Elements in list 'maxdbh' are missing")
+    }
+
+    if (verbose) {
+      cli::cli_alert_info("[{fn_name}] Setting attribute 'maxdbh'")
+    }
+
+    attr(sf_plots, "maxdbh") <- maxdbh
   }
 
 
   if (!is.null(crs)) {
-    sf::st_crs(sf) <- crs
+    if (!is_valid_epsg(crs)) {
+      cli::cli_abort("If 'crs' is not NULL, it must be a valid CRS code")
+    } else {
+
+      if (verbose) {
+        cli::cli_alert_info("[{fn_name}] Setting attribute 'crs'")
+      }
+
+      sf::st_crs(sf_plots) <- crs
+    }
   }
 
 
-  return(sf)
+  return(sf_plots)
 }

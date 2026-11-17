@@ -2,26 +2,28 @@
 % Please edit documentation in R/calc_descriptive.R
 \name{calc_descriptive}
 \alias{calc_descriptive}
-\title{Calculates basal area per plot and species.}
+\title{Calculates structural parameters per plot and species.}
 \usage{
-calc_descriptive(a, param = list())
+calc_descriptive(sf, param = list(), radius_correction = TRUE)
 }
 \arguments{
-\item{a}{a \code{sf} object containing a single row.}
+\item{sf}{a \code{sf} object containing a single row.}
 
-\item{param}{param a named \code{list} of parameters (see \code{Details} below).}
+\item{param}{a named \code{list} of parameters (see \code{Details} below).}
 
-\item{verbose}{}
+\item{radius_correction}{\code{logical}, if set to TRUE (default) a correction factor for the varying stand radius
+in the Spanish IFN is calculated for every 'x' value.
+If set to FALSE, a set of 1's (i.e. no correction factor) is returned.}
 }
 \value{
 The input \code{sf} object with new fields added, namely \code{ba},
-\code{ntrees}, \code{ba_species} and \code{ntrees_species}, corresponding
-to the total basal area (m2) and total number of trees, plus basal area and
-number of trees per species, respectively.
+\code{ntrees} and \code{R3} (total values), and \code{ba_species}, \code{ntrees_species}
+and \code{R3_species} (per species).
 }
 \description{
-It calculates the basal area and number of trees, total and per species, for a plot.
+It calculates (a) basal area (m2/ha), (b) number of trees and (c) sum of cube of tree dbh (m3/ha),
+total and per species, for a plot.
 }
 \details{
-This function is used by \code{update_stands}. Inputs are not checked for correctness.
+This function is used by several functions in the package. Inputs are not checked for correctness.
 }

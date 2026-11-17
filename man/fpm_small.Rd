@@ -4,19 +4,25 @@
 \alias{fpm_small}
 \title{Compute number of small trees.}
 \usage{
-fpm_small(a, type = "", data = data.frame(), models = list(), verbose = T)
+fpm_small(
+  sf_plots = sf_plots,
+  type = NULL,
+  df = NULL,
+  lst_models = lst_models,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{a}{a \code{sf} object containing a number of POINT geometry types.}
-
 \item{type}{\code{character} indicating the component of the ipm model to be calculated.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
+
+\item{a}{a \code{sf} object containing a number of POINT geometry types.}
 
 \item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
 
 \item{models}{names \code{list} with the regressions models to calculate the dynamics
 of small individuals.}
-
-\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed.}
 }
 \value{
 A new \code{sf} stand object with the corresponding calculations.
@@ -30,6 +36,5 @@ This function is executed by function "fpm" and should usually not be used direc
 }
 \examples{
 See Vignettes.
-
 
 }

@@ -33,7 +33,7 @@ When data is not available because species have been grouped under a generic nam
 maximum dbh is calculated from the Spanish Inventories IFN2 or IFN3.
 }
 \examples{
-load("maxdbh")
+data(maxdbh)
 
 }
 \references{

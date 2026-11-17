@@ -6,9 +6,6 @@
 \usage{
 empty_seedlings(a, idplot, include_date = NA)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Set seedlings to an empty \code{data.frame}
 }

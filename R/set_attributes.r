@@ -34,19 +34,25 @@
 #'
 #'
 #'
-set_attributes <- function(a, country = NULL, integvars = NULL, min_dbh = NULL, max_dbh = NULL) {
+set_attributes <- function(sf_plots = NULL, integvars = NULL, mindbh = NULL, maxdbh = NULL, country = NULL) {
 
-  if (is.null(country) & is.null(integvars) & is.null(min_dbh) & is.null(max_dbh)) {
-    warning("No attribute has been set!")
-    return(a)
+  # Checks.
+  if (is.null(sf_plots)) {
+    cli::cli_abort("Please provide a 'sf_plots' parameter")
   }
 
-  if (!is.null(country)) {
-    attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
+  if (is.null(integvars) || is.null(min_dbh) || is.null(max_dbh)) {
+    cli::cli_abort("Attributes to be set are missing")
   }
+
+  # if (!is.null(country)) {
+  #   attr(a, "country") <- match.arg(tolower(country), choices = c("spain", "usa", "france"))
+  # }
 
   if (!is.null(integvars)) {
-    stopifnot(is.matrix(integvars))
+    if (!is.list(integvars)) {
+      cli::cli_abort("Parameter 'integvars' must be a list")
+    }
     attr(a, "integvars") <- integvars
     attr(a, "h") <- integvars[2, ] - integvars[1, ]
   }

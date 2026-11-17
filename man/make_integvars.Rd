@@ -12,8 +12,6 @@ make_integvars(species, min_dbh, max_dbh, length = length)
 \item{min_dbh}{numeric vector with minimum dbh. Same length as \code{species}.}
 
 \item{max_dbh}{numeric vector with maximum dbh. Same length as \code{species}.}
-
-\item{length}{}
 }
 \value{
 \code{data.frame} with as many named columns as the length of \code{species},
@@ -21,5 +19,12 @@ and with \code{length} rows. Each column corresponds to a species and it contain
 an equispaced sequence of abscissas between \code{min_dbh} and \code{max_dbh}.
 }
 \description{
-Sequence of
+A short description...
+}
+\examples{
+species <- c("Pinus nigra", "Fagus sylvatica")
+min_dbh <- c(7.5, 7.5)
+max_dbh <- c(130, 150)
+
+
 }

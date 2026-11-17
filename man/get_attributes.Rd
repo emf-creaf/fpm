@@ -6,9 +6,6 @@
 \usage{
 get_attributes(a)
 }
-\arguments{
-\item{a}{}
-}
 \description{
 Title
 }

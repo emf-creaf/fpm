@@ -6,9 +6,6 @@
 \usage{
 show_stand(a, idplot)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Title
 }

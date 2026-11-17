@@ -4,17 +4,7 @@
 \alias{fpm_saplings}
 \title{Title}
 \usage{
-fpm_saplings(
-  a,
-  df,
-  models_list,
-  statistics = NULL,
-  species = NULL,
-  verbose = T
-)
-}
-\arguments{
-\item{verbose}{}
+fpm_saplings(a, data = list(), verbose = T)
 }
 \description{
 Title

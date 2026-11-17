@@ -13,7 +13,9 @@ per species.}
 \item{maxdbh}{named numeric vector containing the maximum dbh for adults trees
 per species. Names of \code{mindbh} and \code{maxdbh} must match exactly.}
 
-\item{by}{numeric, increment of the sequence.}
+\item{by}{numeric, increment of the sequence. If \code{by=1} then all abscissas will
+have the same increment of 1. If length of \code{by} is larger than 1, then it must be
+a named vector and its length and names must match those of \code{mindbh} and \code{maxdbh}.}
 }
 \value{
 A list, with elements named as the species in \code{mindbh} and \code{maxdbh},
@@ -22,20 +24,35 @@ the corresponding minimum to maximum dbh values.
 }
 \description{
 \code{integvars} calculates the dbh abscissas per species that are used
-during the numerical quadrature of the "ipm" part of the model.
+during the numerical quadrature of the model.
 }
 \details{
 Simple implementation of the \code{seq} function. The option \code{length},
 however, is not available. See examples below.
+
+When length of vector \code{by} matches that of \code{mindbh} and \code{maxdbh},
+each species will have abscissas with different increments.
 }
 \examples{
+
 mindbh <- c('Pinus nigra' = 7.5, 'Pinus pinea' = 7.5)
 maxdbh <- c('Pinus nigra' = 200, 'Pinus pinea' = 220)
+
+# Same increment for all.
 x <- integvars(mindbh, maxdbh, by = 10)
+print(sapply(x, length))
+print(sapply(sapply(x, diff), mean))
+
+# Different increment per species.
+x <- integvars(mindbh, maxdbh, by = c('Pinus nigra' = .5, 'Pinus pinea' = .22))
+print(sapply(x, length))
+print(sapply(sapply(x, diff), mean))
 
 # In case a given length of exactly 100 is required.
-leng <- 100
-by <- (maxdbh-mindbh)/(leng-1)
-x <- c(drop(integvars(mindbh[1], maxdbh[1], by[1])), drop(integvars(mindbh[2], maxdbh[2], by[2])))
+length <- 100
+by <- (maxdbh-mindbh)/(length-1)
+x <- integvars(mindbh, maxdbh, by)
+print(sapply(x, length))
+print(apply(sapply(x, diff), 2, mean))
 
 }

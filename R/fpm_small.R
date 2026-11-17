@@ -22,36 +22,24 @@
 #' @examples
 #' See Vignettes.
 #'
-#'
-#'
-#'
-#'
 
 fpm_small <- function(sf_plots = sf_plots, type = NULL, df = NULL, lst_models = lst_models, verbose = TRUE) {
 
   # Checks.
-  if (!inherits(sf_plots, "sf")) {
-    cli::cli_abort("Parameter 'sf_plots' must be a 'sf' object")
-  }
+  check_param_fpm(sf_plots = sf_plots, type = type, df = df, lst_models = lst_models)
 
-  if (!is.character(type) || length(type) != 1 || is.null(type)) {
-    cli::cli_abort("Wrong 'type' character parameter. It must be 'seedlings', 'saplings' or 'ingrowth'")
-  }
 
-  if (!is.null(df)) {
-    cli::cli_abort("Wrong 'df' parameter")
-  }
-
+  # Calculations.
   .fpm_small(sf_plots = sf_plots,
              type = type,
-             data = df,
-             lst_models = check_list_of_models(lst_models),
+             df = df,
+             lst_models = lst_models,
              verbose = verbose)
 
 }
 
 
-.fpm_small <- function(sf_plots, type = "", data = data.frame(), lst_models = lst_models, verbose = T) {
+.fpm_small <- function(sf_plots, type, df, lst_models, verbose) {
 
 
   # Retrieve parameters.
@@ -68,7 +56,7 @@ fpm_small <- function(sf_plots = sf_plots, type = NULL, df = NULL, lst_models = 
   if (country == "spain") {
     b <- sf::st_drop_geometry(sf_plots)
     b[, c("idplot", "stand_type", "date", "trees", "saplings", "seedlings")] <- NULL
-    data <- cbind(data, b)
+    df <- cbind(df, b)
   }
 
 
@@ -133,7 +121,7 @@ fpm_small <- function(sf_plots = sf_plots, type = NULL, df = NULL, lst_models = 
           for (k in sp) {
 
             # Prepare the data.frame and select species.
-            dat <- data[i, ]
+            dat <- df[i, ]
 
             dat$ba <- ifNULLzero(dat$ba)
             dat$nseedlings <- getn(a[i, ]$seedlings[[1]], k)

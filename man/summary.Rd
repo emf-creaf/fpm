@@ -6,9 +6,6 @@
 \usage{
 summary(a, ...)
 }
-\arguments{
-\item{...}{}
-}
 \description{
 Title
 }

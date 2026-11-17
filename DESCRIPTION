@@ -7,15 +7,8 @@ Authors@R:
 Description: Modelling of population dynamics of forest data from national
     inventories
 License: GPL v3
+Config/roxygen2/version: 8.1.1
 Encoding: UTF-8
 Language: en
 Lazydata: TRUE
 Roxygen: list(markdown = TRUE)
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
-Depends: 
-    R (>= 3.5)
-LazyData: true
-Config/roxygen2/version: 8.1.0

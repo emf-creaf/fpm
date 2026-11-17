@@ -6,9 +6,6 @@
 \usage{
 modify_stand(a, idplot, df, data_type, stand_type, date)
 }
-\arguments{
-\item{b}{}
-}
 \description{
 Title
 }

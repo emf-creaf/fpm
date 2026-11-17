@@ -7,7 +7,9 @@
 fpm_seedlings(a, data = list(), verbose = T)
 }
 \arguments{
-\item{verbose}{}
+\item{data}{\code{list} whose elements are required to calculate the \code{type} component.}
+
+\item{verbose}{logical, if set to TRUE warning messages may be printed.}
 }
 \description{
 Title

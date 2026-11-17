@@ -42,6 +42,6 @@ a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
 # Next, we add one stand.
 df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-a <- build_stand(a, "id1", data = list(df = df), verbose = T)
+a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 
 }

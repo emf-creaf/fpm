@@ -6,9 +6,6 @@
 \usage{
 extract_species(df, species)
 }
-\arguments{
-\item{species}{}
-}
 \description{
 Title
 }

@@ -6,9 +6,6 @@
 \usage{
 start_inventory(idplot, x, y, stand_type = NULL, date = NULL, crs = NULL)
 }
-\arguments{
-\item{type}{}
-}
 \description{
 Initialization of a 'sf' object.
 }

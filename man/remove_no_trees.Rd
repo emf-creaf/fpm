@@ -6,9 +6,6 @@
 \usage{
 remove_no_trees(a, idplot = NULL)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Title
 }

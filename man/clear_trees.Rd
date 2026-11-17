@@ -14,9 +14,6 @@ clear_trees(
   verbose = F
 )
 }
-\arguments{
-\item{verbose}{}
-}
 \description{
 Set trees to an empty \code{data.frame}
 }

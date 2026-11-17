@@ -4,10 +4,13 @@
 \alias{factor_diam_IFN}
 \title{Areal factors to convert from IFN plot area to hectare.}
 \usage{
-factor_diam_IFN(x)
+factor_diam_IFN(x, radius_correction = TRUE)
 }
 \arguments{
-\item{x}{numeric, diameter at breast height in cm.}
+\item{x}{numeric, diameter at breast height in cm. Diameter values \code{0<x<7.5} yield an NA.
+On the other hand, \code{x<=0}}
+
+\item{radius_correction}{\code{logical} if set to TRUE, a vector of 1's and same length as 'x' is returned.}
 }
 \value{
 A vector with the same length as \code{x} containing the conversion factor to hectare
@@ -21,8 +24,11 @@ or the criteria for choosing them is given as output.
 \details{
 The diameter of tree plots of the Spanish Inventario Forestal Nacional are
 sampled differently depending on their diameter at breast height (DBH).
-For a description, call this function with \code{type = "interval"} and
-\code{x} equal to any value.
+With \code{factor_diam_IFN} we can determine the factor by which a given
+DBH must be multiplied to calculate the number of trees per ha.
+For a description, call this function without any argument,
+i.e. \code{factor_diam_IFN()}.
+If this correction is not needed, parameter 'radius_correction' must be set to FALSE.
 }
 \examples{
 factor_diam_IFN(seq(6, 50))

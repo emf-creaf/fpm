@@ -6,9 +6,6 @@
 \usage{
 modify_variables(a, idplot, df, data_type, stand_type, date)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Title
 }

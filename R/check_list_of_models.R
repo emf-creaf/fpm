@@ -3,7 +3,6 @@
 #' @description
 #' \code{check_list_of_models} checks out the validity of the elements in input list of models.
 #'
-#'
 #' @param lst_models \code{list} object containing 7 regression objects.
 #'
 #' @returns
@@ -22,8 +21,7 @@
 #' r <- lm(y ~ x)
 #' lst <- list("seedlings" = r, "saplings" = r, "ingrowth" = r,
 #'    "lambda" = r, "survival" = r, "growth" = r, "variance" = r)
-#' lst2 <- check_list_of_models(lst)
-#' identical(lst, lst2)
+#' check_list_of_models(lst)
 #'
 check_list_of_models <- function(lst_models) {
 
@@ -55,11 +53,12 @@ check_list_of_models <- function(lst_models) {
   # Some of the elements must be a regression object.
   reg_classes <- c("lm", "glm", "glmerMod", "lmerMod", "gam", "nls",
                    "rlm", "coxph", "survreg", "randomForest", "gbm", "rq")
-  if (!all(sapply(lst_models, inherits, what = reg_classes))) {
+
+  if (!all(sapply(lst_models[!(names(lst_models) %in% "lambda")], inherits, what = reg_classes))) {
     cli::cli_abort("Elements in input list 'lst_models' have incorrect classes")
   }
 
 
-  return(lst_models)
+  invisible(TRUE)
 
 }

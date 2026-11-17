@@ -4,12 +4,16 @@
 \alias{calc_stats}
 \title{Calculate descriptive statistics of \code{sf} stands object.}
 \usage{
-calc_stats(a, verbose = T)
+calc_stats(sf, radius_correction = TRUE, verbose = T)
 }
 \arguments{
-\item{a}{a \code{sf} object containing a number of POINT geometry types.}
+\item{sf}{a \code{sf} object containing a number of POINT geometry types.}
 
-\item{verbose}{}
+\item{radius_correction}{\code{logical}, if set to TRUE (default) a correction factor for the varying stand radius
+in the Spanish IFN is calculated for every 'x' value.
+If set to FALSE, a set of 1's (i.e. no correction factor) is returned.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed on screen.}
 }
 \value{
 The same \code{sf} input object with new fields containing plot statistics.
@@ -18,20 +22,20 @@ The same \code{sf} input object with new fields containing plot statistics.
 New fields are added to the \code{stands} \code{sf} object containing plot statistics.
 }
 \details{
-Fields are added to the \code{a} object containing the basal area per species (\code{ba_species}),
+Fields are added to the \code{sf} object containing the basal area per species (\code{ba_species}),
 total basal area (\code{ba}), number of trees per species (\code{ntrees_species})
 and total number of trees (\code{ntrees}).
 }
 \examples{
-a <- start_stands()
+sf <- start_stands()
 maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
+sf <- set_parameters(sf, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
 # Next, we add one stand.
 df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-a <- build_stands(a, "id1", data = list(df = df), verbose = T)
+sf <- build_stands(sf, "id1", data = list(df = df), verbose = T)
 
 # Add fields with statistics.
-a <- calc_stats(a)
+sf <- calc_stats(sf)
 
 }

@@ -6,9 +6,6 @@
 \usage{
 remove_no_saplings(a, idplot = NULL)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Title
 }

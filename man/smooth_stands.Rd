@@ -4,17 +4,27 @@
 \alias{smooth_stands}
 \title{Convolution of discrete tree stands}
 \usage{
-smooth_stands(a, smooth_type = "gaussian", width = 2, verbose = T)
+smooth_stands(
+  a,
+  smooth_type = "gaussian",
+  width = 2,
+  radius_correction = TRUE,
+  verbose = T
+)
 }
 \arguments{
 \item{a}{a \code{sf} object containing a number of POINT geometry types.}
 
 \item{smooth_type}{string indicating which smoothing window to use. Presently,
-only \code{smooth_type = "gaussian"} option is available.}
+\code{smooth_type = "gaussian"} and \code{smooth_type = "uniform"} options are available.}
 
 \item{width}{width of smoothing window. Default is 2.}
 
-\item{verbose}{logical, if set to TRUE a progress bar will be printed on screen.}
+\item{radius_correction}{\code{logical}, if set to TRUE (default) a correction factor for the varying stand radius
+in the Spanish IFN is calculated for every 'x' value.
+If set to FALSE, a set of 1's (i.e. no correction factor) is returned.}
+
+\item{verbose}{\code{logical}, if set to TRUE a progress bar will be printed on screen.}
 }
 \value{
 A \code{sf} object with a continuous distributions of trees per species as a
@@ -35,14 +45,14 @@ a <- start_stands()
 maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
 a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
+# Next, we add one stand.
+df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
+a <- build_stands(a, "id1", data = list(df = df), verbose = T)
+
 x <- list('Pinus nigra' = seq(7.5,220,length=1000),
   'Pinus halepensis' = seq(7.5,250,length=1500),
   'Quercus ilex' = seq(7.5,250,length=2000))
 a <- set_parameters(a, param = list(integvars = x))
-
-# Next, we add one stand.
-df <- data.frame(species = c('Pinus halepensis', 'Quercus ilex'), dbh = c(8.6, 12.7))
-a <- build_stands(a, "id1", data = list(df = df), verbose = T)
 
 # Convolve every tree in every plot with a Gaussian window.
 b <- smooth_stands(a)

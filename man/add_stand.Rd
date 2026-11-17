@@ -2,13 +2,59 @@
 % Please edit documentation in R/add_stand.r
 \name{add_stand}
 \alias{add_stand}
-\title{Title}
+\title{Add new tree-stand to tree-stand \code{sf} object}
 \usage{
-add_stand(a, b)
+add_stand(
+  a,
+  idplot,
+  df,
+  data_type = c("trees", "seedlings", "saplings"),
+  stand_type = c("individual", "ipm"),
+  date = NA
+)
 }
 \arguments{
-\item{b}{}
+\item{a}{a \code{sf} object containing a number of POINT geometry types.}
+
+\item{idplot}{identifier of single POINT, representing a tree stand, to modify.}
+
+\item{df}{a data frame containing seedling, sapling or tree data.}
+
+\item{data_type}{string specifying whether the \code{df} data frame corresponds
+to seedling, sapling or tree data.}
+
+\item{stand_type}{string specifying which type of tree stand, "individual" or "ipm".}
+
+\item{date}{an optional numeric value setting the sampling date. If missing, the
+default value will be NA. It can be set at a later time manually.}
+}
+\value{
+A \code{sf} object with added or modified fields.
 }
 \description{
-Title
+Create and add or modify most variables of tree-stand \code{sf} object.
+}
+\details{
+Unlike, \code{add_stand} does not check for the \country{parameter}. It assumes that
+it is correct. Moreover, if the stand "idplot already exists
+}
+\examples{
+
+# First initialize stands.
+a <- start_stands(c("ID1", "ID2"), c(4, 5), c(45, 45), "EPSG:4326")
+a <- set_parameters(a, country = "spain")
+
+# Next, we add other stands.
+for (i in 3:10) {
+  b <- start_stands(paste0("ID",i), 5, 45, "EPSG:4326")
+  b <- set_parameters(b, country = "spain")
+  a <- add_stands(a)
+}
+
+# Now we add tree information.
+for (i in 1:2) {
+df <- data.frame(species = c(sample(c("Pnigra","Phalep"),5,replace=T)), dbh = 7.5+runif(5)*20)
+a <- build_stand(a, paste0("ID",i), df, "trees", "individual", as.Date("1-1-2019", "\%d-\%m-\%Y"))
+}
+
 }

@@ -4,18 +4,18 @@
 \alias{kernsmooth}
 \title{Fast kernel density estimation for a set of points}
 \usage{
-kernsmooth(x, y, type = "gaussian", width = NULL, normalization = T)
+kernsmooth(x, y, type = "gaussian", width = NULL, normalization = TRUE)
 }
 \arguments{
-\item{x}{vector of abscissae values where density will be evaluated.}
+\item{x}{vector of abscissa values where density will be evaluated.}
 
 \item{y}{vector with a set of points. Length of x and y need not be the same.}
 
 \item{type}{string that determines which smoothing kernel to use.
-At the moment only type = "gaussian" has been implemented.}
+At the moment only type = "gaussian" or type = "uniform" have been implemented.}
 
 \item{width}{If type = "gaussian", width is the standard deviation of the
-gaussian kernel.}
+gaussian kernel. if type = "uniform", width is the width of the bounded interval.}
 
 \item{normalization}{logical, if set the output will be normalized such that
 the area below the density estimation will be equal to the number of \code{y}

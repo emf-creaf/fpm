@@ -5,25 +5,25 @@
 \title{Set attributes of a \code{sf} tree-stand object}
 \usage{
 set_attributes(
-  a,
-  country = NULL,
+  sf_plots = NULL,
   integvars = NULL,
-  min_dbh = NULL,
-  max_dbh = NULL
+  mindbh = NULL,
+  maxdbh = NULL,
+  country = NULL
 )
 }
 \arguments{
-\item{a}{a \code{sf} tree-stand object created with \code{\link{start_stand}}.}
+\item{integvars}{Optional numeric matrix containing, in columns, the abscissas for each
+species to be used by the IPM methodology. Future implementations will likely
+allow the use of different number of abscissas for each species (using e.g. a list),
+but at this moment this is not permitted.}
 
 \item{country}{string indicating which country the stand belongs to.
 At this moment, "Spain" (default), "France" or "USA" are valid inputs, though
 only calculations for the Spanish Inventario Forestal Nacional have been
 implemented. Lower or upper case letters can be used. No default value is set.}
 
-\item{integvars}{Optional numeric matrix containing, in columns, the abscissas for each
-species to be used by the IPM methodology. Future implementations will likely
-allow the use of different number of abscissas for each species (using e.g. a list),
-but at this moment this is not permitted.}
+\item{a}{a \code{sf} tree-stand object created with \code{\link{start_stand}}.}
 
 \item{min_dbh}{named vector containing the minimum dbh after which a tree will
 be considered as an adult individual.}

@@ -6,9 +6,6 @@
 \usage{
 get_integvar(a)
 }
-\arguments{
-\item{a}{}
-}
 \description{
 Title
 }

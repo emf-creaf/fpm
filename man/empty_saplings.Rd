@@ -6,9 +6,6 @@
 \usage{
 empty_saplings(a, idplot, include_date = NA)
 }
-\arguments{
-\item{idplot}{}
-}
 \description{
 Set saplings to an empty \code{data.frame}
 }

@@ -4,31 +4,25 @@
 \alias{start_stands}
 \title{Start \code{sf} object to represent a tree stand}
 \usage{
-start_stands(param = list(country = "spain"))
+start_stands(tree_data = NULL, param = NULL, verbose = TRUE)
 }
 \arguments{
-\item{param}{a named \code{list} of parameters (see \code{Details} below).
-Default is "spain".}
+\item{param_data}{a named \code{list} of parameters (see \code{Details} below).}
 }
 \value{
 A \code{sf} object with the following attributes (if provided in \code{param}):
-\code{country}, \code{integvars}, \code{mindbh}, \code{maxdbh}, \code{crs} and
-\code{species}. New fields in the \code{sf} object are also created, depending
-on which country has been selected.
+\code{integvars}, \code{mindbh}, \code{maxdbh}, \code{crs} and
+\code{species}.
 }
 \description{
 #' @description
-Create a zero-row \code{sf} object to contain stand data.
+Create a zero-row \code{sf} object to contain tree stand data.
 }
 \details{
 This simple function creates a zero-rows, simple feature (a.k.a. \code{sf})
 object to store all data for a single tree stand.
 The \code{param} input can supply the following components:
 \itemize{
-\item \code{country} string indicating which country the stand belongs to.
-At this moment, "spain" (default), "france" or "usa" are valid inputs, though
-only calculations for the Spanish Inventario Forestal Nacional have been
-implemented. Lower or upper case letters can be used.
 \item \code{integvars} optional \code{list} where each named element contains the abscissas for
 the species to be modeled.
 \item \code{mindbh} named vector containing the minimum dbh after which a tree will
@@ -38,6 +32,10 @@ be considered as an adult individual.
 }
 }
 \examples{
-a <- start_stands()
+ df <- data.frame(idplot = as.character(1:2),
+ x = 3:4, y = 5:6,
+ trees = I(list(data.frame(dbh = 1:2, species = letters[1:2]),
+ data.frame(dbh = 3:4, species = letters[1:2]))))
+sf <- start_stands(df)
 
 }

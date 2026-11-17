@@ -6,9 +6,6 @@
 \usage{
 add_data_stand(a, df, data_type, stand_type, date, country = "spain")
 }
-\arguments{
-\item{df}{}
-}
 \description{
 Add individual "trees" or "saplings" data.frames to a single sf object representing a tree stand.
 }

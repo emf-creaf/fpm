@@ -13,9 +13,6 @@ fpm_ingrowth(
   verbose = T
 )
 }
-\arguments{
-\item{verbose}{}
-}
 \description{
 Title
 }

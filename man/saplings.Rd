@@ -22,7 +22,7 @@ Tree saplings are defined as any plant heigher than 130cm and dbh within the int
 Only three species have been included: Pinus nigra, Pinus halepensis and Quercus ilex.
 }
 \examples{
-load("saplings")
+data(saplings)
 
 }
 \references{

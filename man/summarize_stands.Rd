@@ -6,9 +6,6 @@
 \usage{
 summarize_stands(a)
 }
-\arguments{
-\item{...}{}
-}
 \description{
 Title
 }

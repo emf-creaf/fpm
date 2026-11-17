@@ -6,9 +6,6 @@
 \usage{
 modify_date(a, idplot, date)
 }
-\arguments{
-\item{date}{}
-}
 \description{
 Title
 }

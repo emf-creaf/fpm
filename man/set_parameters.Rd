@@ -4,12 +4,12 @@
 \alias{set_parameters}
 \title{Set parameters of a \code{sf} \code{stand} object}
 \usage{
-set_parameters(a, param = list(), verbose = T)
+set_parameters(sf_plots = NULL, param = NULL, verbose = TRUE)
 }
 \arguments{
-\item{a}{a \code{sf} stand object created with \code{\link{start_stand}}.}
+\item{sf_plots}{\code{sf} object..}
 
-\item{param}{a named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).}
+\item{param}{named \code{list} of parameters (see \code{Details} \code{\link{start_stand}}).}
 
 \item{verbose}{logical, if set to TRUE warning messages will be shown, if required.}
 }
@@ -22,15 +22,13 @@ calculations of stand properties
 }
 \details{
 The elements in \code{param} input list are described in \code{\link{start_stand}}.
-Notice that parameter \code{country} must be set previously in \code{\link{start_stand}}
-and is ignored by \code{set_parameters} with a warning.
 
 Setting parameter \code{integvars} automatically creates a new parameter called \code{h}
 (also a list) which is the integration step per species.
 }
 \examples{
-a <- start_stands()
+sf <- start_stands()
 maxdbh <- list('Pinus halepensis' = 200, 'Pinus nigra' = 230)
-a <- set_parameters(a, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
+sf <- set_parameters(sf, param = list(maxdbh = maxdbh, crs =  "EPSG:4326"))
 
 }
